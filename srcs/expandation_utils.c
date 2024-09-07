@@ -59,27 +59,22 @@ void	remove_null(char **argv)
 		argv[j] = 0;
 }
 
-int	join_help(char **token, char *s)
+int	join_util(char **str, char *s)
 {
 	char	*sj;
 
-	sj = ft_strjoin(*token, s);
+	sj = ft_strjoin(*str, s);
 	if (!sj)
 		return (-1);
-	free(*token);
-	*token = sj;
+	free(*str);
+	*str = sj;
 	return (0);
 }
 
-int	join_var(char **token, char **s, int *i)
+int	join_var(char **str, char **s, int *i)
 {
-	char	*sj;
-
-	sj = ft_strjoin(*token, *s);
-	if (!sj)
+	if (join_util(str, *s) < 0)
 		return (-1);
-	free(*token);
-	*token = sj;
 	if ((*s)[*i] != '\0')
 	{
 		*s = *s + ft_strlen(*s);
@@ -91,7 +86,7 @@ int	join_var(char **token, char **s, int *i)
 void	lpeek(char *s, int *i, char *q)
 {
 	while (s[*i] != '\0'
-		&& (s[*i] != '$' || *q == '\'' || (*q && ft_strchr(DELI, s[*i + 1]))))
+		&& (s[*i] != '$' || *q == '\'' || (*q && !isvar(s[*i + 1]))))
 	{
 		if (ft_strchr(QUOTE, s[*i]))
 		{

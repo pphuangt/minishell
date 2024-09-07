@@ -22,19 +22,15 @@ static int	expand_var(char **str, char **s, int i, char **envp)
 	t = *s + i + 1;
 	j = 0;
 	c = 0;
-	while (t[j] != '\0' && !ft_strchr(DELI, t[j]))
+	while (t[j] != '\0' && isvar(t[j]))
 		j++;
-	if (t[j] != '\0')
-	{
-		c = t[j];
-		t[j] = '\0';
-	}
-	if (join_help(str, *s) < 0)
+	c = t[j];
+	t[j] = '\0';
+	if (join_util(str, *s) < 0)
 		return (-1);
-	if (join_help(str, get_env(t, envp)) < 0)
+	if (join_util(str, get_env(t, envp)) < 0)
 		return (-1);
-	if (c > 0)
-		t[j] = c;
+	t[j] = c;
 	*s = t + j;
 	return (0);
 }

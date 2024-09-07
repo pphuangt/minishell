@@ -92,3 +92,10 @@ char	*get_env(char *str, char **envp)
 	}
 	return (NULL);
 }
+
+int	isvar(char c)
+{
+	if (ft_isalnum(c) || c == '_')
+		return (1);
+	return (0);
+}

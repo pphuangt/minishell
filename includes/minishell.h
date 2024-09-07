@@ -27,7 +27,6 @@
 # define CRTL_O "\n|&()"
 # define RDRT_O "<>"
 # define QUOTE "\'\""
-# define DELI " \t\r\n\v|&()<>\'\"/$"
 # define MAXLINE 4096
 # define S_PROMPT "\033[1;32m$ \033[0m"
 # define MAXARGS 10
@@ -83,12 +82,13 @@ int		gettoken(char **ps, char *es, char **q, char **eq);
 int		expandation(t_cmd *cmd, char **envp);
 void	lpeek(char *s, int *i, char *q);
 int		join_var(char **token, char **s, int *i);
-int		join_help(char **token, char *s);
+int		join_util(char **token, char *s);
 void	remove_null(char **argv);
 void	remove_quote(char *s);
 
 /*    env    */
 char	*get_env(char *str, char **envp);
+int		isvar(char c);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);
