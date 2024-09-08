@@ -19,6 +19,29 @@ static t_cmd	*err_exec(t_execcmd *exec_cmd, char *msg)
 	return (NULL);
 }
 
+static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es)
+{
+	t_cmd	*ret;
+	int		tok;
+	t_f		f;
+
+	ret = cmd;
+	while (peek(ps, es, REDIR_O))
+	{
+		tok = gettoken(ps, es, 0, 0);
+		if (gettoken(ps, es, &f.file, &f.efile) != 'a')
+		{
+			err_ret("missing file for redirection");
+			return (NULL);
+		}
+		if (tok == '<')
+			ret = redircmd(cmd, &f, O_RDONLY, 0);
+		else if (tok == '>')
+			ret = redircmd(cmd, &f, O_WRONLY | O_CREAT | O_TRUNC, 1);
+	}
+	return (ret);
+}
+
 static t_cmd	*parseexec(char **ps, char *es)
 {
 	t_cmd		*cmd;
@@ -31,14 +54,16 @@ static t_cmd	*parseexec(char **ps, char *es)
 		return (NULL);
 	exec_cmd = (t_execcmd *)cmd;
 	exec_cmd->argc = 0;
+	cmd = parseredirs(cmd, ps, es);
 	while (*ps < es && !peek(ps, es, METACHARACTER))
 	{
-		if (exec_cmd->argc == MAXARGS)
-			return (err_exec(exec_cmd, "to many args"));
-		else if (gettoken(ps, es, &q, &eq) < 0)
+		if (gettoken(ps, es, &q, &eq) < 0)
 			return (err_exec(exec_cmd, "no closing quote"));
 		exec_cmd->argv[exec_cmd->argc] = q;
 		exec_cmd->eargv[exec_cmd->argc++] = eq;
+		if (exec_cmd->argc == MAXARGS + 1)
+			return (err_exec(exec_cmd, "to many args"));
+		cmd = parseredirs(cmd, ps, es);
 	}
 	exec_cmd->argv[exec_cmd->argc] = 0;
 	exec_cmd->eargv[exec_cmd->argc] = 0;

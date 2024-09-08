@@ -42,3 +42,22 @@ t_cmd	*pipecmd(t_cmd *left, t_cmd *right)
 	pipecmd->right = right;
 	return ((t_cmd *)pipecmd);
 }
+
+t_cmd	*redircmd(t_cmd *subcmd, t_f *f, int mode, int fd)
+{
+	t_redircmd	*redircmd;
+
+	redircmd = malloc(sizeof(*redircmd));
+	if (!redircmd)
+	{
+		err_ret("redircmd malloc");
+		return (NULL);
+	}
+	redircmd->type = REDIR;
+	redircmd->cmd = subcmd;
+	redircmd->f.file = f->file;
+	redircmd->f.efile = f->efile;
+	redircmd->mode = mode;
+	redircmd->fd = fd;
+	return ((t_cmd *)redircmd);
+}

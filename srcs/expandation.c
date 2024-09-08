@@ -86,6 +86,7 @@ static int	expanding_process(t_cmd *cmd, char **envp)
 int	expandation(t_cmd *cmd, char **envp)
 {
 	t_pipecmd	*pcmd;
+	t_redircmd	*rcmd;
 
 	if (!cmd)
 		return (0);
@@ -93,6 +94,12 @@ int	expandation(t_cmd *cmd, char **envp)
 	{
 		if (expanding_process(cmd, envp) < 0)
 			return (-1);
+	}
+	else if (cmd->type == REDIR)
+	{
+		rcmd = (t_redircmd *)cmd;
+		expandation(rcmd->cmd, envp);
+		*rcmd->f.efile = 0;
 	}
 	else if (cmd->type == PIPE)
 	{

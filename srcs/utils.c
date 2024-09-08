@@ -54,6 +54,7 @@ void	printcmd(t_cmd *cmd)
 {
 	t_execcmd	*execcmd;
 	t_pipecmd	*pipecmd;
+	t_redircmd	*redircmd;
 	int			argc;
 
 	argc = 0;
@@ -65,6 +66,13 @@ void	printcmd(t_cmd *cmd)
 		while (execcmd->argv[argc])
 			printf("%s ", execcmd->argv[argc++]);
 		printf("--> command\n");
+	}
+	else if (cmd->type == REDIR)
+	{
+		redircmd = (t_redircmd *)cmd;
+		printf("file: %s	efile: %s	fd: %d", redircmd->f.file, redircmd->f.efile, redircmd->fd);
+		printf("--> redirect\n");
+		printcmd(redircmd->cmd);
 	}
 	else if (cmd->type == PIPE)
 	{

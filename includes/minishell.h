@@ -24,8 +24,7 @@
 
 # define METACHARACTER " \t\r\n\v|&()<>"
 # define WHITESPACE " \t\r\n\v"
-# define CRTL_O "\n|&()"
-# define RDRT_O "<>"
+# define REDIR_O "<>"
 # define QUOTE "\'\""
 # define MAXLINE 4096
 # define S_PROMPT "\033[1;32m$ \033[0m"
@@ -52,14 +51,19 @@ typedef struct s_execcmd
 	int		isexpand;
 }	t_execcmd;
 
+typedef struct s_f
+{
+	char	*file;
+	char	*efile;
+}	t_f;
+
 typedef struct s_redircmd
 {
-	t_type		type;
-	struct cmd	*cmd;
-	char		*file;
-	char		*efile;
-	int			mode;
-	int			fd;
+	t_type			type;
+	struct s_cmd	*cmd;
+	struct s_f		f;
+	int				mode;
+	int				fd;
 }	t_redircmd;
 
 typedef struct s_pipecmd
@@ -72,6 +76,7 @@ typedef struct s_pipecmd
 /*    constructure    */
 t_cmd	*execcmd(void);
 t_cmd	*pipecmd(t_cmd *left, t_cmd *right);
+t_cmd	*redircmd(t_cmd *subcmd, t_f *f, int mode, int fd);
 
 /*    parsing    */
 t_cmd	*parsecmd(char *s, char **envp);
