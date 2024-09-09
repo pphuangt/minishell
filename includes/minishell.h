@@ -22,7 +22,7 @@
 # include <errno.h>
 # include "libft.h"
 
-# define METACHARACTER " \t\r\n\v|&()<>"
+# define METACHARACTER " \t\r\n\v|<>"
 # define WHITESPACE " \t\r\n\v"
 # define REDIR_O "<>"
 # define QUOTE "\'\""
@@ -79,7 +79,7 @@ t_cmd	*pipecmd(t_cmd *left, t_cmd *right);
 t_cmd	*redircmd(t_cmd *subcmd, t_f *f, int mode, int fd);
 
 /*    parsing    */
-t_cmd	*parsecmd(char *s, char **envp);
+t_cmd	*parsecmd(char *s);
 int		peek(char **ps, char *es, char *tokens);
 int		gettoken(char **ps, char *es, char **q, char **eq);
 

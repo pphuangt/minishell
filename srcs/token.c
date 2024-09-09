@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	peekcmd(char **s, char *es, int *ret)
+int	getstr(char **s, char *es, int *ret)
 {
 	char	*q;
 
@@ -31,6 +31,30 @@ int	peekcmd(char **s, char *es, int *ret)
 	return (0);
 }
 
+int	get_meta(char **s, int *ret)
+{
+	char	*ss;
+
+	ss = *s;
+	if (ft_strchr(REDIR_O, **s))
+	{
+		(*s)++;
+		if (**s == '<')
+		{
+			*ret = '-';
+			(*s)++;
+		}
+		else if (**s == '>')
+		{
+			*ret = '+';
+			(*s)++;
+		}
+	}
+	else if (ft_strchr(METACHARACTER, **s))
+		(*s)++;
+	return (*s - ss);
+}
+
 int	gettoken(char **ps, char *es, char **q, char **eq)
 {
 	int		ret;
@@ -44,9 +68,7 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	ret = *s;
 	if (q)
 		*q = s;
-	if (ft_strchr(METACHARACTER, *s))
-		s++;
-	else if (peekcmd(&s, es, &ret) < 0)
+	if (!get_meta(&s, &ret) && getstr(&s, es, &ret) < 0)
 		return (-1);
 	if (eq)
 		*eq = s;

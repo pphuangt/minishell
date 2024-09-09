@@ -21,11 +21,9 @@ static t_cmd	*err_exec(t_execcmd *exec_cmd, char *msg)
 
 static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es)
 {
-	t_cmd	*ret;
 	int		tok;
 	t_f		f;
 
-	ret = cmd;
 	while (peek(ps, es, REDIR_O))
 	{
 		tok = gettoken(ps, es, 0, 0);
@@ -35,11 +33,15 @@ static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es)
 			return (NULL);
 		}
 		if (tok == '<')
-			ret = redircmd(cmd, &f, O_RDONLY, 0);
+			cmd = redircmd(cmd, &f, O_RDONLY, 0);
 		else if (tok == '>')
-			ret = redircmd(cmd, &f, O_WRONLY | O_CREAT | O_TRUNC, 1);
+			cmd = redircmd(cmd, &f, O_WRONLY | O_CREAT | O_TRUNC, 1);
+		else if (tok == '+')
+			cmd = redircmd(cmd, &f, O_WRONLY | O_CREAT | O_APPEND, 1);
+		else if (tok == '-')
+			cmd = redircmd(cmd, &f, O_DSYNC, 0);
 	}
-	return (ret);
+	return (cmd);
 }
 
 static t_cmd	*parseexec(char **ps, char *es)
@@ -97,7 +99,7 @@ static t_cmd	*parsepipe(char **ps, char *es)
 	return (cmd);
 }
 
-t_cmd	*parsecmd(char	*s, char **envp)
+t_cmd	*parsecmd(char	*s)
 {
 	char	*es;
 	t_cmd	*cmd;
@@ -109,12 +111,6 @@ t_cmd	*parsecmd(char	*s, char **envp)
 	if (s != es)
 	{
 		err_msg(0, "invalid args");
-		freecmd(cmd);
-		return (NULL);
-	}
-	if (expandation(cmd, envp) < 0)
-	{
-		err_sys("expanding malloc");
 		freecmd(cmd);
 		return (NULL);
 	}

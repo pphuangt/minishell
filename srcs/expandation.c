@@ -67,19 +67,29 @@ static int	do_expand(char **str, char **envp, int *isexpand)
 static int	expanding_process(t_cmd *cmd, char **envp)
 {
 	t_execcmd	*ecmd;
+	t_redircmd	*rcmd;
 	int			argc;
 
-	ecmd = (t_execcmd *)cmd;
-	argc = 0;
-	while (ecmd->argv[argc])
+	if (cmd->type == EXEC)
 	{
-		*ecmd->eargv[argc] = 0;
-		if (do_expand(&ecmd->argv[argc], envp, &ecmd->isexpand) < 0)
-			return (-1);
-		remove_quote(ecmd->argv[argc]);
-		argc++;
+		ecmd = (t_execcmd *)cmd;
+		argc = 0;
+		while (ecmd->argv[argc])
+		{
+			*ecmd->eargv[argc] = 0;
+			if (do_expand(&ecmd->argv[argc], envp, &ecmd->isexpand) < 0)
+				return (-1);
+			remove_quote(ecmd->argv[argc++]);
+		}
+		remove_null(ecmd->argv);
 	}
-	remove_null(ecmd->argv);
+	else if (cmd->type == REDIR)
+	{
+		rcmd = (t_redircmd *)cmd;
+		if (do_expand(&rcmd->f.file, envp, &argc) < 0)
+			return (-1);
+		remove_quote(rcmd->f.file);
+	}
 	return (0);
 }
 
@@ -90,16 +100,16 @@ int	expandation(t_cmd *cmd, char **envp)
 
 	if (!cmd)
 		return (0);
-	if (cmd->type == EXEC)
-	{
-		if (expanding_process(cmd, envp) < 0)
-			return (-1);
-	}
+	if (cmd->type == EXEC && expanding_process(cmd, envp) < 0)
+		return (-1);
 	else if (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd *)cmd;
-		expandation(rcmd->cmd, envp);
-		*rcmd->f.efile = 0;
+		if (expandation(rcmd->cmd, envp) < 0)
+			return (-1);
+		*rcmd->f.efile = '\0';
+		if (expanding_process(cmd, envp) < 0)
+			return (-1);
 	}
 	else if (cmd->type == PIPE)
 	{

@@ -70,9 +70,16 @@ void	printcmd(t_cmd *cmd)
 	else if (cmd->type == REDIR)
 	{
 		redircmd = (t_redircmd *)cmd;
-		printf("file: %s	efile: %s	fd: %d", redircmd->f.file, redircmd->f.efile, redircmd->fd);
-		printf("--> redirect\n");
 		printcmd(redircmd->cmd);
+		if (redircmd->mode == O_RDONLY)
+			printf("redir stdin (<) to %s ", redircmd->f.file);
+		else if (redircmd->mode == O_DSYNC)
+			printf("redir stdin (<<) to %s ", redircmd->f.file);
+		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_TRUNC))
+			printf("redir stdout (>) to %s ", redircmd->f.file);
+		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_APPEND))
+			printf("redir stdout (>>) to %s ", redircmd->f.file);
+		printf("--> redir\n");
 	}
 	else if (cmd->type == PIPE)
 	{
