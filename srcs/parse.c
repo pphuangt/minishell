@@ -12,34 +12,27 @@
 
 #include "minishell.h"
 
-static t_cmd	*err_exec(t_execcmd *exec_cmd, char *msg)
+static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es, t_string *string)
 {
-	err_msg(0, msg);
-	free(exec_cmd);
-	return (NULL);
-}
+	int			tok;
+	int			fd;
+	int			mode;
+	t_string	file;
 
-static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es)
-{
-	int		tok;
-	t_f		f;
-
+	fd = 0;
+	if (string && *ps < es && ft_strchr(REDIR_O, **ps))
+		fd = 1;
 	while (peek(ps, es, REDIR_O))
 	{
 		tok = gettoken(ps, es, 0, 0);
-		if (gettoken(ps, es, &f.file, &f.efile) != 'a')
+		if (gettoken(ps, es, &file.s, &file.e) != 'a')
 		{
 			err_ret("missing file for redirection");
 			return (NULL);
 		}
-		if (tok == '<')
-			cmd = redircmd(cmd, &f, O_RDONLY, 0);
-		else if (tok == '>')
-			cmd = redircmd(cmd, &f, O_WRONLY | O_CREAT | O_TRUNC, 1);
-		else if (tok == '+')
-			cmd = redircmd(cmd, &f, O_WRONLY | O_CREAT | O_APPEND, 1);
-		else if (tok == '-')
-			cmd = redircmd(cmd, &f, O_DSYNC, 0);
+		set_fd(tok, &fd, string);
+		set_mode(tok, &mode);
+		cmd = redircmd(cmd, &file, mode, fd);
 	}
 	return (cmd);
 }
@@ -48,24 +41,25 @@ static t_cmd	*parseexec(char **ps, char *es)
 {
 	t_cmd		*cmd;
 	t_execcmd	*exec_cmd;
-	char		*q;
-	char		*eq;
+	t_string	string;
 
 	cmd = execcmd();
 	if (!cmd)
 		return (NULL);
 	exec_cmd = (t_execcmd *)cmd;
 	exec_cmd->argc = 0;
-	cmd = parseredirs(cmd, ps, es);
-	while (*ps < es && !peek(ps, es, METACHARACTER))
+	while (*ps < es && !peek(ps, es, META_O))
 	{
-		if (gettoken(ps, es, &q, &eq) < 0)
-			return (err_exec(exec_cmd, "no closing quote"));
-		exec_cmd->argv[exec_cmd->argc] = q;
-		exec_cmd->eargv[exec_cmd->argc++] = eq;
-		if (exec_cmd->argc == MAXARGS + 1)
-			return (err_exec(exec_cmd, "to many args"));
-		cmd = parseredirs(cmd, ps, es);
+		if (gettoken(ps, es, &string.s, &string.e) < 0)
+			return (err_parse_exec(exec_cmd, "no closing quote"));
+		cmd = parseredirs(cmd, ps, es, &string);
+		if (string.s != NULL)
+		{
+			exec_cmd->argv[exec_cmd->argc] = string.s;
+			exec_cmd->eargv[exec_cmd->argc++] = string.e;
+			if (exec_cmd->argc == MAXARGS + 1)
+				return (err_parse_exec(exec_cmd, "to many args"));
+		}
 	}
 	exec_cmd->argv[exec_cmd->argc] = 0;
 	exec_cmd->eargv[exec_cmd->argc] = 0;

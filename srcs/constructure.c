@@ -43,7 +43,7 @@ t_cmd	*pipecmd(t_cmd *left, t_cmd *right)
 	return ((t_cmd *)pipecmd);
 }
 
-t_cmd	*redircmd(t_cmd *subcmd, t_f *f, int mode, int fd)
+t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd)
 {
 	t_redircmd	*redircmd;
 
@@ -55,8 +55,8 @@ t_cmd	*redircmd(t_cmd *subcmd, t_f *f, int mode, int fd)
 	}
 	redircmd->type = REDIR;
 	redircmd->cmd = subcmd;
-	redircmd->f.file = f->file;
-	redircmd->f.efile = f->efile;
+	redircmd->file.s = file->s;
+	redircmd->file.e = file->e;
 	redircmd->mode = mode;
 	redircmd->fd = fd;
 	return ((t_cmd *)redircmd);

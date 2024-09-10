@@ -86,9 +86,9 @@ static int	expanding_process(t_cmd *cmd, char **envp)
 	else if (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd *)cmd;
-		if (do_expand(&rcmd->f.file, envp, &argc) < 0)
+		if (do_expand(&rcmd->file.s, envp, &argc) < 0)
 			return (-1);
-		remove_quote(rcmd->f.file);
+		remove_quote(rcmd->file.s);
 	}
 	return (0);
 }
@@ -107,7 +107,7 @@ int	expandation(t_cmd *cmd, char **envp)
 		rcmd = (t_redircmd *)cmd;
 		if (expandation(rcmd->cmd, envp) < 0)
 			return (-1);
-		*rcmd->f.efile = '\0';
+		*rcmd->file.e = '\0';
 		if (expanding_process(cmd, envp) < 0)
 			return (-1);
 	}

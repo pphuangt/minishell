@@ -23,6 +23,7 @@
 # include "libft.h"
 
 # define METACHARACTER " \t\r\n\v|<>"
+# define META_O " \t\r\n\v|"
 # define WHITESPACE " \t\r\n\v"
 # define REDIR_O "<>"
 # define QUOTE "\'\""
@@ -51,17 +52,17 @@ typedef struct s_execcmd
 	int		isexpand;
 }	t_execcmd;
 
-typedef struct s_f
+typedef struct s_string
 {
-	char	*file;
-	char	*efile;
-}	t_f;
+	char	*s;
+	char	*e;
+}	t_string;
 
 typedef struct s_redircmd
 {
 	t_type			type;
 	struct s_cmd	*cmd;
-	struct s_f		f;
+	struct s_string	file;
 	int				mode;
 	int				fd;
 }	t_redircmd;
@@ -76,12 +77,15 @@ typedef struct s_pipecmd
 /*    constructure    */
 t_cmd	*execcmd(void);
 t_cmd	*pipecmd(t_cmd *left, t_cmd *right);
-t_cmd	*redircmd(t_cmd *subcmd, t_f *f, int mode, int fd);
+t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd);
 
 /*    parsing    */
 t_cmd	*parsecmd(char *s);
 int		peek(char **ps, char *es, char *tokens);
 int		gettoken(char **ps, char *es, char **q, char **eq);
+void	set_fd(int tok, int *fd, t_string *string);
+void	set_mode(int tok, int *mode);
+t_cmd	*err_parse_exec(t_execcmd *exec_cmd, char *msg);
 
 /*    expandation    */
 int		expandation(t_cmd *cmd, char **envp);
