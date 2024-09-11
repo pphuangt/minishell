@@ -61,10 +61,10 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	char	*s;
 
 	s = *ps;
-	if (!(*s))
-		return (0);
 	while (s < es && ft_strchr(WHITESPACE, *s))
 		s++;
+	if (!*s)
+		return (0);
 	ret = *s;
 	if (q)
 		*q = s;

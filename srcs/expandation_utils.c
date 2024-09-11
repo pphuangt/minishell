@@ -83,18 +83,9 @@ int	join_var(char **str, char **s, int *i)
 	return (0);
 }
 
-void	lpeek(char *s, int *i, char *q)
+int	isvar(char c)
 {
-	while (s[*i] != '\0'
-		&& (s[*i] != '$' || *q == '\'' || (*q && !isvar(s[*i + 1]))))
-	{
-		if (ft_strchr(QUOTE, s[*i]))
-		{
-			if (*q == 0)
-				*q = s[*i];
-			else if (*q == s[*i])
-				*q = 0;
-		}
-		*i = *i + 1;
-	}
+	if (ft_isalnum(c) || c == '_')
+		return (1);
+	return (0);
 }

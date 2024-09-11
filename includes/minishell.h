@@ -23,7 +23,6 @@
 # include "libft.h"
 
 # define METACHARACTER " \t\r\n\v|<>"
-# define META_O " \t\r\n\v|"
 # define WHITESPACE " \t\r\n\v"
 # define REDIR_O "<>"
 # define QUOTE "\'\""
@@ -83,21 +82,21 @@ t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd);
 t_cmd	*parsecmd(char *s);
 int		peek(char **ps, char *es, char *tokens);
 int		gettoken(char **ps, char *es, char **q, char **eq);
-void	set_fd(int tok, int *fd, t_string *string);
+void	set_default_fd(int tok, int *fd);
 void	set_mode(int tok, int *mode);
-t_cmd	*err_parse_exec(t_execcmd *exec_cmd, char *msg);
+int		valid_redir(char **ps, char *es, int *fd);
+t_cmd	*err_parse_exec(t_cmd *cmd, char *msg);
 
 /*    expandation    */
 int		expandation(t_cmd *cmd, char **envp);
-void	lpeek(char *s, int *i, char *q);
 int		join_var(char **token, char **s, int *i);
 int		join_util(char **token, char *s);
 void	remove_null(char **argv);
 void	remove_quote(char *s);
+int		isvar(char c);
 
 /*    env    */
 char	*get_env(char *str, char **envp);
-int		isvar(char c);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);

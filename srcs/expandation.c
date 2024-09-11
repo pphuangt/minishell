@@ -12,6 +12,22 @@
 
 #include "minishell.h"
 
+static void	lpeek(char *s, int *i, char *q)
+{
+	while (s[*i] != '\0'
+		&& (s[*i] != '$' || *q == '\'' || (*q && !isvar(s[*i + 1]))))
+	{
+		if (ft_strchr(QUOTE, s[*i]))
+		{
+			if (*q == 0)
+				*q = s[*i];
+			else if (*q == s[*i])
+				*q = 0;
+		}
+		*i = *i + 1;
+	}
+}
+
 static int	expand_var(char **str, char **s, int i, char **envp)
 {
 	char	*t;

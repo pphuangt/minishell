@@ -12,58 +12,65 @@
 
 #include "minishell.h"
 
-static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es, t_string *string)
+static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es)
 {
+	t_cmd		*ncmd;
 	int			tok;
 	int			fd;
 	int			mode;
 	t_string	file;
 
-	fd = 0;
-	if (string && *ps < es && ft_strchr(REDIR_O, **ps))
-		fd = 1;
-	while (peek(ps, es, REDIR_O))
+	while (valid_redir(ps, es, &fd))
 	{
 		tok = gettoken(ps, es, 0, 0);
 		if (gettoken(ps, es, &file.s, &file.e) != 'a')
-		{
-			err_ret("missing file for redirection");
-			return (NULL);
-		}
-		set_fd(tok, &fd, string);
+			return (err_parse_exec(cmd, "missing file for redirection"));
+		if (fd == -1)
+			set_default_fd(tok, &fd);
 		set_mode(tok, &mode);
-		cmd = redircmd(cmd, &file, mode, fd);
+		ncmd = redircmd(cmd, &file, mode, fd);
+		if (!ncmd)
+			return (err_parse_exec(cmd, NULL));
+		cmd = ncmd;
+		while (*ps < es && ft_strchr(WHITESPACE, **ps))
+			(*ps)++;
 	}
 	return (cmd);
 }
 
 static t_cmd	*parseexec(char **ps, char *es)
 {
+	t_cmd		*ret;
 	t_cmd		*cmd;
 	t_execcmd	*exec_cmd;
 	t_string	string;
+	int			tok;
 
-	cmd = execcmd();
-	if (!cmd)
+	ret = execcmd();
+	if (!ret)
 		return (NULL);
-	exec_cmd = (t_execcmd *)cmd;
+	exec_cmd = (t_execcmd *)ret;
 	exec_cmd->argc = 0;
-	while (*ps < es && !peek(ps, es, META_O))
+	while (*ps < es && !peek(ps, es, " \t\r\n\v|"))
 	{
-		if (gettoken(ps, es, &string.s, &string.e) < 0)
-			return (err_parse_exec(exec_cmd, "no closing quote"));
-		cmd = parseredirs(cmd, ps, es, &string);
-		if (string.s != NULL)
+		cmd = parseredirs(ret, ps, es);
+		if (!cmd)
+			return (NULL);
+		ret = cmd;
+		tok = gettoken(ps, es, &string.s, &string.e);
+		if (tok < 0)
+			return (err_parse_exec(ret, "no closing quote"));
+		else if (tok == 'a')
 		{
 			exec_cmd->argv[exec_cmd->argc] = string.s;
 			exec_cmd->eargv[exec_cmd->argc++] = string.e;
 			if (exec_cmd->argc == MAXARGS + 1)
-				return (err_parse_exec(exec_cmd, "to many args"));
+				return (err_parse_exec(ret, "to many args"));
 		}
 	}
 	exec_cmd->argv[exec_cmd->argc] = 0;
 	exec_cmd->eargv[exec_cmd->argc] = 0;
-	return (cmd);
+	return (ret);
 }
 
 static t_cmd	*parsepipe(char **ps, char *es)

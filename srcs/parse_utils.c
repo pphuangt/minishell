@@ -12,41 +12,40 @@
 
 #include "minishell.h"
 
-t_cmd	*err_parse_exec(t_execcmd *exec_cmd, char *msg)
+static void	free_parse_exec(t_cmd *cmd)
 {
-	err_msg(0, msg);
-	free(exec_cmd);
+	t_execcmd	*ecmd;
+	t_redircmd	*rcmd;
+
+	if (!cmd)
+		return ;
+	if (cmd->type == EXEC)
+	{
+		ecmd = (t_execcmd *)cmd;
+		free(ecmd);
+	}
+	else if (cmd->type == REDIR)
+	{
+		rcmd = (t_redircmd *)cmd;
+		free_parse_exec(rcmd->cmd);
+		free(rcmd);
+	}
+}
+
+t_cmd	*err_parse_exec(t_cmd *cmd, char *msg)
+{
+	if (msg)
+		err_msg(0, msg);
+	free_parse_exec(cmd);
 	return (NULL);
 }
 
-void	set_fd(int tok, int *fd, t_string *string)
+void	set_default_fd(int tok, int *fd)
 {
-	char	*s;
-	char	c;
-
-	if (string)
-		s = string->s;
-	if (*fd)
-	{
-		while (s < string->e && ft_isdigit(*s))
-			s++;
-		*fd = -1;
-		if (s == string->e)
-		{
-			c = *(string->e);
-			*string->e = '\0';
-			*fd = ft_atoi(string->s);
-			*string->e = c;
-			string->s = NULL;
-		}
-	}
-	if (!string || *fd == -1)
-	{
-		if (tok == '<' || tok == '-')
-			*fd = 0;
-		else if (tok == '>' || tok == '+')
-			*fd = 1;
-	}
+	if (tok == '<' || tok == '-')
+		*fd = 0;
+	else if (tok == '>' || tok == '+')
+		*fd = 1;
 }
 
 void	set_mode(int tok, int *mode)
@@ -59,4 +58,26 @@ void	set_mode(int tok, int *mode)
 		*mode = O_WRONLY | O_CREAT | O_APPEND;
 	else if (tok == '-')
 		*mode = O_DSYNC;
+}
+
+int	valid_redir(char **ps, char *es, int *fd)
+{
+	char	*s;
+
+	s = *ps;
+	*fd = -1;
+	while (s < es && ft_isdigit(*s))
+		s++;
+	if (s < es && s != *ps && ft_strchr(REDIR_O, *s))
+	{
+		*fd = ft_atoi(*ps);
+		*ps = s;
+		return (1);
+	}
+	else if (s < es && ft_strchr(REDIR_O, *s))
+	{
+		*ps = s;
+		return (1);
+	}
+	return (0);
 }
