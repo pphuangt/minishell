@@ -56,6 +56,8 @@ void	printcmd(t_cmd *cmd)
 	t_pipecmd	*pipecmd;
 	t_redircmd	*redircmd;
 	int			argc;
+	ssize_t		size;
+	char		buffer[MAXLINE + 1];
 
 	argc = 0;
 	if (!cmd)
@@ -72,14 +74,28 @@ void	printcmd(t_cmd *cmd)
 		redircmd = (t_redircmd *)cmd;
 		printcmd(redircmd->cmd);
 		if (redircmd->mode == O_RDONLY)
-			printf("redir fd=%d (<) to %s ", redircmd->fd, redircmd->file.s);
+			printf("redir fd=%d (<) to %s --> redir\n", redircmd->fd, redircmd->file.s);
 		else if (redircmd->mode == O_DSYNC)
-			printf("redir fd=%d (<<) to %s ", redircmd->fd, redircmd->file.s);
+		{
+			printf("heredoc fd=%d (<<) delimeter={%s} --> redir\n", redircmd->fd, redircmd->file.s);
+			printf("Reading from the heredoc:\n");
+			size = read(redircmd->fd, buffer, MAXLINE);
+			while (size > 0)
+			{
+				buffer[size] = '\0';
+				printf("%s", buffer);
+				size = read(redircmd->fd, buffer, MAXLINE);
+			}
+			close(redircmd->fd);
+			if (redircmd->fd == STDIN_FILENO)
+				open("/dev/tty", O_RDONLY);
+			else if (redircmd->fd == STDOUT_FILENO || redircmd->fd == STDOUT_FILENO)
+				open("/dev/tty", O_WRONLY);
+		}
 		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_TRUNC))
-			printf("redir fd=%d (>) to %s ", redircmd->fd, redircmd->file.s);
+			printf("redir fd=%d (>) to %s --> redir\n", redircmd->fd, redircmd->file.s);
 		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_APPEND))
-			printf("redir fd=%d (>>) to %s ", redircmd->fd, redircmd->file.s);
-		printf("--> redir\n");
+			printf("redir fd=%d (>>) to %s --> redir\n", redircmd->fd, redircmd->file.s);
 	}
 	else if (cmd->type == PIPE)
 	{

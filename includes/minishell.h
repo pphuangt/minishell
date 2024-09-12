@@ -62,6 +62,7 @@ typedef struct s_redircmd
 	t_type			type;
 	struct s_cmd	*cmd;
 	struct s_string	file;
+	struct s_string	heredoc;
 	int				mode;
 	int				fd;
 }	t_redircmd;
@@ -86,6 +87,7 @@ void	set_default_fd(int tok, int *fd);
 void	set_mode(int tok, int *mode);
 int		valid_redir(char **ps, char *es, int *fd);
 t_cmd	*err_parse_exec(t_cmd *cmd, char *msg);
+int		heredoc_process(t_cmd *cmd);
 
 /*    expandation    */
 int		expandation(t_cmd *cmd, char **envp);

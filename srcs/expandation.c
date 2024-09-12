@@ -105,6 +105,8 @@ static int	expanding_process(t_cmd *cmd, char **envp)
 		if (do_expand(&rcmd->file.s, envp, &argc) < 0)
 			return (-1);
 		remove_quote(rcmd->file.s);
+		if (rcmd->mode == O_DSYNC && heredoc_process(cmd) == -1)
+			return (-1);
 	}
 	return (0);
 }
