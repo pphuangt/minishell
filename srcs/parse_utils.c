@@ -40,16 +40,15 @@ t_cmd	*err_parse_exec(t_cmd *cmd, char *msg)
 	return (NULL);
 }
 
-void	set_default_fd(int tok, int *fd)
+void	set_fd_mode(int tok, int *fd, int *mode)
 {
-	if (tok == '<' || tok == '-')
-		*fd = 0;
-	else if (tok == '>' || tok == '+')
-		*fd = 1;
-}
-
-void	set_mode(int tok, int *mode)
-{
+	if (*fd == -1)
+	{
+		if (tok == '<' || tok == '-')
+			*fd = 0;
+		else if (tok == '>' || tok == '+')
+			*fd = 1;
+	}
 	if (tok == '<')
 		*mode = O_RDONLY;
 	else if (tok == '>')
@@ -68,15 +67,13 @@ int	valid_redir(char **ps, char *es, int *fd)
 	*fd = -1;
 	while (s < es && ft_isdigit(*s))
 		s++;
-	if (s < es && s != *ps && ft_strchr(REDIR_O, *s))
+	if (s < es && ft_strchr(REDIR_O, *s))
 	{
-		*fd = ft_atoi(*ps);
-		*ps = s;
-		return (1);
-	}
-	else if (s < es && ft_strchr(REDIR_O, *s))
-	{
-		*ps = s;
+		if (s != *ps)
+		{
+			*fd = ft_atoi(*ps);
+			*ps = s;
+		}
 		return (1);
 	}
 	return (0);

@@ -12,31 +12,26 @@
 
 #include "minishell.h"
 
-int	heredoc_process(t_cmd *cmd)
+static int	set_exec_argv(char **ps, char *es, t_execcmd *ecmd, int *argc)
 {
-	t_redircmd	*rcmd;
-	int			fd[2];
-	char		*input_line;
+	t_string	string;
 
-	rcmd = (t_redircmd *)cmd;
-	if (pipe(fd) == -1)
-		return (-1);
-	input_line = readline(">");
-	while (input_line)
+	if (*ps < es && !peek(ps, es, "|"))
 	{
-		if (ft_strncmp(input_line, rcmd->file.s, strlen(rcmd->file.s)) == 0)
+		if (gettoken(ps, es, &string.s, &string.e) < 0)
 		{
-			free(input_line);
-			break ;
-		}
-		if (write(fd[1], input_line, strlen(input_line)) == -1
-			|| write(fd[1], "\n", 1) == -1)
+			err_msg(0, "no closing quote");
 			return (-1);
-		free(input_line);
-		input_line = readline(">");
+		}
+		ecmd->argv[*argc] = string.s;
+		ecmd->eargv[*argc] = string.e;
+		*argc = *argc + 1;
+		if (*argc == MAXARGS + 1)
+		{
+			err_msg(0, "to many args");
+			return (-1);
+		}
 	}
-	close(fd[1]);
-	dup2(fd[0], rcmd->fd);
 	return (0);
 }
 
@@ -53,9 +48,7 @@ static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es)
 		tok = gettoken(ps, es, 0, 0);
 		if (gettoken(ps, es, &file.s, &file.e) != 'a')
 			return (err_parse_exec(cmd, "missing file for redirection"));
-		if (fd == -1)
-			set_default_fd(tok, &fd);
-		set_mode(tok, &mode);
+		set_fd_mode(tok, &fd, &mode);
 		ncmd = redircmd(cmd, &file, mode, fd);
 		if (!ncmd)
 			return (err_parse_exec(cmd, NULL));
@@ -70,41 +63,32 @@ static t_cmd	*parseexec(char **ps, char *es)
 {
 	t_cmd		*ret;
 	t_cmd		*cmd;
-	t_execcmd	*exec_cmd;
-	t_string	string;
-	int			tok;
+	t_execcmd	*ecmd;
+	int			argc;
 
 	ret = execcmd();
 	if (!ret)
 		return (NULL);
-	exec_cmd = (t_execcmd *)ret;
-	exec_cmd->argc = 0;
-	while (*ps < es && !peek(ps, es, " \t\r\n\v|"))
+	ecmd = (t_execcmd *)ret;
+	argc = 0;
+	while (*ps < es && !peek(ps, es, "|"))
 	{
 		cmd = parseredirs(ret, ps, es);
 		if (!cmd)
 			return (NULL);
 		ret = cmd;
-		tok = gettoken(ps, es, &string.s, &string.e);
-		if (tok < 0)
-			return (err_parse_exec(ret, "no closing quote"));
-		else if (tok == 'a')
-		{
-			exec_cmd->argv[exec_cmd->argc] = string.s;
-			exec_cmd->eargv[exec_cmd->argc++] = string.e;
-			if (exec_cmd->argc == MAXARGS + 1)
-				return (err_parse_exec(ret, "to many args"));
-		}
+		if (set_exec_argv(ps, es, ecmd, &argc) < 0)
+			return (err_parse_exec(ret, NULL));
 	}
-	exec_cmd->argv[exec_cmd->argc] = 0;
-	exec_cmd->eargv[exec_cmd->argc] = 0;
+	ecmd->argv[argc] = 0;
+	ecmd->eargv[argc] = 0;
 	return (ret);
 }
 
 static t_cmd	*parsepipe(char **ps, char *es)
 {
 	t_cmd	*cmd;
-	t_cmd	*pipe_cmd;
+	t_cmd	*pcmd;
 
 	cmd = parseexec(ps, es);
 	if (!cmd)
@@ -112,16 +96,17 @@ static t_cmd	*parsepipe(char **ps, char *es)
 	if (peek(ps, es, "|"))
 	{
 		gettoken(ps, es, 0, 0);
-		pipe_cmd = parsepipe(ps, es);
-		if (!pipe_cmd)
+		pcmd = parsepipe(ps, es);
+		if (!pcmd)
 		{
 			freecmd(cmd);
 			return (NULL);
 		}
-		cmd = pipecmd(cmd, pipe_cmd);
+		cmd = pipecmd(cmd, pcmd);
 		if (!cmd)
 		{
 			freecmd(cmd);
+			freecmd(pcmd);
 			return (NULL);
 		}
 	}

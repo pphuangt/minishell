@@ -48,7 +48,6 @@ typedef struct s_execcmd
 	char	*argv[MAXARGS + 1];
 	char	*eargv[MAXARGS + 1];
 	int		argc;
-	int		isexpand;
 }	t_execcmd;
 
 typedef struct s_string
@@ -62,7 +61,6 @@ typedef struct s_redircmd
 	t_type			type;
 	struct s_cmd	*cmd;
 	struct s_string	file;
-	struct s_string	heredoc;
 	int				mode;
 	int				fd;
 }	t_redircmd;
@@ -83,8 +81,7 @@ t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd);
 t_cmd	*parsecmd(char *s);
 int		peek(char **ps, char *es, char *tokens);
 int		gettoken(char **ps, char *es, char **q, char **eq);
-void	set_default_fd(int tok, int *fd);
-void	set_mode(int tok, int *mode);
+void	set_fd_mode(int tok, int *fd, int *mode);
 int		valid_redir(char **ps, char *es, int *fd);
 t_cmd	*err_parse_exec(t_cmd *cmd, char *msg);
 int		heredoc_process(t_cmd *cmd);

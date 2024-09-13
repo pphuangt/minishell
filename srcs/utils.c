@@ -12,44 +12,6 @@
 
 #include "minishell.h"
 
-/*    free EXEC argv    */
-void	freeargv(t_execcmd *ecmd)
-{
-	int	argc;
-	int	i;
-
-	argc = ecmd->argc;
-	i = 0;
-	while (i < argc && ecmd->argv[i])
-	{
-		free(ecmd->argv[i]);
-		i++;
-	}
-}
-
-void	freecmd(t_cmd *cmd)
-{
-	t_execcmd	*execcmd;
-	t_pipecmd	*pipecmd;
-
-	if (!cmd)
-		return ;
-	if (cmd->type == EXEC)
-	{
-		execcmd = (t_execcmd *)cmd;
-		if (execcmd->isexpand > 0)
-			freeargv(execcmd);
-		free(execcmd);
-	}
-	else if (cmd->type == PIPE)
-	{
-		pipecmd = (t_pipecmd *)cmd;
-		freecmd(pipecmd->left);
-		freecmd(pipecmd->right);
-		free(pipecmd);
-	}
-}
-
 void	printcmd(t_cmd *cmd)
 {
 	t_execcmd	*execcmd;
@@ -74,10 +36,12 @@ void	printcmd(t_cmd *cmd)
 		redircmd = (t_redircmd *)cmd;
 		printcmd(redircmd->cmd);
 		if (redircmd->mode == O_RDONLY)
-			printf("redir fd=%d (<) to %s --> redir\n", redircmd->fd, redircmd->file.s);
+			printf("redir fd=%d (<) to %s --> redir\n",\
+			redircmd->fd, redircmd->file.s);
 		else if (redircmd->mode == O_DSYNC)
 		{
-			printf("heredoc fd=%d (<<) delimeter={%s} --> redir\n", redircmd->fd, redircmd->file.s);
+			printf("heredoc fd=%d (<<) delimeter={%s} --> redir\n",\
+			redircmd->fd, redircmd->file.s);
 			printf("Reading from the heredoc:\n");
 			size = read(redircmd->fd, buffer, MAXLINE);
 			while (size > 0)
@@ -87,15 +51,13 @@ void	printcmd(t_cmd *cmd)
 				size = read(redircmd->fd, buffer, MAXLINE);
 			}
 			close(redircmd->fd);
-			if (redircmd->fd == STDIN_FILENO)
-				open("/dev/tty", O_RDONLY);
-			else if (redircmd->fd == STDOUT_FILENO || redircmd->fd == STDOUT_FILENO)
-				open("/dev/tty", O_WRONLY);
 		}
 		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_TRUNC))
-			printf("redir fd=%d (>) to %s --> redir\n", redircmd->fd, redircmd->file.s);
+			printf("redir fd=%d (>) to %s --> redir\n",\
+			redircmd->fd, redircmd->file.s);
 		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_APPEND))
-			printf("redir fd=%d (>>) to %s --> redir\n", redircmd->fd, redircmd->file.s);
+			printf("redir fd=%d (>>) to %s --> redir\n",\
+			redircmd->fd, redircmd->file.s);
 	}
 	else if (cmd->type == PIPE)
 	{

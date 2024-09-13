@@ -23,7 +23,7 @@ t_cmd	*execcmd(void)
 		return (NULL);
 	}
 	execcmd->type = EXEC;
-	execcmd->isexpand = 0;
+	execcmd->argc = 0;
 	return ((t_cmd *)execcmd);
 }
 

@@ -51,7 +51,7 @@ static int	expand_var(char **str, char **s, int i, char **envp)
 	return (0);
 }
 
-static int	do_expand(char **str, char **envp, int *isexpand)
+static int	do_expand(char **str, char **envp)
 {
 	char	*s;
 	int		i;
@@ -75,7 +75,6 @@ static int	do_expand(char **str, char **envp, int *isexpand)
 			if (join_var(str, &s, &i) < 0)
 				return (-1);
 		}
-		*isexpand = 1;
 	}
 	return (0);
 }
@@ -84,25 +83,23 @@ static int	expanding_process(t_cmd *cmd, char **envp)
 {
 	t_execcmd	*ecmd;
 	t_redircmd	*rcmd;
-	int			argc;
 
 	if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
-		argc = 0;
-		while (ecmd->argv[argc])
+		while (ecmd->argv[ecmd->argc])
 		{
-			*ecmd->eargv[argc] = 0;
-			if (do_expand(&ecmd->argv[argc], envp, &ecmd->isexpand) < 0)
+			*ecmd->eargv[ecmd->argc] = 0;
+			if (do_expand(&ecmd->argv[ecmd->argc], envp) < 0)
 				return (-1);
-			remove_quote(ecmd->argv[argc++]);
+			remove_quote(ecmd->argv[ecmd->argc++]);
 		}
 		remove_null(ecmd->argv);
 	}
 	else if (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd *)cmd;
-		if (do_expand(&rcmd->file.s, envp, &argc) < 0)
+		if (do_expand(&rcmd->file.s, envp) < 0)
 			return (-1);
 		remove_quote(rcmd->file.s);
 		if (rcmd->mode == O_DSYNC && heredoc_process(cmd) == -1)
