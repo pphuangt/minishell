@@ -25,17 +25,17 @@ static char	*get_env_var(char *str, size_t size, char **env)
 	return (NULL);
 }
 
-static void	set_quote_status(char c, char *quote_status)
+static int	update_qs(char *qs, char c)
 {
-	char	c;
-
-	if (strchr(QUOTE, c))
+	if (c == '\'' || c == '\"')
 	{
-		if (*quote_status == 0)
-			*quote_status = c;
-		else if (*quote_status == c)
-			*quote_status = 0;
+		if (*qs == 0)
+			*qs = c;
+		else if (*qs == c)
+			*qs = 0;
+		return (1);
 	}
+	return (0);
 }
 
 static int	cal_ret_size(char *str, char **env)
@@ -43,15 +43,14 @@ static int	cal_ret_size(char *str, char **env)
 	char	*value;
 	int		i;
 	int		ret;
-	char	quote_status;
+	char	qs;
 
 	ret = 0;
-	quote_status = 0;
+	qs = 0;
 	while (*str)
 	{
 		i = 0;
-		set_quote_status(&str, &quote_status, NULL, NULL);
-		if (*str == '$' && quote_status != '\'')
+		if (!update_qs(&qs, *str) && *str == '$' && qs != '\'')
 		{
 			while (isalnum(str[i + 1]) || str[i + 1] == '_')
 				i++;
@@ -60,13 +59,60 @@ static int	cal_ret_size(char *str, char **env)
 				ret += strlen(value);
 			str += i;
 		}
-		if (i == 0)
+		if (i == 0 && qs != *str && (qs != 0 || !strchr(QUOTE, *str)))
 			ret++;
 		str++;
 	}
 	return (ret);
 }
 
+static int	env_var_cpy(char *dst, char *src, int *i, char **env)
+{
+	char	*str;
+	int		ret;
+
+	while (isalnum(src[*i + 1]) || src[*i + 1] == '_')
+		*i = *i + 1;
+	str = get_env_var(src + 1, *i, env);
+	ret = 0;
+	if (str)
+	{
+		while (*str)
+		{
+			*dst = *str;
+			str++;
+			dst++;
+			ret++;
+		}
+	}
+	return (ret);
+}
+
 char	*expand_env_var(char *str, char **env)
 {
+	char	*ret;
+	int		size;
+	int		i;
+	char	qs;
+
+	size = cal_ret_size(str, env);
+	ret = malloc(sizeof(char) * (size + 1));
+	if (!ret)
+		return (NULL);
+	size = 0;
+	qs = 0;
+	while (*str)
+	{
+		i = 0;
+		if (!update_qs(&qs, *str) && *str == '$' && qs != '\'')
+		{
+			size += env_var_cpy(ret + size, str, &i, env);
+			str += i;
+		}
+		if (i == 0 && qs != *str && (qs != 0 || !strchr(QUOTE, *str)))
+			ret[size++] = *str;
+		str++;
+	}
+	ret[size] = '\0';
+	return (ret);
 }
