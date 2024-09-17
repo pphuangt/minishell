@@ -1,34 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expandation_utils.c                                :+:      :+:    :+:   */
+/*   expansion_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/06 16:33:45 by pphuangt          #+#    #+#             */
-/*   Updated: 2024/09/06 16:33:54 by pphuangt         ###   ########.fr       */
+/*   Created: 2024/09/16 11:17:51 by pphuangt          #+#    #+#             */
+/*   Updated: 2024/09/16 11:17:57 by pphuangt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	remove_quote(char *s)
+void	strip_matching_quotes(char *s)
 {
 	int		i;
 	int		j;
-	char	q;
+	char	quote_status;
 
 	i = 0;
 	j = 0;
-	q = 0;
+	quote_status = 0;
 	while (s[i] != '\0')
 	{
 		if (ft_strchr(QUOTE, s[i]))
 		{
-			if (q == s[i])
-				q = 0;
-			else if (q == 0)
-				q = s[i];
+			if (quote_status == s[i])
+				quote_status = 0;
+			else if (quote_status == 0)
+				quote_status = s[i];
 			else
 				s[j++] = s[i];
 		}
@@ -39,7 +39,7 @@ void	remove_quote(char *s)
 	s[j] = '\0';
 }
 
-void	remove_null(char **argv)
+void	remove_null_entries(char **argv)
 {
 	int	i;
 	int	j;
@@ -49,43 +49,9 @@ void	remove_null(char **argv)
 	while (argv[i])
 	{
 		if (argv[i][0] != '\0')
-		{
-			argv[j] = argv[i];
-			j++;
-		}
+			argv[j++] = argv[i];
 		i++;
 	}
 	if (j != 0)
 		argv[j] = 0;
-}
-
-int	join_util(char **str, char *s)
-{
-	char	*sj;
-
-	sj = ft_strjoin(*str, s);
-	if (!sj)
-		return (-1);
-	free(*str);
-	*str = sj;
-	return (0);
-}
-
-int	join_var(char **str, char **s, int *i)
-{
-	if (join_util(str, *s) < 0)
-		return (-1);
-	if ((*s)[*i] != '\0')
-	{
-		*s = *s + ft_strlen(*s);
-		*i = 0;
-	}
-	return (0);
-}
-
-int	isvar(char c)
-{
-	if (ft_isalnum(c) || c == '_')
-		return (1);
-	return (0);
 }

@@ -67,21 +67,3 @@ void	printcmd(t_cmd *cmd)
 		printcmd(pipecmd->right);
 	}
 }
-
-char	*get_env(char *str, char **envp)
-{
-	size_t	len;
-	int		i;
-
-	if (!str)
-		return (NULL);
-	len = ft_strlen(str);
-	i = 0;
-	while (envp[i] != NULL)
-	{
-		if (ft_strncmp(envp[i], str, len) == 0 && envp[i][len] == '=')
-			return (envp[i] + len + 1);
-		i++;
-	}
-	return (NULL);
-}

@@ -84,18 +84,13 @@ int		gettoken(char **ps, char *es, char **q, char **eq);
 void	set_fd_mode(int tok, int *fd, int *mode);
 int		valid_redir(char **ps, char *es, int *fd);
 t_cmd	*err_parse_exec(t_cmd *cmd, char *msg);
-int		heredoc_process(t_cmd *cmd);
 
 /*    expandation    */
-int		expandation(t_cmd *cmd, char **envp);
-int		join_var(char **token, char **s, int *i);
-int		join_util(char **token, char *s);
-void	remove_null(char **argv);
-void	remove_quote(char *s);
-int		isvar(char c);
-
-/*    env    */
-char	*get_env(char *str, char **envp);
+int		expansion(t_cmd *cmd, char **envp);
+char	*expand_env_var(char *str, char **envp);
+void	strip_matching_quotes(char *s);
+void	remove_null_entries(char **argv);
+int		heredoc_process(t_redircmd *rcmd);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);

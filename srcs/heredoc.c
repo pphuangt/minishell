@@ -12,14 +12,11 @@
 
 #include "minishell.h"
 
-int	heredoc_process(t_cmd *cmd)
+int	heredoc_process(t_redircmd *rcmd)
 {
-	t_redircmd	*rcmd;
 	int			fd[2];
 	char		*input_line;
 
-	rcmd = (t_redircmd *)cmd;
-	rcmd->file.e = rcmd->file.s;
 	if (pipe(fd) == -1)
 		return (-1);
 	input_line = readline(">");
