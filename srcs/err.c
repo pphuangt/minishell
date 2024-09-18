@@ -16,11 +16,13 @@ static void	err_doit(int error, const char *fmt)
 {
 	char	buff[MAXLINE];
 
+	ft_strlcpy(buff, "bash: ", MAXLINE);
 	if (fmt)
-		ft_strlcpy(buff, fmt, MAXLINE);
+		ft_strlcat(buff, fmt, MAXLINE - 1);
 	if (error)
 	{
-		ft_strlcat(buff, ": ", MAXLINE - 1);
+		if (fmt)
+			ft_strlcat(buff, ": ", MAXLINE - 1);
 		ft_strlcat(buff, strerror(error), MAXLINE - 1);
 	}
 	ft_strlcat(buff, "\n", MAXLINE - 1);

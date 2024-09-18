@@ -27,22 +27,6 @@ t_cmd	*execcmd(void)
 	return ((t_cmd *)execcmd);
 }
 
-t_cmd	*pipecmd(t_cmd *left, t_cmd *right)
-{
-	t_pipecmd	*pipecmd;
-
-	pipecmd = malloc(sizeof(*pipecmd));
-	if (!pipecmd)
-	{
-		err_ret("pipecmd malloc");
-		return (NULL);
-	}
-	pipecmd->type = PIPE;
-	pipecmd->left = left;
-	pipecmd->right = right;
-	return ((t_cmd *)pipecmd);
-}
-
 t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd)
 {
 	t_redircmd	*redircmd;
@@ -60,4 +44,20 @@ t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd)
 	redircmd->mode = mode;
 	redircmd->fd = fd;
 	return ((t_cmd *)redircmd);
+}
+
+t_cmd	*pipecmd(t_cmd *left, t_cmd *right)
+{
+	t_pipecmd	*pipecmd;
+
+	pipecmd = malloc(sizeof(*pipecmd));
+	if (!pipecmd)
+	{
+		err_ret("pipecmd malloc");
+		return (NULL);
+	}
+	pipecmd->type = PIPE;
+	pipecmd->left = left;
+	pipecmd->right = right;
+	return ((t_cmd *)pipecmd);
 }

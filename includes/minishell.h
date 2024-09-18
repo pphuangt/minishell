@@ -20,6 +20,7 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include <errno.h>
+# include <limits.h>
 # include "libft.h"
 
 # define METACHARACTER " \t\r\n\v|<>"
@@ -83,14 +84,13 @@ int		peek(char **ps, char *es, char *tokens);
 int		gettoken(char **ps, char *es, char **q, char **eq);
 void	set_fd_mode(int tok, int *fd, int *mode);
 int		valid_redir(char **ps, char *es, int *fd);
-t_cmd	*err_parse_exec(t_cmd *cmd, char *msg);
+t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 
 /*    expandation    */
 int		expansion(t_cmd *cmd, char **envp);
 char	*expand_env_var(char *str, char **envp);
 void	strip_matching_quotes(char *s);
-void	remove_null_entries(char **argv);
-int		heredoc_process(t_redircmd *rcmd);
+int		heredoc(t_redircmd *rcmd);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);

@@ -18,7 +18,7 @@ static char	*get_env_var(char *str, size_t size, char **env)
 		return (NULL);
 	while (*env != NULL)
 	{
-		if (strncmp(*env, str, size) == 0 && *(*env + size) == '=')
+		if (ft_strncmp(*env, str, size) == 0 && *(*env + size) == '=')
 			return (*env + size + 1);
 		env++;
 	}
@@ -52,14 +52,14 @@ static int	cal_ret_size(char *str, char **env)
 		i = 0;
 		if (!update_qs(&qs, *str) && *str == '$' && qs != '\'')
 		{
-			while (isalnum(str[i + 1]) || str[i + 1] == '_')
+			while (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
 				i++;
 			value = get_env_var(str + 1, i, env);
 			if (value)
-				ret += strlen(value);
+				ret += ft_strlen(value);
 			str += i;
 		}
-		if (i == 0 && qs != *str && (qs != 0 || !strchr(QUOTE, *str)))
+		if (i == 0 && qs != *str && (qs != 0 || !ft_strchr(QUOTE, *str)))
 			ret++;
 		str++;
 	}
@@ -71,7 +71,7 @@ static int	env_var_cpy(char *dst, char *src, int *i, char **env)
 	char	*str;
 	int		ret;
 
-	while (isalnum(src[*i + 1]) || src[*i + 1] == '_')
+	while (ft_isalnum(src[*i + 1]) || src[*i + 1] == '_')
 		*i = *i + 1;
 	str = get_env_var(src + 1, *i, env);
 	ret = 0;
@@ -109,7 +109,7 @@ char	*expand_env_var(char *str, char **env)
 			size += env_var_cpy(ret + size, str, &i, env);
 			str += i;
 		}
-		if (i == 0 && qs != *str && (qs != 0 || !strchr(QUOTE, *str)))
+		if (i == 0 && qs != *str && (qs != 0 || !ft_strchr(QUOTE, *str)))
 			ret[size++] = *str;
 		str++;
 	}

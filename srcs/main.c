@@ -37,9 +37,7 @@ int	main(int argc, char **argv, char **envp)
 		{
 			add_history(input_line);
 			cmd = parsecmd(input_line);
-			if (expansion(cmd, envp) < 0)
-				err_sys("expanding malloc");
-			else
+			if (expansion(cmd, envp) == 0)
 				printcmd(cmd);
 		}
 		freecmd(cmd);

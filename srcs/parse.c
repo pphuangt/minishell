@@ -47,11 +47,11 @@ static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es)
 	{
 		tok = gettoken(ps, es, 0, 0);
 		if (gettoken(ps, es, &file.s, &file.e) != 'a')
-			return (err_parse_exec(cmd, "missing file for redirection"));
+			return (err_parse_exec(cmd, NULL, file.s));
 		set_fd_mode(tok, &fd, &mode);
 		ncmd = redircmd(cmd, &file, mode, fd);
 		if (!ncmd)
-			return (err_parse_exec(cmd, NULL));
+			return (err_parse_exec(cmd, NULL, NULL));
 		cmd = ncmd;
 		while (*ps < es && ft_strchr(WHITESPACE, **ps))
 			(*ps)++;
@@ -78,10 +78,12 @@ static t_cmd	*parseexec(char **ps, char *es)
 			return (NULL);
 		ret = cmd;
 		if (set_exec_argv(ps, es, ecmd, &argc) < 0)
-			return (err_parse_exec(ret, NULL));
+			return (err_parse_exec(ret, NULL, NULL));
 	}
 	ecmd->argv[argc] = 0;
 	ecmd->eargv[argc] = 0;
+	if (argc == 0 && (peek(ps, es, "|") || *ps == es))
+		return (err_parse_exec(ret, NULL, "|"));
 	return (ret);
 }
 

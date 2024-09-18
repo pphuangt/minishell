@@ -12,6 +12,23 @@
 
 #include "minishell.h"
 
+static void	remove_null_entries(char **argv)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (argv[i])
+	{
+		if (argv[i][0] != '\0')
+			argv[j++] = argv[i];
+		i++;
+	}
+	if (j != 0)
+		argv[j] = 0;
+}
+
 static int	expand_exec(t_cmd *cmd, char **envp)
 {
 	t_execcmd	*ecmd;
@@ -23,8 +40,10 @@ static int	expand_exec(t_cmd *cmd, char **envp)
 		*ecmd->eargv[ecmd->argc] = 0;
 		str = expand_env_var(ecmd->argv[ecmd->argc], envp);
 		if (!str)
+		{
+			err_ret("expand environment variable");
 			return (-1);
-		strip_matching_quotes(str);
+		}
 		ecmd->argv[ecmd->argc] = str;
 		ecmd->argc++;
 	}
@@ -41,17 +60,23 @@ static int	expand_redir(t_cmd *cmd, char **envp)
 	if (expansion(rcmd->cmd, envp) < 0)
 		return (-1);
 	*rcmd->file.e = '\0';
-	str = expand_env_var(rcmd->file.s, envp);
+	if (rcmd->mode == O_DSYNC
+		&& (ft_strchr(rcmd->file.s, '\'') || ft_strchr(rcmd->file.s, '\"')))
+	{
+		str = ft_strdup(rcmd->file.s);
+		strip_matching_quotes(str);
+	}
+	else
+		str = expand_env_var(rcmd->file.s, envp);
 	if (!str)
+	{
+		err_ret("expand environment variable");
 		return (-1);
-	strip_matching_quotes(str);
+	}
 	rcmd->file.s = str;
 	rcmd->file.e = str;
-	if (rcmd->mode == O_DSYNC)
-	{
-		if (heredoc_process(rcmd) < 0)
-			return (-1);
-	}
+	if (heredoc(rcmd) < 0)
+		return (-1);
 	return (0);
 }
 

@@ -39,12 +39,12 @@ int	get_meta(char **s, int *ret)
 	if (ft_strchr(REDIR_O, **s))
 	{
 		(*s)++;
-		if (**s == '<')
+		if (**s == '<' && *ss == '<')
 		{
 			*ret = '-';
 			(*s)++;
 		}
-		else if (**s == '>')
+		else if (**s == '>' && *ss == '>')
 		{
 			*ret = '+';
 			(*s)++;
@@ -63,11 +63,11 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	s = *ps;
 	while (s < es && ft_strchr(WHITESPACE, *s))
 		s++;
-	if (!*s)
-		return (0);
 	ret = *s;
 	if (q)
 		*q = s;
+	if (!*s)
+		return (0);
 	if (!get_meta(&s, &ret) && getstr(&s, es, &ret) < 0)
 		return (-1);
 	if (eq)
