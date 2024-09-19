@@ -65,11 +65,11 @@ static int	cal_ret_size(char *str, char **env)
 		i = 0;
 		if (*str == '$')
 		{
-			while (isalnum(str[i + 1]) || str[i + 1] == '_')
+			while (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
 				i++;
 			value = get_env_var(str + 1, i, env);
 			if (value)
-				ret += strlen(value);
+				ret += ft_strlen(value);
 			str += i;
 		}
 		if (i == 0)
@@ -88,8 +88,8 @@ static int	env_var_cpy(char *dst, char *src, int i, char **env)
 	ret = 0;
 	if (str)
 	{
-		ret = strlen(str);
-		memcpy(dst, str, ret);
+		ret = ft_strlen(str);
+		ft_memcpy(dst, str, ret);
 	}
 	return (ret);
 }
@@ -110,7 +110,7 @@ char	*expand_env_var(char *str, char **env)
 		i = 0;
 		if (*str == '$')
 		{
-			while (isalnum(str[i + 1]) || str[i + 1] == '_')
+			while (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
 				i++;
 			size += env_var_cpy(ret + size, str + 1, i, env);
 			str += i;
