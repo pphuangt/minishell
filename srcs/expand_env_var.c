@@ -25,17 +25,32 @@ char	*get_env_var(char *str, size_t size, char **env)
 	return (NULL);
 }
 
-static int	update_qs(char *qs, char c)
+char	*strip_matching_quotes(char *s)
 {
-	if (c == '\'' || c == '\"')
+	int		i;
+	int		j;
+	char	quote_status;
+
+	i = 0;
+	j = 0;
+	quote_status = 0;
+	while (s[i] != '\0')
 	{
-		if (*qs == 0)
-			*qs = c;
-		else if (*qs == c)
-			*qs = 0;
-		return (1);
+		if (ft_strchr(QUOTE, s[i]))
+		{
+			if (quote_status == s[i])
+				quote_status = 0;
+			else if (quote_status == 0)
+				quote_status = s[i];
+			else
+				s[j++] = s[i];
+		}
+		else
+			s[j++] = s[i];
+		i++;
 	}
-	return (0);
+	s[j] = '\0';
+	return (s);
 }
 
 static int	cal_ret_size(char *str, char **env)
@@ -43,47 +58,38 @@ static int	cal_ret_size(char *str, char **env)
 	char	*value;
 	int		i;
 	int		ret;
-	char	qs;
 
 	ret = 0;
-	qs = 0;
 	while (*str)
 	{
 		i = 0;
-		if (!update_qs(&qs, *str) && *str == '$' && qs != '\'')
+		if (*str == '$')
 		{
-			while (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
+			while (isalnum(str[i + 1]) || str[i + 1] == '_')
 				i++;
 			value = get_env_var(str + 1, i, env);
 			if (value)
-				ret += ft_strlen(value);
+				ret += strlen(value);
 			str += i;
 		}
-		if (i == 0 && qs != *str && (qs != 0 || !ft_strchr(QUOTE, *str)))
+		if (i == 0)
 			ret++;
 		str++;
 	}
 	return (ret);
 }
 
-static int	env_var_cpy(char *dst, char *src, int *i, char **env)
+static int	env_var_cpy(char *dst, char *src, int i, char **env)
 {
 	char	*str;
 	int		ret;
 
-	while (ft_isalnum(src[*i + 1]) || src[*i + 1] == '_')
-		*i = *i + 1;
-	str = get_env_var(src + 1, *i, env);
+	str = get_env_var(src, i, env);
 	ret = 0;
 	if (str)
 	{
-		while (*str)
-		{
-			*dst = *str;
-			str++;
-			dst++;
-			ret++;
-		}
+		ret = strlen(str);
+		memcpy(dst, str, ret);
 	}
 	return (ret);
 }
@@ -93,23 +99,23 @@ char	*expand_env_var(char *str, char **env)
 	char	*ret;
 	int		size;
 	int		i;
-	char	qs;
 
 	size = cal_ret_size(str, env);
 	ret = malloc(sizeof(char) * (size + 1));
 	if (!ret)
 		return (NULL);
 	size = 0;
-	qs = 0;
 	while (*str)
 	{
 		i = 0;
-		if (!update_qs(&qs, *str) && *str == '$' && qs != '\'')
+		if (*str == '$')
 		{
-			size += env_var_cpy(ret + size, str, &i, env);
+			while (isalnum(str[i + 1]) || str[i + 1] == '_')
+				i++;
+			size += env_var_cpy(ret + size, str + 1, i, env);
 			str += i;
 		}
-		if (i == 0 && qs != *str && (qs != 0 || !ft_strchr(QUOTE, *str)))
+		if (i == 0)
 			ret[size++] = *str;
 		str++;
 	}

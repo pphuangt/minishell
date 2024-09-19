@@ -12,33 +12,6 @@
 
 #include "minishell.h"
 
-static void	strip_matching_quotes(char *s)
-{
-	int		i;
-	int		j;
-	char	quote_status;
-
-	i = 0;
-	j = 0;
-	quote_status = 0;
-	while (s[i] != '\0')
-	{
-		if (ft_strchr(QUOTE, s[i]))
-		{
-			if (quote_status == s[i])
-				quote_status = 0;
-			else if (quote_status == 0)
-				quote_status = s[i];
-			else
-				s[j++] = s[i];
-		}
-		else
-			s[j++] = s[i];
-		i++;
-	}
-	s[j] = '\0';
-}
-
 static int	put_heredoc_fd(char *input_line, int fd, int has_q, char **env)
 {
 	char	*str;
@@ -47,7 +20,7 @@ static int	put_heredoc_fd(char *input_line, int fd, int has_q, char **env)
 		ft_putendl_fd(input_line, fd);
 	else
 	{
-		str = expand_heredoc(input_line, env);
+		str = expand_env_var(input_line, env);
 		if (!str)
 		{
 			err_ret("malloc expand heredoc");
@@ -98,7 +71,7 @@ int	heredoc(t_redircmd *rcmd, char **env)
 	str = ft_strdup(rcmd->file.s);
 	if (!str)
 	{
-		err_ret("here document");
+		err_ret("malloc here document");
 		return (-1);
 	}
 	if (has_q)

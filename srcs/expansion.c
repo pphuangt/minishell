@@ -12,74 +12,79 @@
 
 #include "minishell.h"
 
-static void	remove_null_entries(char **argv)
+static int	expand_filename(char **filename, char **env)
 {
-	int	i;
-	int	j;
+	char	*str;
+	char	*msg;
 
-	i = 0;
-	j = 0;
-	while (argv[i])
+	str = expand_env_var(*filename, env);
+	if (!str)
 	{
-		if (argv[i][0] != '\0')
-			argv[j++] = argv[i];
-		i++;
+		err_ret("malloc expand environment variable");
+		return (-1);
 	}
-	if (j != 0)
-		argv[j] = 0;
+	if (!*str)
+	{
+		msg = ft_strjoin(*filename, ": ambiguous redirect");
+		if (msg)
+			err_ret(msg);
+		free(str);
+		return (-1);
+	}
+	*filename = strip_matching_quotes(str);
+	return (0);
 }
 
-static int	expand_exec(t_cmd *cmd, char **envp)
+static int	expand_exec(t_cmd *cmd, char **env)
 {
 	t_execcmd	*ecmd;
 	char		*str;
+	int			argc;
 
 	ecmd = (t_execcmd *)cmd;
-	while (ecmd->argv[ecmd->argc])
+	argc = 0;
+	while (ecmd->argv[argc])
 	{
-		*ecmd->eargv[ecmd->argc] = 0;
-		str = expand_env_var(ecmd->argv[ecmd->argc], envp);
+		*ecmd->eargv[argc] = 0;
+		str = expand_env_var(ecmd->argv[argc], env);
 		if (!str)
 		{
 			err_ret("expand environment variable");
 			return (-1);
 		}
-		ecmd->argv[ecmd->argc] = str;
-		ecmd->argc++;
+		if (*str)
+			ecmd->argv[ecmd->argc++] = strip_matching_quotes(str);
+		else
+			free(str);
+		argc++;
 	}
-	remove_null_entries(ecmd->argv);
+	ecmd->argv[ecmd->argc] = 0;
 	return (0);
 }
 
-static int	expand_redir(t_cmd *cmd, char **envp)
+static int	expand_redir(t_cmd *cmd, char **env)
 {
 	t_redircmd	*rcmd;
-	char		*str;
 
 	rcmd = (t_redircmd *)cmd;
-	if (expansion(rcmd->cmd, envp) < 0)
+	if (expansion(rcmd->cmd, env) < 0)
 		return (-1);
 	*rcmd->file.e = '\0';
 	if (rcmd->mode == O_DSYNC)
 	{
-		if (heredoc(rcmd, envp) < 0)
+		if (heredoc(rcmd, env) < 0)
 			return (-1);
 	}
 	else
 	{
-		str = expand_env_var(rcmd->file.s, envp);
-		if (!str)
-		{
-			err_ret("expand environment variable");
+		if (expand_filename(&rcmd->file.s, env) < 0)
 			return (-1);
-		}
-		rcmd->file.s = str;
-		rcmd->file.e = str;
+		rcmd->file.e = rcmd->file.s;
 	}
 	return (0);
 }
 
-int	expansion(t_cmd *cmd, char **envp)
+int	expansion(t_cmd *cmd, char **env)
 {
 	t_pipecmd	*pcmd;
 
@@ -87,20 +92,20 @@ int	expansion(t_cmd *cmd, char **envp)
 		return (0);
 	if (cmd->type == EXEC)
 	{
-		if (expand_exec(cmd, envp) < 0)
+		if (expand_exec(cmd, env) < 0)
 			return (-1);
 	}
 	else if (cmd->type == REDIR)
 	{
-		if (expand_redir(cmd, envp) < 0)
+		if (expand_redir(cmd, env) < 0)
 			return (-1);
 	}
 	else if (cmd->type == PIPE)
 	{
 		pcmd = (t_pipecmd *)cmd;
-		if (expansion(pcmd->left, envp) < 0)
+		if (expansion(pcmd->left, env) < 0)
 			return (-1);
-		if (expansion(pcmd->right, envp) < 0)
+		if (expansion(pcmd->right, env) < 0)
 			return (-1);
 	}
 	return (0);

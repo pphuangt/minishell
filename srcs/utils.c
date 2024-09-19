@@ -21,14 +21,14 @@ void	printcmd(t_cmd *cmd)
 	ssize_t		size;
 	char		buffer[MAXLINE + 1];
 
-	argc = 0;
 	if (!cmd)
 		return ;
 	if (cmd->type == EXEC)
 	{
+		argc = 0;
 		execcmd = (t_execcmd *)cmd;
 		while (execcmd->argv[argc])
-			printf("%s ", execcmd->argv[argc++]);
+			printf("{%s} ", execcmd->argv[argc++]);
 		printf("--> command\n");
 	}
 	else if (cmd->type == REDIR)
