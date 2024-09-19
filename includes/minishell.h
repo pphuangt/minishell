@@ -90,7 +90,6 @@ t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 int		expansion(t_cmd *cmd, char **env);
 char	*expand_env_var(char *str, char **env);
 int		heredoc(t_redircmd *rcmd, char **env);
-char	*get_env_var(char *str, size_t size, char **env);
 char	*strip_matching_quotes(char *s);
 
 /*    utils    */

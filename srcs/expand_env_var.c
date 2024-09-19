@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-char	*get_env_var(char *str, size_t size, char **env)
+static char	*get_env_var(char *str, size_t size, char **env)
 {
 	if (!str || size == 0)
 		return (NULL);
@@ -23,34 +23,6 @@ char	*get_env_var(char *str, size_t size, char **env)
 		env++;
 	}
 	return (NULL);
-}
-
-char	*strip_matching_quotes(char *s)
-{
-	int		i;
-	int		j;
-	char	quote_status;
-
-	i = 0;
-	j = 0;
-	quote_status = 0;
-	while (s[i] != '\0')
-	{
-		if (ft_strchr(QUOTE, s[i]))
-		{
-			if (quote_status == s[i])
-				quote_status = 0;
-			else if (quote_status == 0)
-				quote_status = s[i];
-			else
-				s[j++] = s[i];
-		}
-		else
-			s[j++] = s[i];
-		i++;
-	}
-	s[j] = '\0';
-	return (s);
 }
 
 static int	cal_ret_size(char *str, char **env)
