@@ -18,8 +18,6 @@ static void	strip_matching_quotes(char *s)
 	int		j;
 	char	quote_status;
 
-	if (!s)
-		return ;
 	i = 0;
 	j = 0;
 	quote_status = 0;
@@ -41,13 +39,36 @@ static void	strip_matching_quotes(char *s)
 	s[j] = '\0';
 }
 
+static int	put_heredoc_fd(char *input_line, int fd, int has_q, char **env)
+{
+	char	*str;
+
+	if (has_q)
+		ft_putendl_fd(input_line, fd);
+	else
+	{
+		str = expand_heredoc(input_line, env);
+		if (!str)
+		{
+			err_ret("malloc expand heredoc");
+			return (-1);
+		}
+		ft_putendl_fd(str, fd);
+		free(str);
+	}
+	return (0);
+}
+
 static int	read_heredoc(t_redircmd *rcmd, int has_q, char **env)
 {
 	int			fd[2];
 	char		*input_line;
 
 	if (pipe(fd) == -1)
+	{
+		err_ret("pipe");
 		return (-1);
+	}
 	input_line = readline(">");
 	while (input_line)
 	{
@@ -56,10 +77,8 @@ static int	read_heredoc(t_redircmd *rcmd, int has_q, char **env)
 			free(input_line);
 			break ;
 		}
-		if (has_q)
-			ft_putendl_fd(input_line, fd[1]);
-		else
-			ft_putendl_fd(expand_heredoc(input_line, env), fd[1]);
+		if (put_heredoc_fd(input_line, fd[1], has_q, env) < 0)
+			return (-1);
 		free(input_line);
 		input_line = readline(">");
 	}
@@ -77,20 +96,16 @@ int	heredoc(t_redircmd *rcmd, char **env)
 	if (ft_strchr(rcmd->file.s, '\'') || ft_strchr(rcmd->file.s, '\"'))
 		has_q = 1;
 	str = ft_strdup(rcmd->file.s);
-	if (has_q)
-		strip_matching_quotes(str);
 	if (!str)
 	{
 		err_ret("here document");
 		return (-1);
 	}
-	printf("has_q=%d, EOF={%s}\n", has_q, str);
+	if (has_q)
+		strip_matching_quotes(str);
 	rcmd->file.s = str;
 	rcmd->file.e = str;
 	if (read_heredoc(rcmd, has_q, env) < 0)
-	{
-		err_ret("pipe");
 		return (-1);
-	}
 	return (0);
 }

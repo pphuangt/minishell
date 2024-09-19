@@ -46,7 +46,10 @@ static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es)
 	while (valid_redir(ps, es, &fd))
 	{
 		tok = gettoken(ps, es, 0, 0);
-		if (gettoken(ps, es, &file.s, &file.e) != 'a')
+		mode = gettoken(ps, es, &file.s, &file.e);
+		if (mode == -1)
+			return (err_parse_exec(cmd, "no closing quote", NULL));
+		else if (mode != 'a')
 			return (err_parse_exec(cmd, NULL, file.s));
 		set_fd_mode(tok, &fd, &mode);
 		ncmd = redircmd(cmd, &file, mode, fd);
@@ -121,6 +124,9 @@ t_cmd	*parsecmd(char	*s)
 	t_cmd	*cmd;
 
 	es = s + ft_strlen(s);
+	peek(&s, es, "");
+	if (s == es)
+		return (NULL);
 	cmd = parsepipe(&s, es);
 	if (!cmd)
 		return (NULL);
