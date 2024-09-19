@@ -60,23 +60,22 @@ static int	expand_redir(t_cmd *cmd, char **envp)
 	if (expansion(rcmd->cmd, envp) < 0)
 		return (-1);
 	*rcmd->file.e = '\0';
-	if (rcmd->mode == O_DSYNC
-		&& (ft_strchr(rcmd->file.s, '\'') || ft_strchr(rcmd->file.s, '\"')))
+	if (rcmd->mode == O_DSYNC)
 	{
-		str = ft_strdup(rcmd->file.s);
-		strip_matching_quotes(str);
+		if (heredoc(rcmd, envp) < 0)
+			return (-1);
 	}
 	else
-		str = expand_env_var(rcmd->file.s, envp);
-	if (!str)
 	{
-		err_ret("expand environment variable");
-		return (-1);
+		str = expand_env_var(rcmd->file.s, envp);
+		if (!str)
+		{
+			err_ret("expand environment variable");
+			return (-1);
+		}
+		rcmd->file.s = str;
+		rcmd->file.e = str;
 	}
-	rcmd->file.s = str;
-	rcmd->file.e = str;
-	if (heredoc(rcmd) < 0)
-		return (-1);
 	return (0);
 }
 

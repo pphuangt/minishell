@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	strip_matching_quotes(char *s)
+static void	strip_matching_quotes(char *s)
 {
 	int		i;
 	int		j;
@@ -41,18 +41,13 @@ void	strip_matching_quotes(char *s)
 	s[j] = '\0';
 }
 
-int	heredoc(t_redircmd *rcmd)
+static int	read_heredoc(t_redircmd *rcmd, int has_q, char **env)
 {
 	int			fd[2];
 	char		*input_line;
 
-	if (rcmd->mode != O_DSYNC)
-		return (0);
 	if (pipe(fd) == -1)
-	{
-		err_ret("pipe");
 		return (-1);
-	}
 	input_line = readline(">");
 	while (input_line)
 	{
@@ -61,11 +56,41 @@ int	heredoc(t_redircmd *rcmd)
 			free(input_line);
 			break ;
 		}
-		ft_putendl_fd(input_line, fd[1]);
+		if (has_q)
+			ft_putendl_fd(input_line, fd[1]);
+		else
+			ft_putendl_fd(expand_heredoc(input_line, env), fd[1]);
 		free(input_line);
 		input_line = readline(">");
 	}
 	close(fd[1]);
 	rcmd->fd = fd[0];
+	return (0);
+}
+
+int	heredoc(t_redircmd *rcmd, char **env)
+{
+	char	*str;
+	char	has_q;
+
+	has_q = 0;
+	if (ft_strchr(rcmd->file.s, '\'') || ft_strchr(rcmd->file.s, '\"'))
+		has_q = 1;
+	str = ft_strdup(rcmd->file.s);
+	if (has_q)
+		strip_matching_quotes(str);
+	if (!str)
+	{
+		err_ret("here document");
+		return (-1);
+	}
+	printf("has_q=%d, EOF={%s}\n", has_q, str);
+	rcmd->file.s = str;
+	rcmd->file.e = str;
+	if (read_heredoc(rcmd, has_q, env) < 0)
+	{
+		err_ret("pipe");
+		return (-1);
+	}
 	return (0);
 }

@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static char	*get_env_var(char *str, size_t size, char **env)
+char	*get_env_var(char *str, size_t size, char **env)
 {
 	if (!str || size == 0)
 		return (NULL);

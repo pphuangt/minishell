@@ -87,10 +87,11 @@ int		valid_redir(char **ps, char *es, int *fd);
 t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 
 /*    expandation    */
-int		expansion(t_cmd *cmd, char **envp);
-char	*expand_env_var(char *str, char **envp);
-void	strip_matching_quotes(char *s);
-int		heredoc(t_redircmd *rcmd);
+int		expansion(t_cmd *cmd, char **env);
+char	*expand_env_var(char *str, char **env);
+int		heredoc(t_redircmd *rcmd, char **env);
+char	*expand_heredoc(char *str, char **env);
+char	*get_env_var(char *str, size_t size, char **env);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);
