@@ -14,13 +14,13 @@
 # define MINISHELL_H
 
 # include <unistd.h>
+# include <signal.h>
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdlib.h>
 # include <fcntl.h>
 # include <errno.h>
-# include <limits.h>
 # include "libft.h"
 
 # define METACHARACTER " \t\r\n\v|<>"
@@ -28,7 +28,7 @@
 # define REDIR_O "<>"
 # define QUOTE "\'\""
 # define MAXLINE 4096
-# define S_PROMPT "\033[1;32m$ \033[0m"
+# define S_PROMPT "\033[1;32mminishell$ \033[0m"
 # define MAXARGS 10
 
 typedef enum s_type
@@ -87,9 +87,9 @@ int		valid_redir(char **ps, char *es, int *fd);
 t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 
 /*    expandation    */
-int		expansion(t_cmd *cmd, char **env);
-char	*expand_env_var(char *str, char **env);
-int		heredoc(t_redircmd *rcmd, char **env);
+int		expansion(t_cmd *cmd);
+char	*expand_env_var(char *str);
+int		heredoc(t_redircmd *rcmd);
 char	*strip_matching_quotes(char *s);
 
 /*    utils    */

@@ -16,7 +16,7 @@ static void	err_doit(int error, const char *fmt)
 {
 	char	buff[MAXLINE];
 
-	ft_strlcpy(buff, "bash: ", MAXLINE);
+	ft_strlcpy(buff, "minishell: ", MAXLINE);
 	if (fmt)
 		ft_strlcat(buff, fmt, MAXLINE - 1);
 	if (error)

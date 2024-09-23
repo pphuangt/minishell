@@ -12,8 +12,12 @@
 
 #include "minishell.h"
 
-static char	*get_env_var(char *str, size_t size, char **env)
+static char	*get_env_var(char *str, size_t size)
 {
+	extern char	**environ;
+	char		**env;
+
+	env = environ;
 	if (!str || size == 0)
 		return (NULL);
 	while (*env != NULL)
@@ -25,7 +29,7 @@ static char	*get_env_var(char *str, size_t size, char **env)
 	return (NULL);
 }
 
-static int	cal_ret_size(char *str, char **env)
+static int	cal_ret_size(char *str)
 {
 	char	*value;
 	int		i;
@@ -39,7 +43,7 @@ static int	cal_ret_size(char *str, char **env)
 		{
 			while (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
 				i++;
-			value = get_env_var(str + 1, i, env);
+			value = get_env_var(str + 1, i);
 			if (value)
 				ret += ft_strlen(value);
 			str += i;
@@ -51,12 +55,12 @@ static int	cal_ret_size(char *str, char **env)
 	return (ret);
 }
 
-static int	env_var_cpy(char *dst, char *src, int i, char **env)
+static int	env_var_cpy(char *dst, char *src, int i)
 {
 	char	*str;
 	int		ret;
 
-	str = get_env_var(src, i, env);
+	str = get_env_var(src, i);
 	ret = 0;
 	if (str)
 	{
@@ -66,13 +70,13 @@ static int	env_var_cpy(char *dst, char *src, int i, char **env)
 	return (ret);
 }
 
-char	*expand_env_var(char *str, char **env)
+char	*expand_env_var(char *str)
 {
 	char	*ret;
 	int		size;
 	int		i;
 
-	size = cal_ret_size(str, env);
+	size = cal_ret_size(str);
 	ret = malloc(sizeof(char) * (size + 1));
 	if (!ret)
 		return (NULL);
@@ -84,7 +88,7 @@ char	*expand_env_var(char *str, char **env)
 		{
 			while (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
 				i++;
-			size += env_var_cpy(ret + size, str + 1, i, env);
+			size += env_var_cpy(ret + size, str + 1, i);
 			str += i;
 		}
 		if (i == 0)

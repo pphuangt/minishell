@@ -23,26 +23,43 @@ int	peek(char **ps, char *es, char *tokens)
 	return (*s && ft_strchr(tokens, *s));
 }
 
-int	main(int argc, char **argv, char **envp)
+int	init_signal(int signum, void (*func), int flags)
+{
+	struct sigaction	sa;
+
+	ft_memset(&sa, 0, sizeof(sa));
+	sa.sa_handler = func;
+	sa.sa_flags = flags;
+	if (sigemptyset(&sa.sa_mask) < 0
+		|| sigaction(signum, &sa, NULL) < 0)
+	{
+		err_sys("initialize signal");
+		return (-1);
+	}
+	return (0);
+}
+
+int	main(void)
 {
 	t_cmd	*cmd;
-	char	*input_line;
+	char	*s;
 
-	(void)argc;
-	(void)argv;
-	input_line = readline(S_PROMPT);
-	while (input_line)
+	if (init_signal(SIGQUIT, SIG_IGN, 0) < 0)
+		return (1);
+	s = readline(S_PROMPT);
+	while (s)
 	{
-		if (*input_line)
+		if (*s)
 		{
-			add_history(input_line);
-			cmd = parsecmd(input_line);
-			if (expansion(cmd, envp) == 0)
+			add_history(s);
+			cmd = parsecmd(s);
+			if (expansion(cmd) == 0)
 				printcmd(cmd);
+			freecmd(cmd);
 		}
-		freecmd(cmd);
-		free(input_line);
-		input_line = readline(S_PROMPT);
+		free(s);
+		s = readline(S_PROMPT);
 	}
+	printf("exit\n");
 	return (0);
 }

@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	put_heredoc_fd(char *input_line, int fd, int has_q, char **env)
+static int	put_heredoc_fd(char *input_line, int fd, int has_q)
 {
 	char	*str;
 
@@ -20,7 +20,7 @@ static int	put_heredoc_fd(char *input_line, int fd, int has_q, char **env)
 		ft_putendl_fd(input_line, fd);
 	else
 	{
-		str = expand_env_var(input_line, env);
+		str = expand_env_var(input_line);
 		if (!str)
 		{
 			err_ret("malloc expand heredoc");
@@ -32,7 +32,7 @@ static int	put_heredoc_fd(char *input_line, int fd, int has_q, char **env)
 	return (0);
 }
 
-static int	read_heredoc(t_redircmd *rcmd, int has_q, char **env)
+static int	read_heredoc(t_redircmd *rcmd, int has_q)
 {
 	int			fd[2];
 	char		*input_line;
@@ -50,7 +50,7 @@ static int	read_heredoc(t_redircmd *rcmd, int has_q, char **env)
 			free(input_line);
 			break ;
 		}
-		if (put_heredoc_fd(input_line, fd[1], has_q, env) < 0)
+		if (put_heredoc_fd(input_line, fd[1], has_q) < 0)
 			return (-1);
 		free(input_line);
 		input_line = readline(">");
@@ -60,7 +60,7 @@ static int	read_heredoc(t_redircmd *rcmd, int has_q, char **env)
 	return (0);
 }
 
-int	heredoc(t_redircmd *rcmd, char **env)
+int	heredoc(t_redircmd *rcmd)
 {
 	char	*str;
 	char	has_q;
@@ -78,7 +78,7 @@ int	heredoc(t_redircmd *rcmd, char **env)
 		strip_matching_quotes(str);
 	rcmd->file.s = str;
 	rcmd->file.e = str;
-	if (read_heredoc(rcmd, has_q, env) < 0)
+	if (read_heredoc(rcmd, has_q) < 0)
 		return (-1);
 	return (0);
 }

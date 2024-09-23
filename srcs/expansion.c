@@ -40,12 +40,12 @@ char	*strip_matching_quotes(char *s)
 	return (s);
 }
 
-static int	expand_filename(char **filename, char **env)
+static int	expand_filename(char **filename)
 {
 	char	*str;
 	char	*msg;
 
-	str = expand_env_var(*filename, env);
+	str = expand_env_var(*filename);
 	if (!str)
 	{
 		err_ret("malloc expand environment variable");
@@ -63,7 +63,7 @@ static int	expand_filename(char **filename, char **env)
 	return (0);
 }
 
-static int	expand_exec(t_cmd *cmd, char **env)
+static int	expand_exec(t_cmd *cmd)
 {
 	t_execcmd	*ecmd;
 	char		*str;
@@ -74,7 +74,7 @@ static int	expand_exec(t_cmd *cmd, char **env)
 	while (ecmd->argv[argc])
 	{
 		*ecmd->eargv[argc] = 0;
-		str = expand_env_var(ecmd->argv[argc], env);
+		str = expand_env_var(ecmd->argv[argc]);
 		if (!str)
 		{
 			err_ret("expand environment variable");
@@ -90,29 +90,29 @@ static int	expand_exec(t_cmd *cmd, char **env)
 	return (0);
 }
 
-static int	expand_redir(t_cmd *cmd, char **env)
+static int	expand_redir(t_cmd *cmd)
 {
 	t_redircmd	*rcmd;
 
 	rcmd = (t_redircmd *)cmd;
-	if (expansion(rcmd->cmd, env) < 0)
+	if (expansion(rcmd->cmd) < 0)
 		return (-1);
 	*rcmd->file.e = '\0';
 	if (rcmd->mode == O_DSYNC)
 	{
-		if (heredoc(rcmd, env) < 0)
+		if (heredoc(rcmd) < 0)
 			return (-1);
 	}
 	else
 	{
-		if (expand_filename(&rcmd->file.s, env) < 0)
+		if (expand_filename(&rcmd->file.s) < 0)
 			return (-1);
 		rcmd->file.e = rcmd->file.s;
 	}
 	return (0);
 }
 
-int	expansion(t_cmd *cmd, char **env)
+int	expansion(t_cmd *cmd)
 {
 	t_pipecmd	*pcmd;
 
@@ -120,20 +120,20 @@ int	expansion(t_cmd *cmd, char **env)
 		return (0);
 	if (cmd->type == EXEC)
 	{
-		if (expand_exec(cmd, env) < 0)
+		if (expand_exec(cmd) < 0)
 			return (-1);
 	}
 	else if (cmd->type == REDIR)
 	{
-		if (expand_redir(cmd, env) < 0)
+		if (expand_redir(cmd) < 0)
 			return (-1);
 	}
 	else if (cmd->type == PIPE)
 	{
 		pcmd = (t_pipecmd *)cmd;
-		if (expansion(pcmd->left, env) < 0)
+		if (expansion(pcmd->left) < 0)
 			return (-1);
-		if (expansion(pcmd->right, env) < 0)
+		if (expansion(pcmd->right) < 0)
 			return (-1);
 	}
 	return (0);

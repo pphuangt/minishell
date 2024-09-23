@@ -120,8 +120,8 @@ static t_cmd	*parsepipe(char **ps, char *es)
 
 t_cmd	*parsecmd(char	*s)
 {
-	char	*es;
 	t_cmd	*cmd;
+	char	*es;
 
 	es = s + ft_strlen(s);
 	peek(&s, es, "");
