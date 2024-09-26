@@ -37,8 +37,8 @@ t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd)
 		err_ret("redircmd malloc");
 		return (NULL);
 	}
-	redircmd->type = REDIR;
 	redircmd->cmd = subcmd;
+	redircmd->type = REDIR;
 	redircmd->file.s = file->s;
 	redircmd->file.e = file->e;
 	redircmd->mode = mode;

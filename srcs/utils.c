@@ -12,6 +12,31 @@
 
 #include "minishell.h"
 
+t_cmd	*reverse_redircmd(t_cmd *cmd)
+{
+	t_cmd		*prev;
+	t_cmd		*curr;
+	t_cmd		*next;
+	t_redircmd	*rcmd;
+
+	if (cmd->type == EXEC)
+		return (cmd);
+	prev = NULL;
+	curr = cmd;
+	rcmd = NULL;
+	while (curr->type == REDIR)
+	{
+		rcmd = (t_redircmd *)curr;
+		next = rcmd->cmd;
+		rcmd->cmd = prev;
+		prev = curr;
+		curr = next;
+	}
+	rcmd = (t_redircmd *)cmd;
+	rcmd->cmd = curr;
+	return (prev);
+}
+
 void	printcmd(t_cmd *cmd)
 {
 	t_execcmd	*execcmd;
@@ -34,14 +59,13 @@ void	printcmd(t_cmd *cmd)
 	else if (cmd->type == REDIR)
 	{
 		redircmd = (t_redircmd *)cmd;
-		printcmd(redircmd->cmd);
 		if (redircmd->mode == O_RDONLY)
 			printf("redir fd=%d (<) to %s --> redir\n",\
-			redircmd->fd, redircmd->file.s);
+					redircmd->fd, redircmd->file.s);
 		else if (redircmd->mode == O_DSYNC)
 		{
 			printf("heredoc fd=%d (<<) delimeter={%s} --> redir\n",\
-			redircmd->fd, redircmd->file.s);
+					redircmd->fd, redircmd->file.s);
 			printf("Reading from the heredoc:\n");
 			size = read(redircmd->fd, buffer, MAXLINE);
 			while (size > 0)
@@ -54,10 +78,11 @@ void	printcmd(t_cmd *cmd)
 		}
 		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_TRUNC))
 			printf("redir fd=%d (>) to %s --> redir\n",\
-			redircmd->fd, redircmd->file.s);
+					redircmd->fd, redircmd->file.s);
 		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_APPEND))
 			printf("redir fd=%d (>>) to %s --> redir\n",\
-			redircmd->fd, redircmd->file.s);
+					redircmd->fd, redircmd->file.s);
+		printcmd(redircmd->cmd);
 	}
 	else if (cmd->type == PIPE)
 	{

@@ -87,7 +87,7 @@ static t_cmd	*parseexec(char **ps, char *es)
 	ecmd->eargv[argc] = 0;
 	if (argc == 0 && (peek(ps, es, "|") || *ps == es))
 		return (err_parse_exec(ret, NULL, "|"));
-	return (ret);
+	return (reverse_redircmd(ret));
 }
 
 static t_cmd	*parsepipe(char **ps, char *es)

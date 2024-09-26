@@ -16,11 +16,12 @@
 # include <unistd.h>
 # include <signal.h>
 # include <stdio.h>
-# include <readline/readline.h>
-# include <readline/history.h>
 # include <stdlib.h>
 # include <fcntl.h>
 # include <errno.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <sys/ioctl.h>
 # include "libft.h"
 
 # define METACHARACTER " \t\r\n\v|<>"
@@ -92,9 +93,13 @@ char	*expand_env_var(char *str);
 int		heredoc(t_redircmd *rcmd);
 char	*strip_matching_quotes(char *s);
 
+/*    signals    */
+int	init_signal(void);
+
 /*    utils    */
 void	freecmd(t_cmd *cmd);
 void	printcmd(t_cmd *cmd);
+t_cmd	*reverse_redircmd(t_cmd *cmd);
 
 /*    err    */
 void	err_ret(const char *fmt);
