@@ -90,17 +90,17 @@ static int	expand_exec(t_cmd *cmd)
 	return (0);
 }
 
-static int	expand_redir(t_cmd *cmd)
+static int	expand_redir(t_shell *shell, t_cmd *cmd)
 {
 	t_redircmd	*rcmd;
 
 	rcmd = (t_redircmd *)cmd;
-	if (expansion(rcmd->cmd) < 0)
+	if (expansion(shell, rcmd->cmd) < 0)
 		return (-1);
 	*rcmd->file.e = '\0';
 	if (rcmd->mode == O_DSYNC)
 	{
-		if (heredoc(rcmd) < 0)
+		if (heredoc(shell, rcmd) < 0)
 			return (-1);
 	}
 	else
@@ -112,7 +112,7 @@ static int	expand_redir(t_cmd *cmd)
 	return (0);
 }
 
-int	expansion(t_cmd *cmd)
+int	expansion(t_shell *shell, t_cmd *cmd)
 {
 	t_pipecmd	*pcmd;
 
@@ -125,15 +125,15 @@ int	expansion(t_cmd *cmd)
 	}
 	else if (cmd->type == REDIR)
 	{
-		if (expand_redir(cmd) < 0)
+		if (expand_redir(shell, cmd) < 0)
 			return (-1);
 	}
 	else if (cmd->type == PIPE)
 	{
 		pcmd = (t_pipecmd *)cmd;
-		if (expansion(pcmd->left) < 0)
+		if (expansion(shell, pcmd->left) < 0)
 			return (-1);
-		if (expansion(pcmd->right) < 0)
+		if (expansion(shell, pcmd->right) < 0)
 			return (-1);
 	}
 	return (0);

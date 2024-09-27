@@ -25,19 +25,22 @@ int	peek(char **ps, char *es, char *tokens)
 
 int	main(void)
 {
+	t_shell	shell;
 	t_cmd	*cmd;
 	char	*s;
 
-	if (init_signal() < 0)
+	if (init_signal(&shell) < 0)
 		return (-1);
 	s = readline(S_PROMPT);
 	while (s)
 	{
+		shell.count_line++;
 		if (*s)
 		{
 			add_history(s);
 			cmd = parsecmd(s);
-			if (expansion(cmd) == 0)
+			shell.exit_status = 0;
+			if (expansion(&shell, cmd) == 0)
 				printcmd(cmd);
 			freecmd(cmd);
 		}

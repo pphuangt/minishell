@@ -12,9 +12,18 @@
 
 #include "minishell.h"
 
-static void	signal_handler(int signum)
+static void	signal_handler(int signum, siginfo_t *info, void *context)
 {
+	static t_shell	*shell = NULL;
+
+	if (!shell)
+	{
+		shell = (t_shell *)context;
+		return ;
+	}
 	(void)signum;
+	(void)info;
+	shell->exit_status = 1;
 	ioctl(STDIN_FILENO, TIOCSTI, "\n");
 	rl_replace_line("", 0);
 	rl_on_new_line();
@@ -36,11 +45,13 @@ static int	set_signal(int signum, void (*func), int flags)
 	return (0);
 }
 
-int	init_signal(void)
+int	init_signal(t_shell *shell)
 {
+	shell->count_line = 0;
+	signal_handler(0, 0, shell);
 	if (set_signal(SIGQUIT, SIG_IGN, 0))
 		return (-1);
-	if (set_signal(SIGINT, &signal_handler, SA_RESTART))
+	if (set_signal(SIGINT, &signal_handler, SA_RESTART | SA_SIGINFO))
 		return (-1);
 	return (0);
 }

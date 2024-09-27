@@ -74,6 +74,12 @@ typedef struct s_pipecmd
 	t_cmd	*right;
 }	t_pipecmd;
 
+typedef struct s_shell
+{
+	size_t	count_line;
+	int		exit_status;
+}	t_shell;
+
 /*    constructure    */
 t_cmd	*execcmd(void);
 t_cmd	*pipecmd(t_cmd *left, t_cmd *right);
@@ -88,13 +94,13 @@ int		valid_redir(char **ps, char *es, int *fd);
 t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 
 /*    expandation    */
-int		expansion(t_cmd *cmd);
+int		expansion(t_shell *shell, t_cmd *cmd);
 char	*expand_env_var(char *str);
-int		heredoc(t_redircmd *rcmd);
+int		heredoc(t_shell *shell, t_redircmd *rcmd);
 char	*strip_matching_quotes(char *s);
 
 /*    signals    */
-int	init_signal(void);
+int	init_signal(t_shell *shell);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);
