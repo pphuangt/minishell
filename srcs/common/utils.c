@@ -12,29 +12,13 @@
 
 #include "minishell.h"
 
-t_cmd	*reverse_redircmd(t_cmd *cmd)
+void	print_envp(char **envp)
 {
-	t_cmd		*prev;
-	t_cmd		*curr;
-	t_cmd		*next;
-	t_redircmd	*rcmd;
-
-	if (cmd->type == EXEC)
-		return (cmd);
-	prev = NULL;
-	curr = cmd;
-	rcmd = NULL;
-	while (curr->type == REDIR)
+	while (*envp)
 	{
-		rcmd = (t_redircmd *)curr;
-		next = rcmd->cmd;
-		rcmd->cmd = prev;
-		prev = curr;
-		curr = next;
+		printf("%s\n", *envp);
+		envp++;
 	}
-	rcmd = (t_redircmd *)cmd;
-	rcmd->cmd = curr;
-	return (prev);
 }
 
 void	printcmd(t_cmd *cmd)

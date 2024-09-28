@@ -29,7 +29,7 @@ int	main(void)
 	t_cmd	*cmd;
 	char	*s;
 
-	if (init_signal(&shell) < 0)
+	if (init_signal(&shell) < 0 || init_environ(&shell) < 0)
 		return (-1);
 	s = readline(S_PROMPT);
 	while (s)

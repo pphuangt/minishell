@@ -98,3 +98,28 @@ int	valid_redir(char **ps, char *es, int *fd)
 	}
 	return (0);
 }
+
+t_cmd	*reverse_redircmd(t_cmd *cmd)
+{
+	t_cmd		*prev;
+	t_cmd		*curr;
+	t_cmd		*next;
+	t_redircmd	*rcmd;
+
+	if (cmd->type == EXEC)
+		return (cmd);
+	prev = NULL;
+	curr = cmd;
+	rcmd = NULL;
+	while (curr->type == REDIR)
+	{
+		rcmd = (t_redircmd *)curr;
+		next = rcmd->cmd;
+		rcmd->cmd = prev;
+		prev = curr;
+		curr = next;
+	}
+	rcmd = (t_redircmd *)cmd;
+	rcmd->cmd = curr;
+	return (prev);
+}

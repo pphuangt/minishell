@@ -12,23 +12,6 @@
 
 #include "minishell.h"
 
-static char	*get_env_var(char *str, size_t size)
-{
-	extern char	**environ;
-	char		**env;
-
-	env = environ;
-	if (!str || size == 0)
-		return (NULL);
-	while (*env != NULL)
-	{
-		if (ft_strncmp(*env, str, size) == 0 && *(*env + size) == '=')
-			return (*env + size + 1);
-		env++;
-	}
-	return (NULL);
-}
-
 static int	cal_ret_size(char *str)
 {
 	char	*value;
@@ -43,7 +26,7 @@ static int	cal_ret_size(char *str)
 		{
 			while (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
 				i++;
-			value = get_env_var(str + 1, i);
+			value = get_variable_environ(str + 1, i);
 			if (value)
 				ret += ft_strlen(value);
 			str += i;
@@ -60,7 +43,7 @@ static int	env_var_cpy(char *dst, char *src, int i)
 	char	*str;
 	int		ret;
 
-	str = get_env_var(src, i);
+	str = get_variable_environ(src, i);
 	ret = 0;
 	if (str)
 	{

@@ -6,7 +6,11 @@ CFLAGS = -Wall -Wextra -Werror
 LIBFT = $(LIB)/libft
 HEADERS = -I./$(INCLUDES) -I./$(LIBFT)
 LIBS = $(LIBFT)/libft.a -lreadline
-SRCS = $(addprefix srcs/, main.c parse.c parse_utils.c err.c token.c constructure.c utils.c expansion.c expand_env_var.c heredoc.c free.c signals.c)
+SRCS = $(addprefix srcs/, main.c \
+	   $(addprefix signals/, signals.c) \
+	   $(addprefix environ/, environ.c) \
+	   $(addprefix parse/, constructure.c parse.c parse_utils.c expansion.c expand_env_var.c heredoc.c gettoken.c) \
+	   $(addprefix common/, free.c err.c utils.c))
 OBJS = $(SRCS:.c=.o)
 
 all : $(NAME)

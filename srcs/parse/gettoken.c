@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   token.c                                            :+:      :+:    :+:   */
+/*   gettoken.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/05 11:20:04 by pphuangt          #+#    #+#             */
-/*   Updated: 2024/07/05 11:20:11 by pphuangt         ###   ########.fr       */
+/*   Created: 2024/09/28 15:17:09 by pphuangt          #+#    #+#             */
+/*   Updated: 2024/09/28 15:17:17 by pphuangt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	getstr(char **s, char *es, int *ret)
+static int	getstr(char **s, char *es, int *ret)
 {
 	char	*q;
 
@@ -31,7 +31,7 @@ int	getstr(char **s, char *es, int *ret)
 	return (0);
 }
 
-int	get_meta(char **s, int *ret)
+static int	get_meta(char **s, int *ret)
 {
 	char	*ss;
 
