@@ -22,6 +22,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/ioctl.h>
+# include <sys/wait.h>
 # include "libft.h"
 
 # define METACHARACTER " \t\r\n\v|<>"
@@ -84,7 +85,6 @@ typedef struct s_environ
 typedef struct s_shell
 {
 	t_environ	environ;
-	size_t		size;
 	size_t		count_line;
 	int			exit_status;
 }	t_shell;
@@ -108,6 +108,9 @@ char	*expand_env_var(char *str);
 int		heredoc(t_shell *shell, t_redircmd *rcmd);
 char	*strip_matching_quotes(char *s);
 
+/*    runcmd    */
+void	runcmd(t_cmd *cmd);
+
 /*    environ    */
 int		init_environ(t_shell *shell);
 char	*get_variable_environ(char *str, size_t size);
@@ -120,7 +123,6 @@ int		init_signal(t_shell *shell);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);
-void	printcmd(t_cmd *cmd);
 t_cmd	*reverse_redircmd(t_cmd *cmd);
 
 /*    err    */

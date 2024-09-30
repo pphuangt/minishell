@@ -41,7 +41,7 @@ int	main(void)
 			cmd = parsecmd(s);
 			shell.exit_status = 0;
 			if (expansion(&shell, cmd) == 0)
-				printcmd(cmd);
+				runcmd(cmd);
 			freecmd(cmd);
 		}
 		free(s);

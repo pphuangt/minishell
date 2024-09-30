@@ -21,6 +21,7 @@ void	print_envp(char **envp)
 	}
 }
 
+/*
 void	printcmd(t_cmd *cmd)
 {
 	t_execcmd	*execcmd;
@@ -36,7 +37,7 @@ void	printcmd(t_cmd *cmd)
 	{
 		argc = 0;
 		execcmd = (t_execcmd *)cmd;
-		while (execcmd->argv[argc])
+		while (argc <= execcmd->argc)
 			printf("{%s} ", execcmd->argv[argc++]);
 		printf("--> command\n");
 	}
@@ -76,3 +77,4 @@ void	printcmd(t_cmd *cmd)
 		printcmd(pipecmd->right);
 	}
 }
+*/
