@@ -110,6 +110,7 @@ char	*strip_matching_quotes(char *s);
 
 /*    runcmd    */
 void	runcmd(t_cmd *cmd);
+char	*search_pathname(char *name, size_t len);
 
 /*    environ    */
 int		init_environ(t_shell *shell);

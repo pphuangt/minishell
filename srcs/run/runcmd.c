@@ -12,49 +12,9 @@
 
 #include "minishell.h"
 
-static void	free_split(char **p)
-{
-	char	**head;
+static void	runcmd_recursive(t_cmd *cmd);
 
-	head = p;
-	while (*p)
-	{
-		free(*p);
-		p++;
-	}
-	free(head);
-}
-
-char	*search_pathname(char *name, size_t len)
-{
-	char	**path;
-	char	**curr;
-	char	*pathname;
-	size_t	path_len;
-
-	path = ft_split(get_variable_environ("PATH", 4), ':');
-	if (!path)
-		return (NULL);
-	curr = path;
-	while (*curr)
-	{
-		path_len = ft_strlen(*curr);
-		pathname = malloc(sizeof(char) * (path_len + len + 2));
-		if (!pathname)
-			return (free_split(path), err_ret("malloc"), NULL);
-		ft_memcpy(pathname, *curr, path_len);
-		pathname[path_len] = '/';
-		ft_memcpy(pathname + path_len + 1, name, path_len + len + 2);
-		pathname[path_len + len + 1] = '\0';
-		if (access(pathname, X_OK) == 0)
-			return (free_split(path), pathname);
-		free(pathname);
-		curr++;
-	}
-	return (free_split(path), NULL);
-}
-
-void	runcmd_exec(t_cmd *cmd)
+static void	runcmd_exec(t_cmd *cmd)
 {
 	t_execcmd	*ecmd;
 	char		*pathname;
@@ -74,12 +34,58 @@ void	runcmd_exec(t_cmd *cmd)
 	}
 	execve(pathname, ecmd->argv, environ);
 	err_ret(pathname);
+	if (pathname != ecmd->argv[0])
+		free(pathname);
 }
 
-void	runcmd_recursive(t_cmd *cmd)
+static void	runcmd_redir(t_cmd *cmd)
+{
+	(void)cmd;
+	return ;
+}
+
+static void	runcmd_pipe(t_cmd *cmd)
+{
+	int			fd[2];
+	t_pipecmd	*pcmd;
+	int			wstatus;
+
+	if (pipe(fd) < 0)
+	{
+		err_ret("pipe");
+		return ;
+	}
+	pcmd = (t_pipecmd *)cmd;
+	if (fork() == 0)
+	{
+		close(1);
+		dup(fd[1]);
+		close(fd[0]);
+		close(fd[1]);
+		runcmd_recursive(pcmd->left);
+	}
+	if (fork() == 0)
+	{
+		close(0);
+		dup(fd[0]);
+		close(fd[0]);
+		close(fd[1]);
+		runcmd_recursive(pcmd->right);
+	}
+	close(fd[0]);
+	close(fd[1]);
+	wait(&wstatus);
+	wait(&wstatus);
+}
+
+static void	runcmd_recursive(t_cmd *cmd)
 {
 	if (cmd->type == EXEC)
 		runcmd_exec(cmd);
+	else if (cmd->type == REDIR)
+		runcmd_redir(cmd);
+	else if (cmd->type == PIPE)
+		runcmd_pipe(cmd);
 }
 
 void	runcmd(t_cmd *cmd)
