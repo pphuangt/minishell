@@ -40,7 +40,16 @@ static void	runcmd_exec(t_cmd *cmd)
 
 static void	runcmd_redir(t_cmd *cmd)
 {
-	(void)cmd;
+	t_redircmd	*rcmd;
+
+	rcmd = (t_redircmd *)cmd;
+	close(rcmd->fd);
+	if (open(rcmd->file.s, rcmd->mode) < 0)
+	{
+		err_ret("open file");
+		exit(0);
+	}
+	runcmd_recursive(rcmd->cmd);
 	return ;
 }
 

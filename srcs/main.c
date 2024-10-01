@@ -38,8 +38,7 @@ int	main(void)
 		if (*s)
 		{
 			add_history(s);
-			cmd = parsecmd(s);
-			shell.exit_status = 0;
+			cmd = parsecmd(&shell, s);
 			if (expansion(&shell, cmd) == 0)
 				runcmd(cmd);
 			freecmd(cmd);

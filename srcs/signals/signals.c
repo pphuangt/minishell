@@ -23,7 +23,7 @@ static void	signal_handler(int signum, siginfo_t *info, void *context)
 	}
 	(void)signum;
 	(void)info;
-	shell->exit_status = 1;
+	shell->exit_status = TERM_BY_SIG + signum;
 	ioctl(STDIN_FILENO, TIOCSTI, "\n");
 	rl_replace_line("", 0);
 	rl_on_new_line();
@@ -39,7 +39,7 @@ static int	set_signal(int signum, void (*func), int flags)
 	if (sigemptyset(&sa.sa_mask) < 0
 		|| sigaction(signum, &sa, NULL) < 0)
 	{
-		err_sys("initialize signal");
+		err_ret("initialize signal");
 		return (-1);
 	}
 	return (0);

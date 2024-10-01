@@ -118,7 +118,7 @@ static t_cmd	*parsepipe(char **ps, char *es)
 	return (cmd);
 }
 
-t_cmd	*parsecmd(char	*s)
+t_cmd	*parsecmd(t_shell *shell, char	*s)
 {
 	t_cmd	*cmd;
 	char	*es;
@@ -129,11 +129,8 @@ t_cmd	*parsecmd(char	*s)
 		return (NULL);
 	cmd = parsepipe(&s, es);
 	if (!cmd)
-		return (NULL);
-	if (s != es)
 	{
-		err_msg(0, "invalid args");
-		freecmd(cmd);
+		shell->exit_status = SYNTAX_ERROR;
 		return (NULL);
 	}
 	return (cmd);

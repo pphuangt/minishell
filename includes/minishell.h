@@ -33,6 +33,14 @@
 # define S_PROMPT "\033[1;32mminishell$ \033[0m"
 # define MAXARGS 10
 
+/*    exit_status    */
+# define SUCCESS 0
+# define SYSTEM_ERROR 1
+# define SYNTAX_ERROR 2
+# define CMD_NOT_EXEC 126
+# define CMD_NOT_FOUND 127
+# define TERM_BY_SIG 128
+
 typedef enum s_type
 {
 	EXEC,
