@@ -127,16 +127,10 @@ t_shell	*parsecmd(t_shell *shell, char	*s)
 	if (s != es)
 	{
 		shell->cmd = parsepipe(&s, es);
-		if (shell->cmd)
+		if (!shell->cmd)
 			shell->exit_status = SYNTAX_ERROR;
 	}
 	else
 		shell->exit_status = SUCCESS;
-	if (expansion(shell->cmd) < 0)
-	{
-		freecmd(shell->cmd);
-		shell->exit_status = SYSTEM_ERROR;
-		shell->cmd = NULL;
-	}
-	return (shell);
+	return (expansion(shell));
 }

@@ -105,7 +105,7 @@ int		valid_redir(char **ps, char *es, int *fd);
 t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 
 /*    expandation    */
-int		expansion(t_cmd *cmd);
+t_shell	*expansion(t_shell *shell);
 char	*expand_env_var(char *str, int exit_status);
 int		heredoc(t_shell *shell, t_redircmd *rcmd);
 char	*strip_matching_quotes(char *s);
