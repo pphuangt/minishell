@@ -14,7 +14,9 @@
 
 void	execute(t_shell *shell)
 {
-	if (!shell->cmd || shell->exit_status != SUCCESS)
+	if (!shell->cmd)
+		return ;
+	if (expansion(shell) != SUCCESS)
 		return ;
 	printcmd(shell->cmd);
 }

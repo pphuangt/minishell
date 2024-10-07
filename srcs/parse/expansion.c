@@ -100,9 +100,12 @@ static int	expand_cmd(t_cmd *cmd)
 	}
 }
 
-t_shell	*expansion(t_shell *shell)
+int	expansion(t_shell *shell)
 {
-	if (shell->cmd && expand_cmd(shell->cmd) != SUCCESS)
+	if (expand_cmd(shell->cmd) == SYSTEM_ERROR)
+	{
 		shell->exit_status = SYSTEM_ERROR;
-	return (shell);
+		return (SYSTEM_ERROR);
+	}
+	return (SUCCESS);
 }

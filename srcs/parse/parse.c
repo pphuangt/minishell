@@ -132,5 +132,5 @@ t_shell	*parsecmd(t_shell *shell, char	*s)
 	}
 	else
 		shell->exit_status = SUCCESS;
-	return (expansion(shell));
+	return (shell);
 }
