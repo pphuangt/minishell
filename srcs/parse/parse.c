@@ -85,7 +85,7 @@ static t_cmd	*parseexec(char **ps, char *es)
 	}
 	ecmd->argv[argc] = 0;
 	ecmd->eargv[argc] = 0;
-	if (argc == 0 && (peek(ps, es, "|") || *ps == es))
+	if (peek(ps, es, "|") && *ps == es)
 		return (err_parse_exec(ret, NULL, "|"));
 	return (reverse_redircmd(ret));
 }
@@ -118,20 +118,25 @@ static t_cmd	*parsepipe(char **ps, char *es)
 	return (cmd);
 }
 
-t_cmd	*parsecmd(t_shell *shell, char	*s)
+t_shell	*parsecmd(t_shell *shell, char	*s)
 {
-	t_cmd	*cmd;
 	char	*es;
 
 	es = s + ft_strlen(s);
 	peek(&s, es, "");
-	if (s == es)
-		return (NULL);
-	cmd = parsepipe(&s, es);
-	if (!cmd)
+	if (s != es)
 	{
-		shell->exit_status = SYNTAX_ERROR;
-		return (NULL);
+		shell->cmd = parsepipe(&s, es);
+		if (shell->cmd)
+			shell->exit_status = SYNTAX_ERROR;
 	}
-	return (cmd);
+	else
+		shell->exit_status = SUCCESS;
+	if (expansion(shell->cmd) < 0)
+	{
+		freecmd(shell->cmd);
+		shell->exit_status = SYSTEM_ERROR;
+		shell->cmd = NULL;
+	}
+	return (shell);
 }

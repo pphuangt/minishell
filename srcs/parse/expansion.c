@@ -12,40 +12,12 @@
 
 #include "minishell.h"
 
-char	*strip_matching_quotes(char *s)
-{
-	int		i;
-	int		j;
-	char	quote_status;
-
-	i = 0;
-	j = 0;
-	quote_status = 0;
-	while (s[i] != '\0')
-	{
-		if (ft_strchr(QUOTE, s[i]))
-		{
-			if (quote_status == s[i])
-				quote_status = 0;
-			else if (quote_status == 0)
-				quote_status = s[i];
-			else
-				s[j++] = s[i];
-		}
-		else
-			s[j++] = s[i];
-		i++;
-	}
-	s[j] = '\0';
-	return (s);
-}
-
 static int	expand_filename(char **filename)
 {
 	char	*str;
 	char	*msg;
 
-	str = expand_env_var(*filename);
+	str = expand_env_var(*filename, 0);
 	if (!str)
 	{
 		err_ret("malloc expand environment variable");
@@ -74,7 +46,7 @@ static int	expand_exec(t_cmd *cmd)
 	while (ecmd->argv[argc])
 	{
 		*ecmd->eargv[argc] = 0;
-		str = expand_env_var(ecmd->argv[argc]);
+		str = expand_env_var(ecmd->argv[argc], 0);
 		if (!str)
 		{
 			err_ret("expand environment variable");
@@ -90,20 +62,15 @@ static int	expand_exec(t_cmd *cmd)
 	return (0);
 }
 
-static int	expand_redir(t_shell *shell, t_cmd *cmd)
+static int	expand_redir(t_cmd *cmd)
 {
 	t_redircmd	*rcmd;
 
 	rcmd = (t_redircmd *)cmd;
-	if (expansion(shell, rcmd->cmd) < 0)
+	if (expansion(rcmd->cmd) < 0)
 		return (-1);
 	*rcmd->file.e = '\0';
-	if (rcmd->mode == O_DSYNC)
-	{
-		if (heredoc(shell, rcmd) < 0)
-			return (-1);
-	}
-	else
+	if (rcmd->mode != O_DSYNC)
 	{
 		if (expand_filename(&rcmd->file.s) < 0)
 			return (-1);
@@ -112,7 +79,7 @@ static int	expand_redir(t_shell *shell, t_cmd *cmd)
 	return (0);
 }
 
-int	expansion(t_shell *shell, t_cmd *cmd)
+int	expansion(t_cmd *cmd)
 {
 	t_pipecmd	*pcmd;
 
@@ -125,15 +92,15 @@ int	expansion(t_shell *shell, t_cmd *cmd)
 	}
 	else if (cmd->type == REDIR)
 	{
-		if (expand_redir(shell, cmd) < 0)
+		if (expand_redir(cmd) < 0)
 			return (-1);
 	}
 	else if (cmd->type == PIPE)
 	{
 		pcmd = (t_pipecmd *)cmd;
-		if (expansion(shell, pcmd->left) < 0)
+		if (expansion(pcmd->left) < 0)
 			return (-1);
-		if (expansion(shell, pcmd->right) < 0)
+		if (expansion(pcmd->right) < 0)
 			return (-1);
 	}
 	return (0);

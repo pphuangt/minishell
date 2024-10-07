@@ -83,18 +83,12 @@ typedef struct s_pipecmd
 	t_cmd	*right;
 }	t_pipecmd;
 
-typedef struct s_environ
-{
-	char	**p;
-	size_t	len;
-	size_t	size;
-}	t_environ;
-
 typedef struct s_shell
 {
-	t_environ	environ;
-	size_t		count_line;
-	int			exit_status;
+	t_cmd	*cmd;
+	char	*input;
+	size_t	count_line;
+	int		exit_status;
 }	t_shell;
 
 /*    constructure    */
@@ -103,7 +97,7 @@ t_cmd	*pipecmd(t_cmd *left, t_cmd *right);
 t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd);
 
 /*    parsing    */
-t_cmd	*parsecmd(char *s);
+t_shell	*parsecmd(t_shell *shell, char *s);
 int		peek(char **ps, char *es, char *tokens);
 int		gettoken(char **ps, char *es, char **q, char **eq);
 void	set_fd_mode(int tok, int *fd, int *mode);
@@ -111,26 +105,22 @@ int		valid_redir(char **ps, char *es, int *fd);
 t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 
 /*    expandation    */
-int		expansion(t_shell *shell, t_cmd *cmd);
-char	*expand_env_var(char *str);
+int		expansion(t_cmd *cmd);
+char	*expand_env_var(char *str, int exit_status);
 int		heredoc(t_shell *shell, t_redircmd *rcmd);
 char	*strip_matching_quotes(char *s);
 
 /*    runcmd    */
-void	runcmd(t_cmd *cmd);
-char	*search_pathname(char *name, size_t len);
+void	execute(t_shell *shell);
 
 /*    environ    */
-int		init_environ(t_shell *shell);
 char	*get_variable_environ(char *str, size_t size);
-int		add_variable_environ(t_shell *shell, char *var);
-int		remove_vairable_environ(t_shell *shell, char *name, size_t size);
-void	free_envp(t_shell *shell);
 
 /*    signals    */
 int		init_signal(t_shell *shell);
 
 /*    utils    */
+void	printcmd(t_cmd *cmd);
 void	freecmd(t_cmd *cmd);
 t_cmd	*reverse_redircmd(t_cmd *cmd);
 

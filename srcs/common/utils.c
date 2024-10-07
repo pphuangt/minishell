@@ -12,16 +12,34 @@
 
 #include "minishell.h"
 
-void	print_envp(char **envp)
+char	*strip_matching_quotes(char *s)
 {
-	while (*envp)
+	int		i;
+	int		j;
+	char	quote_status;
+
+	i = 0;
+	j = 0;
+	quote_status = 0;
+	while (s[i] != '\0')
 	{
-		printf("%s\n", *envp);
-		envp++;
+		if (ft_strchr(QUOTE, s[i]))
+		{
+			if (quote_status == s[i])
+				quote_status = 0;
+			else if (quote_status == 0)
+				quote_status = s[i];
+			else
+				s[j++] = s[i];
+		}
+		else
+			s[j++] = s[i];
+		i++;
 	}
+	s[j] = '\0';
+	return (s);
 }
 
-/*
 void	printcmd(t_cmd *cmd)
 {
 	t_execcmd	*execcmd;
@@ -77,4 +95,3 @@ void	printcmd(t_cmd *cmd)
 		printcmd(pipecmd->right);
 	}
 }
-*/

@@ -47,7 +47,6 @@ static int	set_signal(int signum, void (*func), int flags)
 
 int	init_signal(t_shell *shell)
 {
-	shell->count_line = 0;
 	signal_handler(0, 0, shell);
 	if (set_signal(SIGQUIT, SIG_IGN, 0))
 		return (-1);

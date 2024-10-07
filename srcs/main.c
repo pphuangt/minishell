@@ -23,28 +23,45 @@ int	peek(char **ps, char *es, char *tokens)
 	return (*s && ft_strchr(tokens, *s));
 }
 
+void	reset_shell(t_shell *shell)
+{
+	freecmd(shell->cmd);
+	shell->cmd = NULL;
+	free(shell->input);
+	shell->input = NULL;
+}
+
+char	*rl_gets(t_shell *shell, char **s, char *prompt, int history)
+{
+	*s = readline(prompt);
+	shell->input = *s;
+	shell->count_line++;
+	if (*s && **s && history)
+		add_history(*s);
+	return (*s);
+}
+
+void	init_shell(t_shell *shell)
+{
+	shell->cmd = NULL;
+	shell->input = NULL;
+	shell->count_line = 0;
+	shell->exit_status = 0;
+}
+
 int	main(void)
 {
 	t_shell	shell;
-	t_cmd	*cmd;
 	char	*s;
 
-	if (init_signal(&shell) < 0 || init_environ(&shell) < 0)
+	init_shell(&shell);
+	if (init_signal(&shell) < 0)
 		return (-1);
-	s = readline(S_PROMPT);
-	while (s)
+	while (rl_gets(&shell, &s, S_PROMPT, 1))
 	{
-		shell.count_line++;
 		if (*s)
-		{
-			add_history(s);
-			cmd = parsecmd(&shell, s);
-			if (expansion(&shell, cmd) == 0)
-				runcmd(cmd);
-			freecmd(cmd);
-		}
-		free(s);
-		s = readline(S_PROMPT);
+			execute(parsecmd(&shell, s));
+		reset_shell(&shell);
 	}
 	printf("exit\n");
 	return (0);
