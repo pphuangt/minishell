@@ -53,8 +53,11 @@ static int	env_var_cpy(char *dst, char *src, int *i, int exit_status)
 		str = get_variable_environ(src, *i);
 		if (str)
 		{
+			*dst = 0x01;
 			ret = ft_strlen(str);
-			ft_memcpy(dst, str, ret);
+			ft_memcpy(dst + 1, str, ret);
+			*(dst + ret + 1) = 0x02;
+			ret += 2;
 		}
 	}
 	return (ret);
@@ -78,7 +81,7 @@ static int	cal_ret_size(char *str, int exit_status)
 				i++;
 			value = get_variable_environ(str + 1, i);
 			if (value)
-				ret += ft_strlen(value);
+				ret += ft_strlen(value) + 2;
 		}
 		if (i == 0)
 			ret++;

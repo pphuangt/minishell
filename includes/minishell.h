@@ -31,7 +31,7 @@
 # define QUOTE "\'\""
 # define MAXLINE 4096
 # define S_PROMPT "\033[1;32mminishell$ \033[0m"
-# define MAXARGS 10
+# define MAXARGS 100
 
 /*    exit_status    */
 # define SUCCESS 0
@@ -109,6 +109,8 @@ int		expansion(t_shell *shell);
 char	*expand_env_var(char *str, int exit_status);
 int		heredoc(t_shell *shell, t_redircmd *rcmd);
 char	*strip_matching_quotes(char *s);
+int		set_argument(t_execcmd *ecmd, char *str);
+void	clone_argument(char **dst, char **src);
 
 /*    runcmd    */
 void	execute(t_shell *shell);

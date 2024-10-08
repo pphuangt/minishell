@@ -40,24 +40,21 @@ static int	expand_filename(char **filename)
 static int	expand_exec(t_cmd *cmd)
 {
 	t_execcmd	*ecmd;
+	char		*argv[MAXARGS + 1];
 	char		*str;
 	int			argc;
 
 	ecmd = (t_execcmd *)cmd;
 	argc = 0;
-	while (ecmd->argv[argc])
+	clone_argument(argv, ecmd->argv);
+	while (argv[argc])
 	{
 		*ecmd->eargv[argc] = 0;
-		str = expand_env_var(ecmd->argv[argc], 0);
+		str = expand_env_var(argv[argc], 0);
 		if (!str)
-		{
-			err_ret("expand environment variable");
-			return (SYSTEM_ERROR);
-		}
-		if (*str)
-			ecmd->argv[ecmd->argc++] = strip_matching_quotes(str);
-		else
-			free(str);
+			return (err_ret("expand environment variable"), SYSTEM_ERROR);
+		if (set_argument(ecmd, str) == SYSTEM_ERROR)
+			return (err_ret("expand environment variable"), SYSTEM_ERROR);
 		argc++;
 	}
 	ecmd->argv[ecmd->argc] = 0;

@@ -9,7 +9,7 @@ LIBS = $(LIBFT)/libft.a -lreadline
 SRCS = $(addprefix srcs/, main.c \
 	   $(addprefix signals/, signals.c) \
 	   $(addprefix environ/, environ.c) \
-	   $(addprefix parse/, constructure.c parse.c parse_utils.c expansion.c expand_env_var.c heredoc.c gettoken.c) \
+	   $(addprefix parse/, constructure.c parse.c parse_utils.c expansion.c expansion_utils.c expand_env_var.c heredoc.c gettoken.c) \
 	   $(addprefix execute/, execute.c) \
 	   $(addprefix common/, free.c err.c utils.c))
 OBJS = $(SRCS:.c=.o)
