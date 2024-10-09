@@ -45,7 +45,7 @@ static int	handler_set_argument(t_execcmd *ecmd, char *str, int *i, int *start)
 			substr = ft_substr(str, *start, *i - *start);
 			if (!substr)
 				return (SYSTEM_ERROR);
-			ecmd->argv[ecmd->argc++] = substr;
+			ecmd->argv[ecmd->argc++] = strip_quotes(substr);
 			*start = *i + 1;
 		}
 		*i = *i + 1;
@@ -74,7 +74,7 @@ int	set_argument(t_execcmd *ecmd, char *str)
 				return (free(str), SYSTEM_ERROR);
 		}
 	}
-	ecmd->argv[ecmd->argc++] = ft_substr(str, start, i - start);
+	ecmd->argv[ecmd->argc++] = strip_quotes(ft_substr(str, start, i - start));
 	if (!ecmd->argv[ecmd->argc - 1])
 		return (free(str), SYSTEM_ERROR);
 	return (free(str), SUCCESS);

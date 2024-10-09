@@ -19,7 +19,7 @@ static int	expand_filename(char **filename)
 	char	*str;
 	char	*msg;
 
-	str = expand_env_var(*filename, 0);
+	str = expand_env_var(*filename, 0, 0);
 	if (!str)
 	{
 		err_ret("malloc expand environment variable");
@@ -33,7 +33,7 @@ static int	expand_filename(char **filename)
 		free(str);
 		return (SYSTEM_ERROR);
 	}
-	*filename = strip_matching_quotes(str);
+	*filename = strip_quotes(str);
 	return (SUCCESS);
 }
 
@@ -50,7 +50,7 @@ static int	expand_exec(t_cmd *cmd)
 	while (argv[argc])
 	{
 		*ecmd->eargv[argc] = 0;
-		str = expand_env_var(argv[argc], 0);
+		str = expand_env_var(argv[argc], 0, 0);
 		if (!str)
 			return (err_ret("expand environment variable"), SYSTEM_ERROR);
 		if (set_argument(ecmd, str) == SYSTEM_ERROR)

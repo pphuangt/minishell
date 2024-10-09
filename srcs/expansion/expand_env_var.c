@@ -18,13 +18,15 @@ static int	env_var_cpy(char *dst, char *src, int *i, int exit_status)
 	int		ret;
 
 	ret = 0;
-	if (*i == 0 && *src == '?')
+	if (*src == '?')
 	{
 		ret = get_exit_status(dst, exit_status);
 		*i = *i + 1;
 	}
 	else
 	{
+		while (ft_isalnum(src[*i]) || src[*i] == '_')
+			*i = *i + 1;
 		str = get_variable_environ(src, *i);
 		if (str)
 		{
@@ -38,26 +40,34 @@ static int	env_var_cpy(char *dst, char *src, int *i, int exit_status)
 	return (ret);
 }
 
-char	*expand_env_var(char *str, int exit_status)
+static void	handle_quote(char *qs, char c)
+{
+	if (*qs == c)
+		*qs = 0;
+	else if (*qs == 0)
+		*qs = c;
+}
+
+char	*expand_env_var(char *str, int exit_status, int single_quote)
 {
 	char	*ret;
 	int		size;
 	int		i;
+	char	qs;
 
-	size = cal_ret_size(str, exit_status);
+	size = cal_ret_size(str, exit_status, single_quote);
 	ret = malloc(sizeof(char) * (size + 1));
 	if (!ret)
 		return (NULL);
 	size = 0;
+	qs = 0;
 	while (*str)
 	{
 		i = 0;
-		if (*str == '$')
-		{
-			while (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
-				i++;
+		if (*str == '\'' || *str == '"')
+			handle_quote(&qs, *str);
+		else if (*str == '$' && (single_quote || qs != '\''))
 			size += env_var_cpy(ret + size, str + 1, &i, exit_status);
-		}
 		if (i == 0)
 			ret[size++] = *str;
 		str += i + 1;
