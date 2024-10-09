@@ -12,31 +12,6 @@
 
 #include "minishell.h"
 
-static int	get_exit_status(char *dst, int exit_status)
-{
-	int	ret;
-	int	tmp;
-
-	ret = 0;
-	tmp = exit_status;
-	if (tmp == 0)
-		ret = 1;
-	while (tmp != 0)
-	{
-		ret++;
-		tmp /= 10;
-	}
-	if (!dst)
-		return (ret);
-	tmp = ret;
-	while (tmp > 0)
-	{
-		dst[--tmp] = '0' + (exit_status % 10);
-		exit_status /= 10;
-	}
-	return (ret);
-}
-
 static int	env_var_cpy(char *dst, char *src, int *i, int exit_status)
 {
 	char	*str;
@@ -59,33 +34,6 @@ static int	env_var_cpy(char *dst, char *src, int *i, int exit_status)
 			*(dst + ret + 1) = 0x02;
 			ret += 2;
 		}
-	}
-	return (ret);
-}
-
-static int	cal_ret_size(char *str, int exit_status)
-{
-	char	*value;
-	int		i;
-	int		ret;
-
-	ret = 0;
-	while (*str)
-	{
-		i = 0;
-		if (*str == '$' && *(str + 1) == '?' && ++i)
-			ret += get_exit_status(NULL, exit_status);
-		else if (*str == '$')
-		{
-			while (ft_isalnum(str[i + 1]) || str[i + 1] == '_')
-				i++;
-			value = get_variable_environ(str + 1, i);
-			if (value)
-				ret += ft_strlen(value) + 2;
-		}
-		if (i == 0)
-			ret++;
-		str += i + 1;
 	}
 	return (ret);
 }

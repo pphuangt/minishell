@@ -107,6 +107,8 @@ t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 /*    expandation    */
 int		expansion(t_shell *shell);
 char	*expand_env_var(char *str, int exit_status);
+int		cal_ret_size(char *str, int exit_status);
+int		get_exit_status(char *dst, int exit_status);
 int		heredoc(t_shell *shell, t_redircmd *rcmd);
 char	*strip_matching_quotes(char *s);
 int		set_argument(t_execcmd *ecmd, char *str);
