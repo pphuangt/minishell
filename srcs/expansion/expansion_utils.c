@@ -71,11 +71,11 @@ int	set_argument(t_execcmd *ecmd, char *str)
 		else if (str[i] == 0x01)
 		{
 			if (handler_set_argument(ecmd, str, &i, &start) == SYSTEM_ERROR)
-				return (SYSTEM_ERROR);
+				return (free(str), SYSTEM_ERROR);
 		}
 	}
 	ecmd->argv[ecmd->argc++] = ft_substr(str, start, i - start);
 	if (!ecmd->argv[ecmd->argc - 1])
-		return (SYSTEM_ERROR);
-	return (SUCCESS);
+		return (free(str), SYSTEM_ERROR);
+	return (free(str), SUCCESS);
 }
