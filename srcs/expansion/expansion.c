@@ -17,22 +17,12 @@ static int	expand_cmd(t_cmd *cmd);
 static int	expand_filename(char **filename)
 {
 	char	*str;
-	char	*msg;
 
 	str = expand_env_var(*filename, 0, 0);
 	if (!str)
-	{
-		err_ret("malloc expand environment variable");
-		return (SYSTEM_ERROR);
-	}
-	if (!*str)
-	{
-		msg = ft_strjoin(*filename, ": ambiguous redirect");
-		if (msg)
-			err_ret(msg);
-		free(str);
-		return (SYSTEM_ERROR);
-	}
+		return (err_ret("malloc"), SYSTEM_ERROR);
+	if (!*str || is_invalid_filename(str))
+		return (err_filename(*filename), free(str), SYSTEM_ERROR);
 	*filename = strip_quotes(str);
 	return (SUCCESS);
 }

@@ -109,6 +109,7 @@ int		expansion(t_shell *shell);
 char	*expand_env_var(char *str, int exit_status, int single_quote);
 int		cal_ret_size(char *str, int exit_status, int single_quote);
 int		get_exit_status(char *dst, int exit_status);
+int		is_invalid_filename(char *str);
 int		heredoc(t_shell *shell, t_redircmd *rcmd);
 char	*strip_quotes(char *s);
 int		set_argument(t_execcmd *ecmd, char *str);
@@ -130,6 +131,8 @@ t_cmd	*reverse_redircmd(t_cmd *cmd);
 
 /*    err    */
 void	err_ret(const char *fmt);
+void	err_tok(char *stok, char *etok);
+void	err_filename(char *filename);
 void	err_sys(const char *fmt);
 void	err_msg(int error, const char *fmt);
 void	err_exit(int error, const char *fmt);

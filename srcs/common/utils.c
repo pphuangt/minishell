@@ -35,7 +35,7 @@ void	printcmd(t_cmd *cmd)
 	{
 		redircmd = (t_redircmd *)cmd;
 		if (redircmd->mode == O_RDONLY)
-			printf("redir fd=%d (<) to %s --> redir\n",\
+			printf("redir fd=%d (<) to {%s} --> redir\n",\
 					redircmd->fd, redircmd->file.s);
 		else if (redircmd->mode == O_DSYNC)
 		{
@@ -52,10 +52,10 @@ void	printcmd(t_cmd *cmd)
 			close(redircmd->fd);
 		}
 		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_TRUNC))
-			printf("redir fd=%d (>) to %s --> redir\n",\
+			printf("redir fd=%d (>) to {%s} --> redir\n",\
 					redircmd->fd, redircmd->file.s);
 		else if (redircmd->mode == (O_WRONLY | O_CREAT | O_APPEND))
-			printf("redir fd=%d (>>) to %s --> redir\n",\
+			printf("redir fd=%d (>>) to {%s} --> redir\n",\
 					redircmd->fd, redircmd->file.s);
 		printcmd(redircmd->cmd);
 	}

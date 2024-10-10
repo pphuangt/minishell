@@ -12,54 +12,6 @@
 
 #include "minishell.h"
 
-static void	free_parse_exec(t_cmd *cmd)
-{
-	t_execcmd	*ecmd;
-	t_redircmd	*rcmd;
-
-	if (!cmd)
-		return ;
-	if (cmd->type == EXEC)
-	{
-		ecmd = (t_execcmd *)cmd;
-		free(ecmd);
-	}
-	else if (cmd->type == REDIR)
-	{
-		rcmd = (t_redircmd *)cmd;
-		free_parse_exec(rcmd->cmd);
-		free(rcmd);
-	}
-}
-
-t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok)
-{
-	char	*str;
-	char	*t;
-
-	if (msg)
-		err_msg(0, msg);
-	else if (tok)
-	{
-		if (!*tok)
-			err_msg(0, "systax error near unexpected token `newline'");
-		else
-		{
-			str = ft_strdup("systax error near unexpected token `_'");
-			if (str)
-			{
-				t = ft_strchr(str, '_');
-				*t = *tok;
-				err_msg(0, str);
-			}
-			else
-				err_ret("error message");
-		}
-	}
-	free_parse_exec(cmd);
-	return (NULL);
-}
-
 void	set_fd_mode(int tok, int *fd, int *mode)
 {
 	if (*fd == -1)
