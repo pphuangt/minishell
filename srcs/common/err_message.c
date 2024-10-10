@@ -14,7 +14,8 @@
 
 void	err_tok(char *stok, char *etok)
 {
-	ft_putstr_fd("minishell: systax error near unexpected token `", STDERR_FILENO);
+	ft_putstr_fd("minishell: systax error near unexpected token `"\
+	, STDERR_FILENO);
 	if (!*stok)
 		ft_putendl_fd("newline'", STDERR_FILENO);
 	else
