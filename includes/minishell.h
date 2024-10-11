@@ -83,12 +83,20 @@ typedef struct s_pipecmd
 	t_cmd	*right;
 }	t_pipecmd;
 
+typedef struct s_environ
+{
+	char	**p;
+	size_t	len;
+	size_t	size;
+}	t_environ;
+
 typedef struct s_shell
 {
-	t_cmd	*cmd;
-	char	*input;
-	size_t	count_line;
-	int		exit_status;
+	t_cmd		*cmd;
+	char		*input;
+	t_environ	environ;
+	size_t		count_line;
+	int			exit_status;
 }	t_shell;
 
 /*    constructure    */
@@ -106,8 +114,8 @@ t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 
 /*    expandation    */
 int		expansion(t_shell *shell);
-char	*expand_env_var(char *str, int exit_status, int single_quote);
-int		cal_ret_size(char *str, int exit_status, int single_quote);
+char	*expand_env_var(char *str, char **environ, int exit_status, int heredoc);
+int		cal_ret_size(char *str, char **environ, int exit_status, int heredoc);
 int		get_exit_status(char *dst, int exit_status);
 int		is_invalid_filename(char *str);
 int		heredoc(t_shell *shell, t_redircmd *rcmd);
@@ -119,7 +127,9 @@ void	clone_argument(char **dst, char **src);
 void	execute(t_shell *shell);
 
 /*    environ    */
-char	*get_variable_environ(char *str, size_t size);
+char	*get_variable_environ(char **environ, char *str, size_t size);
+int		init_environ(t_environ *environ);
+void	free_environ(t_environ *environ);
 
 /*    signals    */
 int		init_signal(t_shell *shell);

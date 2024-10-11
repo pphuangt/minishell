@@ -4,8 +4,8 @@ LIB = lib
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 LIBFT = $(LIB)/libft
-HEADERS = -I./$(INCLUDES) -I./$(LIBFT)
-LIBS = $(LIBFT)/libft.a -lreadline
+HEADERS = -I./$(INCLUDES) -I./$(LIBFT) -I/usr/local/opt/readline/include
+LIBS = $(LIBFT)/libft.a -L/usr/local/opt/readline/lib -lreadline
 SRCS = $(addprefix srcs/, main.c \
 	   $(addprefix signals/, signals.c) \
 	   $(addprefix environ/, environ.c) \

@@ -55,7 +55,7 @@ int	main(void)
 	char	*s;
 
 	init_shell(&shell);
-	if (init_signal(&shell) < 0)
+	if (init_signal(&shell) < 0 || init_environ(&shell.environ) < 0)
 		return (-1);
 	while (rl_gets(&shell, &s, S_PROMPT, 1))
 	{
@@ -63,6 +63,7 @@ int	main(void)
 			execute(parsecmd(&shell, s));
 		reset_shell(&shell);
 	}
+	free_environ(&shell.environ);
 	printf("exit\n");
 	return (0);
 }
