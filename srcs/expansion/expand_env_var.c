@@ -40,14 +40,6 @@ static int	env_var_cpy(char *dst, char *src, int *i, int exit_status)
 	return (ret);
 }
 
-static void	handle_quote(char *qs, char c)
-{
-	if (*qs == c)
-		*qs = 0;
-	else if (*qs == 0)
-		*qs = c;
-}
-
 char	*expand_env_var(char *str, int exit_status, int heredoc)
 {
 	char	*ret;

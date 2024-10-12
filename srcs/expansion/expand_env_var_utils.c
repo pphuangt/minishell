@@ -34,14 +34,6 @@ static int	variable_size(char *str, int *i, int exit_status)
 	return (ret);
 }
 
-static void	handle_quote(char *qs, char c)
-{
-	if (*qs == c)
-		*qs = 0;
-	else if (*qs == 0)
-		*qs = c;
-}
-
 int	cal_ret_size(char *str, int exit_status, int heredoc)
 {
 	int		i;

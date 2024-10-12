@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expansion_utils2.c                                 :+:      :+:    :+:   */
+/*   symbols.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/10 20:08:38 by pphuangt          #+#    #+#             */
-/*   Updated: 2024/10/10 20:08:44 by pphuangt         ###   ########.fr       */
+/*   Created: 2024/10/12 16:59:03 by pphuangt          #+#    #+#             */
+/*   Updated: 2024/10/12 16:59:10 by pphuangt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	handle_quote(char *qs, char c)
+void	handle_quote(char *qs, char c)
 {
 	if (*qs == c)
 		*qs = 0;

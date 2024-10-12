@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static void	handle_mask(char *s, int i, int *mask_status)
+static void	skip_mask(char *s, int i, int *mask_status)
 {
 	if (*mask_status == 0)
 		*mask_status = s[i];
@@ -20,7 +20,7 @@ static void	handle_mask(char *s, int i, int *mask_status)
 		*mask_status = 0;
 }
 
-static void	handle_quote(char *s, int i, int *j, char *quote_status)
+static void	skip_quote(char *s, int i, int *j, char *quote_status)
 {
 	if (*quote_status == s[i])
 		*quote_status = 0;
@@ -48,9 +48,9 @@ char	*strip_quotes(char *s)
 	while (s[i] != '\0')
 	{
 		if (s[i] == 0x01 || s[i] == 0x02)
-			handle_mask(s, i, &mask_status);
+			skip_mask(s, i, &mask_status);
 		else if (!mask_status && ft_strchr(QUOTE, s[i]))
-			handle_quote(s, i, &j, &quote_status);
+			skip_quote(s, i, &j, &quote_status);
 		else
 			s[j++] = s[i];
 		i++;

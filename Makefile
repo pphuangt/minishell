@@ -10,7 +10,7 @@ SRCS = $(addprefix srcs/, main.c \
 	   $(addprefix signals/, signals.c) \
 	   $(addprefix environ/, environ.c) \
 	   $(addprefix parse/, constructure.c parse.c parse_utils.c heredoc.c gettoken.c) \
-	   $(addprefix expansion/, expansion.c expansion_utils.c expansion_utils2.c expand_env_var.c expand_env_var_utils.c expand_exit_status.c strip_quote.c) \
+	   $(addprefix expansion/, expansion.c expansion_utils.c expand_env_var.c expand_env_var_utils.c expand_exit_status.c strip_quote.c symbols.c) \
 	   $(addprefix execute/, execute.c) \
 	   $(addprefix common/, free.c err.c err_message.c utils.c))
 OBJS = $(SRCS:.c=.o)
