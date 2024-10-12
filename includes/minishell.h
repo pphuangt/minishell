@@ -126,6 +126,7 @@ void	clone_argument(char **dst, char **src);
 
 /*    runcmd    */
 void	execute(t_shell *shell);
+void	runcmd(t_cmd *cmd, t_shell *shell);
 
 /*    environ    */
 char	*get_variable_environ(char **environ, char *str, size_t size);
