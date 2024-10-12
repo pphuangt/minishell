@@ -114,8 +114,8 @@ t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 
 /*    expandation    */
 int		expansion(t_shell *shell);
-char	*expand_env_var(char *str, char **environ, int exit_status, int heredoc);
-int		cal_ret_size(char *str, char **environ, int exit_status, int heredoc);
+char	*expand_env_var(char *str, int exit_status, int heredoc);
+int		cal_ret_size(char *str, int exit_status, int heredoc);
 int		get_exit_status(char *dst, int exit_status);
 int		is_invalid_filename(char *str);
 int		heredoc(t_shell *shell, t_redircmd *rcmd);

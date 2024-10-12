@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	variable_size(char *str, char **environ, int *i, int exit_status)
+static int	variable_size(char *str, int *i, int exit_status)
 {
 	char	*value;
 	int		ret;
@@ -27,7 +27,7 @@ static int	variable_size(char *str, char **environ, int *i, int exit_status)
 	{
 		while (ft_isalnum(str[*i + 1]) || str[*i + 1] == '_')
 			*i = *i + 1;
-		value = get_variable_environ(environ, str + 1, *i);
+		value = get_variable_environ(0, str + 1, *i);
 		if (value)
 			ret = ft_strlen(value) + 2;
 	}
@@ -42,7 +42,7 @@ static void	handle_quote(char *qs, char c)
 		*qs = c;
 }
 
-int	cal_ret_size(char *str, char **environ, int exit_status, int heredoc)
+int	cal_ret_size(char *str, int exit_status, int heredoc)
 {
 	int		i;
 	int		ret;
@@ -56,7 +56,7 @@ int	cal_ret_size(char *str, char **environ, int exit_status, int heredoc)
 		if (*str == '\'' || *str == '"')
 			handle_quote(&qs, *str);
 		else if (*str == '$' && (heredoc || qs != '\''))
-			ret += variable_size(str, environ, &i, exit_status);
+			ret += variable_size(str, &i, exit_status);
 		if (i == 0)
 			ret++;
 		str += i + 1;

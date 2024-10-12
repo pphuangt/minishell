@@ -35,7 +35,7 @@ static int	put_heredoc_fd(char *input_line, int fd, int has_q)
 		ft_putendl_fd(input_line, fd);
 	else
 	{
-		str = expand_env_var(input_line, 0, 0, 1);
+		str = expand_env_var(input_line, 0, 1);
 		if (!str)
 		{
 			free(input_line);

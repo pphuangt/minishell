@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	env_var_cpy(char *dst, char *src, int *i, char **environ, int exit_status)
+static int	env_var_cpy(char *dst, char *src, int *i, int exit_status)
 {
 	char	*str;
 	int		ret;
@@ -27,7 +27,7 @@ static int	env_var_cpy(char *dst, char *src, int *i, char **environ, int exit_st
 	{
 		while (ft_isalnum(src[*i]) || src[*i] == '_')
 			*i = *i + 1;
-		str = get_variable_environ(environ, src, *i);
+		str = get_variable_environ(0, src, *i);
 		if (str)
 		{
 			*dst = 0x01;
@@ -48,14 +48,14 @@ static void	handle_quote(char *qs, char c)
 		*qs = c;
 }
 
-char	*expand_env_var(char *str, char **environ, int exit_status, int heredoc)
+char	*expand_env_var(char *str, int exit_status, int heredoc)
 {
 	char	*ret;
 	int		size;
 	int		i;
 	char	qs;
 
-	size = cal_ret_size(str, environ, exit_status, heredoc);
+	size = cal_ret_size(str, exit_status, heredoc);
 	ret = malloc(sizeof(char) * (size + 1));
 	if (!ret)
 		return (NULL);
@@ -67,7 +67,7 @@ char	*expand_env_var(char *str, char **environ, int exit_status, int heredoc)
 		if (*str == '\'' || *str == '"')
 			handle_quote(&qs, *str);
 		else if (*str == '$' && (heredoc || qs != '\''))
-			size += env_var_cpy(ret + size, str + 1, &i, environ, exit_status);
+			size += env_var_cpy(ret + size, str + 1, &i, exit_status);
 		if (i == 0)
 			ret[size++] = *str;
 		str += i + 1;

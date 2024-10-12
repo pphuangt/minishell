@@ -14,9 +14,15 @@
 
 char	*get_variable_environ(char **environ, char *str, size_t size)
 {
+	static char	**s_environ = NULL;
 	char		**env;
 
-	env = environ;
+	if (environ != NULL)
+	{
+		s_environ = environ;
+		return (NULL);
+	}
+	env = s_environ;
 	if (!str || size == 0)
 		return (NULL);
 	while (*env != NULL)
@@ -53,6 +59,7 @@ int	init_environ(t_environ *shell_environ)
 	}
 	shell_environ->len = size;
 	shell_environ->p[shell_environ->len] = NULL;
+	get_variable_environ(shell_environ->p, 0, 0);
 	return (0);
 }
 
