@@ -39,12 +39,6 @@ static int	is_builtins(char *cmd_name)
 	return (0);
 }
 
-static void	runbuiltins(t_shell *shell)
-{
-	printf("run builtins\n");
-	shell->exit_status = SUCCESS;
-}
-
 void	execute(t_shell *shell)
 {
 	char	*cmd_name;
