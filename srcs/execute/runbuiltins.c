@@ -36,6 +36,7 @@ static int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell)
 	return (SUCCESS);
 }
 
+/*    if can't open or dup should close all fd that already open before    */
 static int	runbuiltins_redir(t_redircmd *rcmd)
 {
 	int	fd;
@@ -44,44 +45,9 @@ static int	runbuiltins_redir(t_redircmd *rcmd)
 	if (fd < 0)
 		return (err_ret("open"), SYSTEM_ERROR);
 	if (dup2(fd, rcmd->fd) < 0)
-		return (err_ret("dup2"), SYSTEM_ERROR);
+		return (close(fd), err_ret("dup2"), SYSTEM_ERROR);
 	close(fd);
 	return (SUCCESS);
-}
-
-static int	save_std_fd(int *std_in, int *std_out, int *std_err)
-{
-	*std_in = dup(STDIN_FILENO);
-	if (*std_in == -1)
-		return (err_ret("dup"), -1);
-	*std_out = dup(STDOUT_FILENO);
-	if (*std_out == -1)
-		return (close(*std_in), err_ret("dup"), -1);
-	*std_err = dup(STDERR_FILENO);
-	if (*std_err == -1)
-		return (close(*std_in), close(*std_out), err_ret("dup"), -1);
-	return (SUCCESS);
-}
-
-static int	restore_std_fd(int *std_in, int *std_out, int *std_err)
-{
-	int	ret;
-
-	ret = SUCCESS;
-	if (dup2(*std_in, STDIN_FILENO) < 0
-		|| dup2(*std_out, STDOUT_FILENO) < 0
-		|| dup2(*std_err, STDERR_FILENO) < 0)
-	{
-		err_ret("dup2");
-		ret = SYSTEM_ERROR;
-	}
-	close(*std_in);
-	close(*std_out);
-	close(*std_err);
-	*std_in = -1;
-	*std_out = -1;
-	*std_err = -1;
-	return (ret);
 }
 
 void	runbuiltins(t_shell *shell)

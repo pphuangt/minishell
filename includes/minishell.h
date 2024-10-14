@@ -125,9 +125,11 @@ char	*strip_quotes(char *s);
 int		set_argument(t_execcmd *ecmd, char *str);
 void	clone_argument(char **dst, char **src);
 
-/*    runcmd    */
+/*    execute    */
 void	execute(t_shell *shell);
 void	runbuiltins(t_shell *shell);
+int		save_std_fd(int *std_in, int *std_out, int *std_err);
+int		restore_std_fd(int *std_in, int *std_out, int *std_err);
 void	runcmd(t_cmd *cmd, t_shell *shell);
 
 /*    environ    */

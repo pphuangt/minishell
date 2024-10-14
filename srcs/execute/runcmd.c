@@ -21,7 +21,22 @@ static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell)
 
 static void	runcmd_redir(t_redircmd *rcmd, t_shell *shell)
 {
-	(void)shell;
+	int	fd;
+
+	fd = open(rcmd->file.s, rcmd->mode);
+	if (fd < 0)
+	{
+		err_ret("open");
+		shell->exit_status = SYSTEM_ERROR;
+		ft_exit(shell);
+	}
+	if (dup2(fd, rcmd->fd) < 0)
+	{
+		err_ret("dup2");
+		shell->exit_status = SYSTEM_ERROR;
+		ft_exit(shell);
+	}
+	close(fd);
 	runcmd(rcmd->cmd, shell);
 }
 
