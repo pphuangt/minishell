@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   runbuiltins.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/14 14:54:27 by pphuangt          #+#    #+#             */
+/*   Updated: 2024/10/14 14:54:29 by pphuangt         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell)
@@ -20,7 +32,7 @@ static int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell)
 	else if (!ft_strncmp(cmd_name, "env", cmd_name_len))
 		return (ft_env(ecmd->argv, ecmd->argc, &shell->environ));
 	else if (!ft_strncmp(cmd_name, "exit", cmd_name_len))
-		return (ft_exit(ecmd->argv, ecmd->argc, shell));
+		return (ft_exit(shell));
 	return (SUCCESS);
 }
 

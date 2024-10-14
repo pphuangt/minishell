@@ -12,6 +12,44 @@
 
 #include "minishell.h"
 
+static void	print_exit_msg(int wstatus, int signum)
+{
+	char	*exit_msg;
+
+	if (signum == SIGQUIT)
+		exit_msg = "Quit";
+	else
+		exit_msg = "Segmentation fault";
+	if (WCOREDUMP(wstatus))
+	{
+		ft_putstr_fd(exit_msg, STDERR_FILENO);
+		ft_putendl_fd(" (core dumped)", STDERR_FILENO);
+	}
+	else
+		ft_putendl_fd(exit_msg, STDERR_FILENO);
+}
+
+static int	wait_runcmd(pid_t pid)
+{
+	int	ret;
+	int	wstatus;
+	int	signum;
+
+	ret = UNEXPECT_EXIT;
+	if (waitpid(pid, &wstatus, 0) == -1)
+		return (err_ret("waitpid"), ret);
+	if (WIFEXITED(wstatus))
+		ret = WEXITSTATUS(wstatus);
+	else if (WIFSIGNALED(wstatus))
+	{
+		signum = WTERMSIG(wstatus);
+		if (signum == SIGQUIT || signum == SIGSEGV)
+			print_exit_msg(wstatus, signum);
+		ret = TERM_BY_SIG + signum;
+	}
+	return (ret);
+}
+
 static char	*get_cmd_name(t_cmd *cmd)
 {
 	if (cmd->type == EXEC)
@@ -42,10 +80,9 @@ static int	is_builtins(char *cmd_name)
 void	execute(t_shell *shell)
 {
 	char	*cmd_name;
+	pid_t	child_pid;
 
-	if (!shell->cmd)
-		return ;
-	if (expansion(shell) != SUCCESS)
+	if (!shell->cmd || expansion(shell) != SUCCESS)
 		return ;
 	if (shell->cmd->type == PIPE)
 		runcmd(shell->cmd, shell);
@@ -55,6 +92,14 @@ void	execute(t_shell *shell)
 		if (is_builtins(cmd_name))
 			runbuiltins(shell);
 		else
-			runcmd(shell->cmd, shell);
+		{
+			child_pid = fork();
+			if (child_pid == -1)
+				err_ret("fork");
+			else if (child_pid == 0)
+				runcmd(shell->cmd, shell);
+			else
+				shell->exit_status = wait_runcmd(child_pid);
+		}
 	}
 }

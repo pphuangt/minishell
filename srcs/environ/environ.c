@@ -62,14 +62,3 @@ int	init_environ(t_environ *shell_environ)
 	get_variable_environ(shell_environ->p, 0, 0);
 	return (0);
 }
-
-void	free_environ(t_environ *environ)
-{
-	char	**envp;
-
-	envp = environ->p;
-	while (*envp)
-		free(*envp++);
-	free(environ->p);
-	environ->p = NULL;
-}

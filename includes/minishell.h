@@ -40,6 +40,7 @@
 # define CMD_NOT_EXEC 126
 # define CMD_NOT_FOUND 127
 # define TERM_BY_SIG 128
+# define UNEXPECT_EXIT 128
 
 typedef enum s_type
 {
@@ -133,6 +134,15 @@ void	runcmd(t_cmd *cmd, t_shell *shell);
 char	*get_variable_environ(char **environ, char *str, size_t size);
 int		init_environ(t_environ *environ);
 void	free_environ(t_environ *environ);
+
+/*    builtins    */
+int		ft_echo(char **argv, int argc);
+int		ft_cd(char **argv, int argc, t_environ *environ);
+int		ft_pwd(char **argv, int argc, t_environ *environ);
+int		ft_export(char **argv, int argc, t_environ *environ);
+int		ft_unset(char **argv, int argc, t_environ *environ);
+int		ft_env(char **argv, int argc, t_environ *environ);
+int		ft_exit(t_shell *shell);
 
 /*    signals    */
 int		init_signal(t_shell *shell);

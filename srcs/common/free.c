@@ -56,3 +56,14 @@ void	freecmd(t_cmd *cmd)
 	else if (cmd->type == PIPE)
 		freepipe(cmd);
 }
+
+void	free_environ(t_environ *environ)
+{
+	char	**envp;
+
+	envp = environ->p;
+	while (*envp)
+		free(*envp++);
+	free(environ->p);
+	environ->p = NULL;
+}
