@@ -36,24 +36,55 @@ static int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell)
 	return (SUCCESS);
 }
 
-/*    if can't open or dup should close all fd that already open before    */
-static int	runbuiltins_redir(t_redircmd *rcmd)
+static int	is_new_fd(int new_fd, int fd[], int fd_size)
 {
-	int	fd;
+	int	i;
 
-	fd = open(rcmd->file.s, rcmd->mode);
-	if (fd < 0)
+	i = 0;
+	while (i < fd_size)
+	{
+		if (fd[i++] == new_fd)
+			return (0);
+	}
+	return (1);
+}
+
+static int	runbuiltins_redir(t_redircmd *rcmd, int fd[], int *fd_size)
+{
+	int	open_fd;
+
+	open_fd = open(rcmd->file.s, rcmd->mode);
+	if (open_fd < 0)
 		return (err_ret("open"), SYSTEM_ERROR);
-	if (dup2(fd, rcmd->fd) < 0)
-		return (close(fd), err_ret("dup2"), SYSTEM_ERROR);
-	close(fd);
+	if (dup2(open_fd, rcmd->fd) < 0)
+		return (close(open_fd), err_ret("dup2"), SYSTEM_ERROR);
+	if (open_fd != rcmd->fd)
+		close(open_fd);
+	if (is_new_fd(rcmd->fd, fd, *fd_size))
+	{
+		if (*fd_size == MAXARGS)
+			return (close(rcmd->fd), err_msg(0, "too many fd"), SYSTEM_ERROR);
+		fd[*fd_size] = rcmd->fd;
+		(*fd_size)++;
+	}
 	return (SUCCESS);
+}
+
+static void	close_fd(int fd[], int fd_size)
+{
+	int	i;
+
+	i = 0;
+	while (i < fd_size)
+		close(fd[i++]);
 }
 
 void	runbuiltins(t_shell *shell)
 {
 	t_cmd	*cmd;
 	int		std_fd[3];
+	int		fd[MAXARGS];
+	int		fd_size;
 
 	if (save_std_fd(&std_fd[0], &std_fd[1], &std_fd[2]) < 0)
 	{
@@ -61,19 +92,15 @@ void	runbuiltins(t_shell *shell)
 		return ;
 	}
 	cmd = shell->cmd;
-	while (cmd->type == REDIR)
-	{
-		if (runbuiltins_redir((t_redircmd *)cmd) != SUCCESS)
-		{
-			shell->exit_status = SYSTEM_ERROR;
-			return ;
-		}
+	fd_size = 0;
+	while (cmd->type == REDIR
+		&& runbuiltins_redir((t_redircmd *)cmd, fd, &fd_size) == SUCCESS)
 		cmd = ((t_redircmd *)cmd)->cmd;
-	}
-	shell->exit_status = runbuiltins_exec((t_execcmd *)cmd, shell);
-	if (restore_std_fd(&std_fd[0], &std_fd[1], &std_fd[2]) < 0)
-	{
+	if (cmd->type == EXEC)
+		shell->exit_status = runbuiltins_exec((t_execcmd *)cmd, shell);
+	else
 		shell->exit_status = SYSTEM_ERROR;
-		return ;
-	}
+	close_fd(fd, fd_size);
+	if (restore_std_fd(&std_fd[0], &std_fd[1], &std_fd[2]) < 0)
+		shell->exit_status = SYSTEM_ERROR;
 }
