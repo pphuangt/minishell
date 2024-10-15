@@ -49,17 +49,11 @@ static int	is_new_fd(int new_fd, int fd[], int fd_size)
 	return (1);
 }
 
-static int	runbuiltins_redir(t_redircmd *rcmd, int fd[], int *fd_size)
+static int	runbuiltins_redir(t_redircmd *rcmd, t_shell *shell,
+		int fd[], int *fd_size)
 {
-	int	open_fd;
-
-	open_fd = open(rcmd->file.s, rcmd->mode);
-	if (open_fd < 0)
-		return (err_ret("open"), SYSTEM_ERROR);
-	if (dup2(open_fd, rcmd->fd) < 0)
-		return (close(open_fd), err_ret("dup2"), SYSTEM_ERROR);
-	if (open_fd != rcmd->fd)
-		close(open_fd);
+	if (runredir(rcmd, shell) != SUCCESS)
+		return (SYSTEM_ERROR);
 	if (is_new_fd(rcmd->fd, fd, *fd_size))
 	{
 		if (*fd_size == MAXARGS)
@@ -94,7 +88,7 @@ void	runbuiltins(t_shell *shell)
 	cmd = shell->cmd;
 	fd_size = 0;
 	while (cmd->type == REDIR
-		&& runbuiltins_redir((t_redircmd *)cmd, fd, &fd_size) == SUCCESS)
+		&& runbuiltins_redir((t_redircmd *)cmd, shell, fd, &fd_size) == SUCCESS)
 		cmd = ((t_redircmd *)cmd)->cmd;
 	if (cmd->type == EXEC)
 		shell->exit_status = runbuiltins_exec((t_execcmd *)cmd, shell);

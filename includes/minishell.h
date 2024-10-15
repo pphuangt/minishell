@@ -100,6 +100,11 @@ typedef struct s_shell
 	int			exit_status;
 }	t_shell;
 
+/*    common    */
+void	init_shell(t_shell *shell);
+char	*rl_gets(t_shell *shell, char **s, char *prompt, int history);
+void	reset_shell(t_shell *shell);
+
 /*    constructure    */
 t_cmd	*execcmd(void);
 t_cmd	*pipecmd(t_cmd *left, t_cmd *right);
@@ -120,7 +125,7 @@ int		cal_ret_size(char *str, int exit_status, int heredoc);
 int		get_exit_status(char *dst, int exit_status);
 int		is_invalid_filename(char *str);
 void	handle_quote(char *qs, char c);
-int		heredoc(t_shell *shell, t_redircmd *rcmd);
+int		heredoc(t_redircmd *rcmd, t_shell *shell);
 char	*strip_quotes(char *s);
 int		set_argument(t_execcmd *ecmd, char *str);
 void	clone_argument(char **dst, char **src);
@@ -131,6 +136,7 @@ void	runbuiltins(t_shell *shell);
 int		save_std_fd(int *std_in, int *std_out, int *std_err);
 int		restore_std_fd(int *std_in, int *std_out, int *std_err);
 void	runcmd(t_cmd *cmd, t_shell *shell);
+int		runredir(t_redircmd *rcmd, t_shell *shell);
 
 /*    environ    */
 char	*get_variable_environ(char **environ, char *str, size_t size);
