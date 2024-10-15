@@ -52,7 +52,7 @@ static int	is_new_fd(int new_fd, int fd[], int fd_size)
 static int	runbuiltins_redir(t_redircmd *rcmd, t_shell *shell,
 		int fd[], int *fd_size)
 {
-	if (runredir(rcmd, shell) != SUCCESS)
+	if (redirect(rcmd, shell) != SUCCESS)
 		return (SYSTEM_ERROR);
 	if (is_new_fd(rcmd->fd, fd, *fd_size))
 	{

@@ -40,7 +40,7 @@ static int	put_heredoc_fd(char *s, int fd, int exit_status)
 
 	str = expand_env_var(s, exit_status, 1);
 	if (!str)
-		return (free(s), err_ret("malloc expand heredoc"), -1);
+		return (err_ret("malloc expand heredoc"), -1);
 	ft_putendl_fd(str, fd);
 	free(str);
 	return (0);
@@ -64,7 +64,7 @@ static int	read_heredoc(t_redircmd *rcmd, t_shell *shell, int has_q)
 		if (has_q)
 			ft_putendl_fd(s, fd[1]);
 		else if (put_heredoc_fd(s, fd[1], shell->exit_status) < 0)
-			return (close(fd[0]), close(fd[1]), -1);
+			return (free(s), close(fd[0]), close(fd[1]), -1);
 		free(s);
 	}
 	if (!s)

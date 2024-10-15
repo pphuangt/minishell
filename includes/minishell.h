@@ -136,7 +136,9 @@ void	runbuiltins(t_shell *shell);
 int		save_std_fd(int *std_in, int *std_out, int *std_err);
 int		restore_std_fd(int *std_in, int *std_out, int *std_err);
 void	runcmd(t_cmd *cmd, t_shell *shell);
-int		runredir(t_redircmd *rcmd, t_shell *shell);
+int		redirect(t_redircmd *rcmd, t_shell *shell);
+int		wait_runcmd(pid_t pid);
+char	*search_pathname(char *name, size_t len);
 
 /*    environ    */
 char	*get_variable_environ(char **environ, char *str, size_t size);

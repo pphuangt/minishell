@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   runredir.c                                         :+:      :+:    :+:   */
+/*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/15 17:30:53 by pphuangt          #+#    #+#             */
-/*   Updated: 2024/10/15 17:31:00 by pphuangt         ###   ########.fr       */
+/*   Created: 2024/10/15 22:18:28 by pphuangt          #+#    #+#             */
+/*   Updated: 2024/10/15 22:18:34 by pphuangt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	runredir(t_redircmd *rcmd, t_shell *shell)
+int	redirect(t_redircmd *rcmd, t_shell *shell)
 {
 	int	fd;
 

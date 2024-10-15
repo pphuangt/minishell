@@ -14,37 +14,58 @@
 
 static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell)
 {
-	(void)ecmd;
-	shell->exit_status = 0;
-	printf("runcmd exec\n");
+	char	*pathname;
+
+	pathname = ecmd->argv[0];
+	if (!ft_strchr(pathname, '/'))
+		pathname = search_pathname(ecmd->argv[0], ft_strlen(ecmd->argv[0]));
+	execve(pathname, ecmd->argv, shell->environ.p);
 }
 
 static void	runcmd_redir(t_redircmd *rcmd, t_shell *shell)
 {
-	int	fd;
-
-	fd = open(rcmd->file.s, rcmd->mode);
-	if (fd < 0)
-	{
-		err_ret("open");
-		shell->exit_status = SYSTEM_ERROR;
-		ft_exit(shell);
-	}
-	if (dup2(fd, rcmd->fd) < 0)
-	{
-		err_ret("dup2");
-		shell->exit_status = SYSTEM_ERROR;
-		ft_exit(shell);
-	}
-	close(fd);
+	if (redirect(rcmd, shell) != SUCCESS)
+		exit(SYSTEM_ERROR);
 	runcmd(rcmd->cmd, shell);
+}
+
+static pid_t	runpipe(t_cmd *cmd, t_shell *shell, int input_fd, int output_fd, int close_fd)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+	{
+		err_ret("fork");
+		exit(SYSTEM_ERROR);
+	}
+	else if (pid == 0)
+	{
+		dup2(close_fd, output_fd);
+		close(close_fd);
+		close(input_fd);
+		runcmd(cmd, shell);
+	}
+	return (pid);
 }
 
 static void	runcmd_pipe(t_pipecmd *pcmd, t_shell *shell)
 {
-	(void)shell;
-	runcmd(pcmd->left, shell);
-	runcmd(pcmd->right, shell);
+	int		fd[2];
+	pid_t	left_pid;
+	pid_t	right_pid;
+
+	if (pipe(fd) == -1)
+	{
+		err_ret("pipe");
+		exit(SYSTEM_ERROR);
+	}
+	left_pid = runpipe(pcmd->left, shell, fd[0], STDOUT_FILENO, fd[1]);
+	right_pid = runpipe(pcmd->right, shell, fd[1], STDIN_FILENO, fd[0]);
+	close(fd[0]);
+	close(fd[1]);
+	wait_runcmd(left_pid);
+	exit(wait_runcmd(right_pid));
 }
 
 void	runcmd(t_cmd *cmd, t_shell *shell)

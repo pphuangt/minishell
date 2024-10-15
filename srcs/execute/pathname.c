@@ -32,7 +32,7 @@ char	*search_pathname(char *name, size_t len)
 	char	*pathname;
 	size_t	path_len;
 
-	path = ft_split(get_variable_environ("PATH", 4), ':');
+	path = ft_split(get_variable_environ(NULL, "PATH", 4), ':');
 	if (!path)
 		return (NULL);
 	curr = path;

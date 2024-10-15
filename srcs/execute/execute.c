@@ -29,7 +29,7 @@ static void	print_exit_msg(int wstatus, int signum)
 		ft_putendl_fd(exit_msg, STDERR_FILENO);
 }
 
-static int	wait_runcmd(pid_t pid)
+int	wait_runcmd(pid_t pid)
 {
 	int	ret;
 	int	wstatus;
@@ -80,26 +80,24 @@ static int	is_builtins(char *cmd_name)
 void	execute(t_shell *shell)
 {
 	char	*cmd_name;
-	pid_t	child_pid;
+	pid_t	pid;
 
 	if (!shell->cmd || expansion(shell) != SUCCESS)
 		return ;
-	if (shell->cmd->type == PIPE)
-		runcmd(shell->cmd, shell);
+	cmd_name = get_cmd_name(shell->cmd);
+	if (shell->cmd->type != PIPE && is_builtins(cmd_name))
+		runbuiltins(shell);
 	else
 	{
-		cmd_name = get_cmd_name(shell->cmd);
-		if (is_builtins(cmd_name))
-			runbuiltins(shell);
-		else
+		pid = fork();
+		if (pid == -1)
 		{
-			child_pid = fork();
-			if (child_pid == -1)
-				err_ret("fork");
-			else if (child_pid == 0)
-				runcmd(shell->cmd, shell);
-			else
-				shell->exit_status = wait_runcmd(child_pid);
+			err_ret("fork");
+			shell->exit_status = SYSTEM_ERROR;
 		}
+		else if (pid == 0)
+			runcmd(shell->cmd, shell);
+		else
+			shell->exit_status = wait_runcmd(pid);
 	}
 }
