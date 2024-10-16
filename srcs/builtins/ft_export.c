@@ -34,8 +34,23 @@ int	add_variable_environ(t_environ *environ, char *var)
 
 int	ft_export(char **argv, int argc, t_environ *environ)
 {
+	int	i;
+
+	i = 1;
 	(void)argv;
 	(void)argc;
 	(void)environ;
-	return(SUCCESS);
+	if (argc > 1)
+	{
+		while (argv[i] != NULL)
+		{
+			add_variable_environ(environ, argv[i]);
+			i++;
+		}
+	}
+	else
+	{
+		print_env
+	}
+	return (SUCCESS);
 }
