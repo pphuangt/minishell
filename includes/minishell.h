@@ -31,7 +31,7 @@
 # define QUOTE "\'\""
 # define MAXLINE 4096
 # define S_PROMPT "\033[1;32mminishell$ \033[0m"
-# define MAXARGS 10
+# define MAXARGS 100
 
 /*    exit_status    */
 # define SUCCESS 0
@@ -40,6 +40,7 @@
 # define CMD_NOT_EXEC 126
 # define CMD_NOT_FOUND 127
 # define TERM_BY_SIG 128
+# define UNEXPECT_EXIT 128
 
 typedef enum s_type
 {
@@ -92,10 +93,17 @@ typedef struct s_environ
 
 typedef struct s_shell
 {
+	t_cmd		*cmd;
+	char		*input;
 	t_environ	environ;
 	size_t		count_line;
 	int			exit_status;
 }	t_shell;
+
+/*    common    */
+void	init_shell(t_shell *shell);
+char	*rl_gets(t_shell *shell, char **s, char *prompt, int history);
+void	reset_shell(t_shell *shell);
 
 /*    constructure    */
 t_cmd	*execcmd(void);
@@ -103,7 +111,7 @@ t_cmd	*pipecmd(t_cmd *left, t_cmd *right);
 t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd);
 
 /*    parsing    */
-t_cmd	*parsecmd(char *s);
+t_shell	*parsecmd(t_shell *shell, char *s);
 int		peek(char **ps, char *es, char *tokens);
 int		gettoken(char **ps, char *es, char **q, char **eq);
 void	set_fd_mode(int tok, int *fd, int *mode);
@@ -111,31 +119,53 @@ int		valid_redir(char **ps, char *es, int *fd);
 t_cmd	*err_parse_exec(t_cmd *cmd, char *msg, char *tok);
 
 /*    expandation    */
-int		expansion(t_shell *shell, t_cmd *cmd);
-char	*expand_env_var(char *str);
-int		heredoc(t_shell *shell, t_redircmd *rcmd);
-char	*strip_matching_quotes(char *s);
+int		expansion(t_shell *shell);
+char	*expand_env_var(char *str, int exit_status, int heredoc);
+int		cal_ret_size(char *str, int exit_status, int heredoc);
+int		get_exit_status(char *dst, int exit_status);
+int		is_invalid_filename(char *str);
+void	handle_quote(char *qs, char c);
+int		heredoc(t_redircmd *rcmd, t_shell *shell);
+char	*strip_quotes(char *s);
+int		set_argument(t_execcmd *ecmd, char *str);
+void	clone_argument(char **dst, char **src);
 
-/*    runcmd    */
-void	runcmd(t_cmd *cmd);
+/*    execute    */
+void	execute(t_shell *shell);
+void	runbuiltins(t_shell *shell);
+int		save_std_fd(int *std_in, int *std_out, int *std_err);
+int		restore_std_fd(int *std_in, int *std_out, int *std_err);
+void	runcmd(t_cmd *cmd, t_shell *shell);
+int		redirect(t_redircmd *rcmd, t_shell *shell);
+int		wait_runcmd(pid_t pid);
 char	*search_pathname(char *name, size_t len);
 
 /*    environ    */
-int		init_environ(t_shell *shell);
-char	*get_variable_environ(char *str, size_t size);
-int		add_variable_environ(t_shell *shell, char *var);
-int		remove_vairable_environ(t_shell *shell, char *name, size_t size);
-void	free_envp(t_shell *shell);
+char	*get_variable_environ(char **environ, char *str, size_t size);
+int		init_environ(t_environ *environ);
+void	free_environ(t_environ *environ);
+
+/*    builtins    */
+int		ft_echo(char **argv, int argc);
+int		ft_cd(char **argv, int argc, t_environ *environ);
+int		ft_pwd(char **argv, int argc, t_environ *environ);
+int		ft_export(char **argv, int argc, t_environ *environ);
+int		ft_unset(char **argv, int argc, t_environ *environ);
+int		ft_env(char **argv, int argc, t_environ *environ);
+int		ft_exit(t_shell *shell);
 
 /*    signals    */
 int		init_signal(t_shell *shell);
 
 /*    utils    */
+void	printcmd(t_cmd *cmd);
 void	freecmd(t_cmd *cmd);
 t_cmd	*reverse_redircmd(t_cmd *cmd);
 
 /*    err    */
 void	err_ret(const char *fmt);
+void	err_tok(char *stok, char *etok);
+void	err_filename(char *filename);
 void	err_sys(const char *fmt);
 void	err_msg(int error, const char *fmt);
 void	err_exit(int error, const char *fmt);

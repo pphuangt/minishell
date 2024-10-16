@@ -12,25 +12,17 @@
 
 #include "minishell.h"
 
-void	free_envp(t_shell *shell)
+char	*get_variable_environ(char **environ, char *str, size_t size)
 {
-	char	**envp;
-
-	envp = shell->environ.p;
-	while (*envp)
-	{
-		free(*envp);
-		envp++;
-	}
-	free(shell->environ.p);
-}
-
-char	*get_variable_environ(char *str, size_t size)
-{
-	extern char	**environ;
+	static char	**s_environ = NULL;
 	char		**env;
 
-	env = environ;
+	if (environ != NULL)
+	{
+		s_environ = environ;
+		return (NULL);
+	}
+	env = s_environ;
 	if (!str || size == 0)
 		return (NULL);
 	while (*env != NULL)
@@ -42,57 +34,7 @@ char	*get_variable_environ(char *str, size_t size)
 	return (NULL);
 }
 
-int	add_variable_environ(t_shell *shell, char *var)
-{
-	char		**n_environ;
-	t_environ	*environ;
-
-	environ = &shell->environ;
-	if (environ->len == environ->size)
-	{
-		environ->size = environ->size * 2;
-		n_environ = malloc(sizeof(char *) * (environ->size + 1));
-		if (!n_environ)
-			return (err_ret("malloc"), -1);
-		ft_memcpy(n_environ, environ->p, sizeof(char *) * environ->len);
-		free(environ->p);
-		environ->p = n_environ;
-	}
-	var = ft_strdup(var);
-	if (!var)
-		return (err_ret("malloc"), -1);
-	environ->p[environ->len++] = var;
-	environ->p[environ->len] = NULL;
-	return (0);
-}
-
-int	remove_variable_environ(t_shell *shell, char *name, size_t size)
-{
-	t_environ	*environ;
-	char		**p;
-
-	environ = &shell->environ;
-	p = environ->p;
-	while (*p)
-	{
-		if (ft_strncmp(*p, name, size) == 0 && *(*p + size) == '=')
-		{
-			free(*p);
-			while (*(p + 1))
-			{
-				*p = *(p + 1);
-				p++;
-			}
-			*p = NULL;
-			environ->len--;
-			break ;
-		}
-		p++;
-	}
-	return (0);
-}
-
-int	init_environ(t_shell *shell)
+int	init_environ(t_environ *shell_environ)
 {
 	extern char	**environ;
 	size_t		size;
@@ -102,21 +44,21 @@ int	init_environ(t_shell *shell)
 	envp = environ;
 	while (*envp && ++size)
 		envp++;
-	shell->environ.size = size * 2;
-	shell->environ.p = malloc(sizeof(char *) * (shell->environ.size + 1));
-	if (!shell->environ.p)
+	shell_environ->size = size * 2;
+	shell_environ->p = malloc(sizeof(char *) * (shell_environ->size + 1));
+	if (!shell_environ->p)
 		return (err_ret("malloc"), -1);
 	envp = environ;
 	size = 0;
 	while (*envp)
 	{
-		shell->environ.p[size] = ft_strdup(*envp);
-		if (!shell->environ.p[size++])
-			return (free_envp(shell), err_ret("malloc"), -1);
+		shell_environ->p[size] = ft_strdup(*envp);
+		if (!shell_environ->p[size++])
+			return (free_environ(shell_environ), err_ret("malloc"), -1);
 		envp++;
 	}
-	shell->environ.len = size;
-	shell->environ.p[shell->environ.len] = NULL;
-	environ = shell->environ.p;
+	shell_environ->len = size;
+	shell_environ->p[shell_environ->len] = NULL;
+	get_variable_environ(shell_environ->p, 0, 0);
 	return (0);
 }

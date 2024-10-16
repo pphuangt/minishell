@@ -19,18 +19,12 @@ static int	set_exec_argv(char **ps, char *es, t_execcmd *ecmd, int *argc)
 	if (*ps < es && !peek(ps, es, "|"))
 	{
 		if (gettoken(ps, es, &string.s, &string.e) < 0)
-		{
-			err_msg(0, "no closing quote");
-			return (-1);
-		}
+			return (err_msg(0, "no closing quote"), -1);
 		ecmd->argv[*argc] = string.s;
 		ecmd->eargv[*argc] = string.e;
 		*argc = *argc + 1;
 		if (*argc == MAXARGS + 1)
-		{
-			err_msg(0, "to many args");
-			return (-1);
-		}
+			return (err_msg(0, "to many args"), -1);
 	}
 	return (0);
 }
@@ -48,13 +42,13 @@ static t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es)
 		tok = gettoken(ps, es, 0, 0);
 		mode = gettoken(ps, es, &file.s, &file.e);
 		if (mode == -1)
-			return (err_parse_exec(cmd, "no closing quote", NULL));
+			return (freecmd(cmd), err_ret("no closing quote"), NULL);
 		else if (mode != 'a')
-			return (err_parse_exec(cmd, NULL, file.s));
+			return (freecmd(cmd), err_tok(file.s, file.e), NULL);
 		set_fd_mode(tok, &fd, &mode);
 		ncmd = redircmd(cmd, &file, mode, fd);
 		if (!ncmd)
-			return (err_parse_exec(cmd, NULL, NULL));
+			return (NULL);
 		cmd = ncmd;
 		while (*ps < es && ft_strchr(WHITESPACE, **ps))
 			(*ps)++;
@@ -81,12 +75,12 @@ static t_cmd	*parseexec(char **ps, char *es)
 			return (NULL);
 		ret = cmd;
 		if (set_exec_argv(ps, es, ecmd, &argc) < 0)
-			return (err_parse_exec(ret, NULL, NULL));
+			return (freecmd(ret), NULL);
 	}
 	ecmd->argv[argc] = 0;
 	ecmd->eargv[argc] = 0;
-	if (argc == 0 && (peek(ps, es, "|") || *ps == es))
-		return (err_parse_exec(ret, NULL, "|"));
+	if (ret->type == EXEC && argc == 0)
+		return (freecmd(ret), err_tok("|", 0), NULL);
 	return (reverse_redircmd(ret));
 }
 
@@ -108,30 +102,23 @@ static t_cmd	*parsepipe(char **ps, char *es)
 			return (NULL);
 		}
 		cmd = pipecmd(cmd, pcmd);
-		if (!cmd)
-		{
-			freecmd(cmd);
-			freecmd(pcmd);
-			return (NULL);
-		}
 	}
 	return (cmd);
 }
 
-t_cmd	*parsecmd(t_shell *shell, char	*s)
+t_shell	*parsecmd(t_shell *shell, char	*s)
 {
-	t_cmd	*cmd;
 	char	*es;
 
 	es = s + ft_strlen(s);
 	peek(&s, es, "");
-	if (s == es)
-		return (NULL);
-	cmd = parsepipe(&s, es);
-	if (!cmd)
+	if (s != es)
 	{
-		shell->exit_status = SYNTAX_ERROR;
-		return (NULL);
+		shell->cmd = parsepipe(&s, es);
+		if (!shell->cmd)
+			shell->exit_status = SYNTAX_ERROR;
 	}
-	return (cmd);
+	else
+		shell->exit_status = SUCCESS;
+	return (shell);
 }

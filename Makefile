@@ -9,9 +9,11 @@ LIBS = $(LIBFT)/libft.a -lreadline
 SRCS = $(addprefix srcs/, main.c \
 	   $(addprefix signals/, signals.c) \
 	   $(addprefix environ/, environ.c) \
-	   $(addprefix parse/, constructure.c parse.c parse_utils.c expansion.c expand_env_var.c heredoc.c gettoken.c) \
-	   $(addprefix run/, runcmd.c pathname.c) \
-	   $(addprefix common/, free.c err.c utils.c))
+	   $(addprefix parse/, constructure.c parse.c parse_utils.c gettoken.c) \
+	   $(addprefix expansion/, expansion.c expansion_utils.c expand_env_var.c expand_env_var_utils.c expand_exit_status.c strip_quote.c symbols.c) \
+	   $(addprefix execute/, execute.c runbuiltins.c runcmd.c redirect.c heredoc.c file_descriptor.c pathname.c) \
+	   $(addprefix builtins/, builtins.c) \
+	   $(addprefix common/, free.c err.c err_message.c utils.c))
 OBJS = $(SRCS:.c=.o)
 
 all : $(NAME)

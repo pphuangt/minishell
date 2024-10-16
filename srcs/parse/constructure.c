@@ -35,6 +35,7 @@ t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd)
 	if (!redircmd)
 	{
 		err_ret("redircmd malloc");
+		freecmd(subcmd);
 		return (NULL);
 	}
 	redircmd->type = REDIR;
@@ -54,6 +55,8 @@ t_cmd	*pipecmd(t_cmd *left, t_cmd *right)
 	if (!pipecmd)
 	{
 		err_ret("pipecmd malloc");
+		freecmd(left);
+		freecmd(right);
 		return (NULL);
 	}
 	pipecmd->type = PIPE;
