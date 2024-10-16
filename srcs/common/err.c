@@ -34,10 +34,10 @@ void	err_ret(const char *fmt)
 	err_doit(errno, fmt);
 }
 
-void	err_sys(const char *fmt)
+void	err_sys(const char *fmt, int exit_status)
 {
 	err_doit(errno, fmt);
-	exit(1);
+	exit(exit_status);
 }
 
 void	err_msg(int error, const char *fmt)
@@ -45,8 +45,8 @@ void	err_msg(int error, const char *fmt)
 	err_doit(error, fmt);
 }
 
-void	err_exit(int error, const char *fmt)
+void	err_exit(int error, const char *fmt, int exit_status)
 {
 	err_doit(error, fmt);
-	exit(1);
+	exit(exit_status);
 }

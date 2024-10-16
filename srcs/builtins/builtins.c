@@ -1,12 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/16 16:14:24 by pphuangt          #+#    #+#             */
+/*   Updated: 2024/10/16 16:14:26 by pphuangt         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int	ft_echo(char **argv, int argc)
-{
-	(void)argv;
-	(void)argc;
-	printf("run echo\n");
-	return (0);
-}
+#include "minishell.h"
 
 int	ft_cd(char **argv, int argc, t_environ *environ)
 {
@@ -51,15 +55,4 @@ int	ft_env(char **argv, int argc, t_environ *environ)
 	(void)environ;
 	printf("run env\n");
 	return (0);
-}
-
-int	ft_exit(t_shell *shell)
-{
-	freecmd(shell->cmd);
-	shell->cmd = NULL;
-	free(shell->input);
-	shell->input = NULL;
-	free_environ(&shell->environ);
-	printf("exit\n");
-	exit(shell->exit_status);
 }
