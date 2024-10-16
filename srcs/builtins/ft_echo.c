@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
+
 int	ft_isflag(char *str)
 {
 	int	i;
@@ -17,7 +19,7 @@ int	ft_isflag(char *str)
 	i = 1;
 	if (str[0] == '-')
 	{
-		while (str[i] && str[i] == n)
+		while (str[i] && str[i] == 'n')
 			i++;
 		if (i == 2)
 			return (1);

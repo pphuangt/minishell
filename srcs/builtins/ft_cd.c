@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
+
 void	ft_update_pwd(char *new_pwd, t_environ *environ)
 {
 	char	*pwd;
@@ -22,13 +24,13 @@ void	ft_update_pwd(char *new_pwd, t_environ *environ)
 int	ft_change_dir(char *path, t_environ *environ)
 {
 	char	*pwd;
-	char	*buff;
+	char	buff[MAXLINE];
 
 	if (!chdir(path))
 	{
 		return (1);//dir error
 	}
-	pwd = getcwd(buff, PATH_MAX);
+	pwd = getcwd(buff, MAXLINE);
 	ft_update_pwd(pwd, environ);
 	return (0);
 }

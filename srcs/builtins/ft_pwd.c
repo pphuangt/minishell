@@ -1,30 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_env.c                                           :+:      :+:    :+:   */
+/*   ft_pwd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: paradari <paradari@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/04 16:26:01 by paradari          #+#    #+#             */
-/*   Updated: 2024/10/12 10:03:10 by paradari         ###   ########.fr       */
+/*   Created: 2024/10/04 16:26:47 by paradari          #+#    #+#             */
+/*   Updated: 2024/10/12 10:09:23 by paradari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_env(char **argv, t_environ *environ)
-{
-	char	**env;
-	int		i;
+#include "minishell.h"
 
-	i = 0;
-	// if (argv && argv[1])
-	// 	return (); //too many arg
-	env = environ->p;
-	if (!env)
-		return (1);
-	while (env[i])
-	{
-		ft_putendl_fd(env[i], STDOUT_FILENO);
-		i++;
-	}
+int	ft_pwd(char **argv, int argc, t_environ *environ)
+{
+	char	*wd;
+	char	buff[MAXLINE];
+
+	(void)argv;
+	(void)argc;
+	(void)environ;
+	wd = getcwd(buff, MAXLINE);
+	if (wd)
+		ft_putendl_fd(wd, STDOUT_FILENO);
 	return (0);
 }

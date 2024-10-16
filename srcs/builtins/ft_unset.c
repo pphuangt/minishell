@@ -10,16 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
+
 int	remove_variable_environ(t_environ *environ, char *name, size_t size)
 {
 	char	**p;
-	char	**tmp;
-	int		i;
-	int		len;
-
-	len = environ->len;
+		
 	p = environ->p;
-	**tmp = malloc(sizeof(char *) * (environ->size));
 	while (*p)
 	{
 		if (ft_strncmp(*p, name, size) == 0 && *(*p + size) == '=')
@@ -27,28 +24,7 @@ int	remove_variable_environ(t_environ *environ, char *name, size_t size)
 			p++;
 			environ->len--;
 		}
-		*tmp = ft_strdup(*p);
-		tmp++;
 		p++;
-	}
-	if (len > environ->len)
-	{
-		while (*p)
-		{
-			free(*p);
-			p++;
-		}
-		free(p);
-		p = tmp;
-	}
-	else
-	{
-		while (*tmp)
-		{
-			free(*tmp);
-			tmp++;
-		}
-		free(tmp);
 	}
 	return (0);
 }
