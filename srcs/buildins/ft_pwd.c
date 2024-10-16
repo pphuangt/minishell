@@ -14,8 +14,7 @@ int	ft_pwd(void)
 {
 	char	*wd;
 
-	wd = getcwd(wd, 4242);
-	//can it error?
+	wd = getcwd(wd, PATH_MAX);
 	if (wd)
 		ft_putendl_fd(wd, STDOUT_FILENO);
 	return (0);

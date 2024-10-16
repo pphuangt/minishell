@@ -38,18 +38,18 @@ void	ft_print_argv(char **argv, int i, int flag)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 }
 
-int	ft_echo(char **argv)
+int	ft_echo(char **argv, int argc)
 {
 	int	i;
 	int	flag;
 
 	i = 1;
 	flag = 0;
-	//check_n_skip_flag
-	while (argv[i] && ft_isflag(argv[i]))
+	while (argv[i] && ft_isflag(argv[i]) && argc > 0)
 	{
 		flag = 1;
 		i++;
+		argc--;
 	}
 	ft_print_argv(argv, i, flag);
 	return (0);

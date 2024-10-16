@@ -17,7 +17,7 @@ int	ft_env(char **argv, t_environ *environ)
 
 	i = 0;
 	if (argv && argv[1])
-		return (); //too many arg
+		return (127); //too many arg
 	env = environ->p;
 	if (!env)
 		return (1);//not sure exit code
