@@ -30,53 +30,50 @@ static void	runcmd_redir(t_redircmd *rcmd, t_shell *shell)
 	runcmd(rcmd->cmd, shell);
 }
 
-/*
-static pid_t	runpipe(t_cmd *cmd, t_shell *shell, int input_fd, int output_fd, int close_fd)
+static void	runcmd_pipe_right(t_cmd *cmd, t_shell *shell,
+	int fd[2], pid_t left_pid)
 {
-	pid_t	pid;
+	pid_t	right_pid;
 
-	pid = fork();
-	if (pid == -1)
-		err_exit(errno, "fork", SYSTEM_ERROR);
-	else if (pid == 0)
-	{
-		dup2(close_fd, output_fd);
-		close(close_fd);
-		close(input_fd);
-		runcmd(cmd, shell);
-	}
-	return (pid);
-}
-*/
-
-static void	runcmd_pipe(t_pipecmd *pcmd, t_shell *shell)
-{
-	int		fd[2];
-	pid_t	pid;
-
-	if (pipe(fd) == -1)
+	right_pid = fork();
+	if (right_pid == -1)
 		err_exit(errno, "pipe", SYSTEM_ERROR);
-	pid = fork();
-	if (pid == -1)
-		err_exit(errno, "fork", SYSTEM_ERROR);
-	else if (pid == 0)
+	else if (right_pid == 0)
 	{
-		dup2(fd[0], STDOUT_FILENO);
+		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		close(fd[1]);
 		runcmd(cmd, shell);
 	}
 	else
-		wait_runcmd();
+	{
+		close(fd[0]);
+		close(fd[1]);
+		wait_runcmd(left_pid);
+		exit(wait_runcmd(right_pid));
+	}
 }
-	/*
-	left_pid = runpipe(pcmd->left, shell, fd[0], STDOUT_FILENO, fd[1]);
-	right_pid = runpipe(pcmd->right, shell, fd[1], STDIN_FILENO, fd[0]);
-	close(fd[0]);
-	close(fd[1]);
-	wait_runcmd(left_pid);
-	wait_runcmd(right_pid);
-	*/
+
+static void	runcmd_pipe_left(t_pipecmd *pcmd, t_shell *shell)
+{
+	int		fd[2];
+	pid_t	left_pid;
+
+	if (pipe(fd) == -1)
+		err_exit(errno, "pipe", SYSTEM_ERROR);
+	left_pid = fork();
+	if (left_pid == -1)
+		err_exit(errno, "fork", SYSTEM_ERROR);
+	else if (left_pid == 0)
+	{
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		runcmd(pcmd->left, shell);
+	}
+	else
+		runcmd_pipe_right(pcmd->right, shell, fd, left_pid);
+}
 
 void	runcmd(t_cmd *cmd, t_shell *shell)
 {
@@ -85,6 +82,6 @@ void	runcmd(t_cmd *cmd, t_shell *shell)
 	else if (cmd->type == REDIR)
 		runcmd_redir((t_redircmd *)cmd, shell);
 	else if (cmd->type == PIPE)
-		runcmd_pipe((t_pipecmd *)cmd, shell);
+		runcmd_pipe_left((t_pipecmd *)cmd, shell);
 	exit(SUCCESS);
 }
