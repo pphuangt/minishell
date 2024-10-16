@@ -16,11 +16,11 @@ int	ft_env(char **argv, t_environ *environ)
 	int		i;
 
 	i = 0;
-	if (argv && argv[1])
-		return (127); //too many arg
+	// if (argv && argv[1])
+	// 	return (); //too many arg
 	env = environ->p;
 	if (!env)
-		return (1);//not sure exit code
+		return (1);
 	while (env[i])
 	{
 		ft_putendl_fd(env[i], STDOUT_FILENO);

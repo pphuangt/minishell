@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_cd_uf.c                                         :+:      :+:    :+:   */
+/*   ft_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: paradari <paradari@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,13 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-void	ft_change_pwd(char *new_pwd, t_environ *environ)
+void	ft_update_pwd(char *new_pwd, t_environ *environ)
 {
 	char	*pwd;
 
 	pwd = get_variable_environ(environ->p, "PWD", 3);
-	//free_old_pwd
-	//...
+	free(pwd);
 	pwd = ft_strdup(new_pwd);
 }
 
@@ -30,11 +29,7 @@ int	ft_change_dir(char *path, t_environ *environ)
 		return (1);//dir error
 	}
 	pwd = getcwd(buff, PATH_MAX);
-	if (!pwd)
-	{
-		//get_pwd_from_struct_and_join_new_path
-	}
-	ft_change_pwd(pwd, environ);
+	ft_update_pwd(pwd, environ);
 	return (0);
 }
 
