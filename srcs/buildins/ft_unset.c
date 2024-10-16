@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_unset_uf.c                                      :+:      :+:    :+:   */
+/*   ft_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: paradari <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,49 +10,58 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-void	ft_unset_node(char	**node)
-{
-
-}
-
 int	remove_variable_environ(t_environ *environ, char *name, size_t size)
 {
 	char	**p;
 	char	**tmp;
+	int		i;
+	int		len;
 
+	len = environ->len;
 	p = environ->p;
-	**tmp = malloc(sizeof(char *) * (environ->len));
+	**tmp = malloc(sizeof(char *) * (environ->size));
 	while (*p)
 	{
 		if (ft_strncmp(*p, name, size) == 0 && *(*p + size) == '=')
 		{
-			free(*p)
-			while (*(p + 1))
-			{
-				*p = *(p + 1)
-				p++;
-			}
-			*p = NULL;
+			p++;
 			environ->len--;
-			break;
 		}
+		*tmp = ft_strdup(*p);
+		tmp++;
 		p++;
+	}
+	if (len > environ->len)
+	{
+		while (*p)
+		{
+			free(*p);
+			p++;
+		}
+		free(p);
+		p = tmp;
+	}
+	else
+	{
+		while (*tmp)
+		{
+			free(*tmp);
+			tmp++;
+		}
+		free(tmp);
 	}
 	return (0);
 }
 
 
-int	ft_unset(char **argv)
+int	ft_unset(char **argv, int argc, t_environ *environ)
 {
-	extern char	**environ;
-	char		**node_to_unset;
-	int			i;
+	int	i;
 
-	i = 0;
-	while (argv[i])
+	i = 1;
+	while (argv[i] != NULL && argc > 1)
 	{
-		node_to_unset = get_variable_environ(argv[i], ft_strlen(argv[i]));
-		ft_unset_node(node_to_unset);
+		remove_variable_environ(environ, argv[i], ft_strlen(argv[i]));
 		i++;
 	}
 	return (0);
