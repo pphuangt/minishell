@@ -17,10 +17,24 @@ static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell)
 	char	*pathname;
 
 	if (!ecmd->argv[0])
-		exit(SUCCESS);
-	pathname = ecmd->argv[0];
+		clean_and_exit(shell, NULL, SUCCESS);
+	pathname = ft_strdup(ecmd->argv[0]);
+	if (!pathname)
+		clean_and_exit(shell, NULL, SYSTEM_ERROR);
+	if (is_builtins(pathname))
+	{
+		runbuiltins(shell);
+		clean_and_exit(shell, pathname, shell->exit_status);
+	}
+	else if (!ft_strchr(pathname, '/'))
+	{
+		free(pathname);
+		pathname = search_pathname(ecmd->argv[0], ft_strlen(ecmd->argv[0]));
+	}
+	if (!is_pathname_exist(pathname, ecmd->argv[0]))
+		clean_and_exit(shell, pathname, CMD_NOT_FOUND);
 	execve(pathname, ecmd->argv, shell->environ.p);
-	err_exit(errno, pathname, CMD_NOT_EXEC);
+	on_execve_error(shell, pathname);
 }
 
 static void	runcmd_redir(t_redircmd *rcmd, t_shell *shell)
@@ -31,7 +45,7 @@ static void	runcmd_redir(t_redircmd *rcmd, t_shell *shell)
 }
 
 static void	runcmd_pipe_right(t_cmd *cmd, t_shell *shell,
-	int fd[2], pid_t left_pid)
+		int fd[2], pid_t left_pid)
 {
 	pid_t	right_pid;
 

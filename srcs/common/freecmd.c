@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   freecmd.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/13 15:36:54 by pphuangt          #+#    #+#             */
-/*   Updated: 2024/09/13 15:37:02 by pphuangt         ###   ########.fr       */
+/*   Created: 2024/10/16 21:37:51 by pphuangt          #+#    #+#             */
+/*   Updated: 2024/10/16 21:37:59 by pphuangt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,15 +55,4 @@ void	freecmd(t_cmd *cmd)
 		freeredir(cmd);
 	else if (cmd->type == PIPE)
 		freepipe(cmd);
-}
-
-void	free_environ(t_environ *environ)
-{
-	char	**envp;
-
-	envp = environ->p;
-	while (*envp)
-		free(*envp++);
-	free(environ->p);
-	environ->p = NULL;
 }

@@ -23,6 +23,7 @@
 # include <readline/history.h>
 # include <sys/ioctl.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
 # include "libft.h"
 
 # define METACHARACTER " \t\r\n\v|<>"
@@ -103,7 +104,7 @@ typedef struct s_shell
 /*    common    */
 void	init_shell(t_shell *shell);
 char	*rl_gets(t_shell *shell, char **s, char *prompt, int history);
-void	reset_shell(t_shell *shell);
+void	reset_prompt(t_shell *shell);
 
 /*    constructure    */
 t_cmd	*execcmd(void);
@@ -138,7 +139,12 @@ int		restore_std_fd(int *std_in, int *std_out, int *std_err);
 void	runcmd(t_cmd *cmd, t_shell *shell);
 int		redirect(t_redircmd *rcmd, t_shell *shell);
 int		wait_runcmd(pid_t pid);
+int		is_builtins(char *cmd_name);
 char	*search_pathname(char *name, size_t len);
+int		is_dir(char *dir);
+int		is_pathname_exist(char *pathname, char *cmd_name);
+void	on_execve_error(t_shell *shell, char *pathname);
+void	clean_and_exit(t_shell *shell, char *pathname, int exit_status);
 
 /*    environ    */
 char	*get_variable_environ(char **environ, char *str, size_t size);
@@ -158,7 +164,6 @@ int		ft_exit(t_shell *shell);
 int		init_signal(t_shell *shell);
 
 /*    utils    */
-void	printcmd(t_cmd *cmd);
 void	freecmd(t_cmd *cmd);
 t_cmd	*reverse_redircmd(t_cmd *cmd);
 
