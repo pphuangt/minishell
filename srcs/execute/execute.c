@@ -59,7 +59,7 @@ static char	*get_cmd_name(t_cmd *cmd)
 	return (NULL);
 }
 
-static int	is_builtins(char *cmd_name)
+int	is_builtins(char *cmd_name)
 {
 	size_t	cmd_name_len;
 

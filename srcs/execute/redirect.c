@@ -23,7 +23,11 @@ int	redirect(t_redircmd *rcmd, t_shell *shell)
 	}
 	else
 	{
-		fd = open(rcmd->file.s, rcmd->mode);
+		if (rcmd->mode == O_RDONLY)
+			fd = open(rcmd->file.s, rcmd->mode);
+		else
+			fd = open(rcmd->file.s, rcmd->mode,
+					(S_IRUSR + S_IWUSR) | S_IRGRP | S_IROTH);
 		if (fd < 0)
 			return (err_ret("open"), SYSTEM_ERROR);
 		if (dup2(fd, rcmd->fd) < 0)

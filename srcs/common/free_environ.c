@@ -1,24 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   free_environ.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: paradari <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/16 19:04:35 by paradari          #+#    #+#             */
-/*   Updated: 2024/10/16 19:04:38 by paradari         ###   ########.fr       */
+/*   Created: 2024/10/16 21:38:53 by pphuangt          #+#    #+#             */
+/*   Updated: 2024/10/16 21:39:02 by pphuangt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	ft_exit(t_shell *shell)
+void	free_environ(t_environ *environ)
 {
-	freecmd(shell->cmd);
-	shell->cmd = NULL;
-	free(shell->input);
-	shell->input = NULL;
-	free_environ(&shell->environ);
-	printf("exit\n");
-	exit(shell->exit_status);
+	char	**envp;
+
+	envp = environ->p;
+	while (*envp)
+		free(*envp++);
+	free(environ->p);
+	environ->p = NULL;
 }

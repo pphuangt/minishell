@@ -16,10 +16,25 @@ static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell)
 {
 	char	*pathname;
 
-	pathname = ecmd->argv[0];
-	if (!ft_strchr(pathname, '/'))
+	if (!ecmd->argv[0])
+		clean_and_exit(shell, NULL, SUCCESS);
+	pathname = ft_strdup(ecmd->argv[0]);
+	if (!pathname)
+		clean_and_exit(shell, NULL, SYSTEM_ERROR);
+	if (is_builtins(pathname))
+	{
+		runbuiltins(shell);
+		clean_and_exit(shell, pathname, shell->exit_status);
+	}
+	else if (!ft_strchr(pathname, '/'))
+	{
+		free(pathname);
 		pathname = search_pathname(ecmd->argv[0], ft_strlen(ecmd->argv[0]));
+	}
+	if (!is_pathname_exist(pathname, ecmd->argv[0]))
+		clean_and_exit(shell, pathname, CMD_NOT_FOUND);
 	execve(pathname, ecmd->argv, shell->environ.p);
+	on_execve_error(shell, pathname);
 }
 
 static void	runcmd_redir(t_redircmd *rcmd, t_shell *shell)
@@ -29,43 +44,49 @@ static void	runcmd_redir(t_redircmd *rcmd, t_shell *shell)
 	runcmd(rcmd->cmd, shell);
 }
 
-static pid_t	runpipe(t_cmd *cmd, t_shell *shell, int input_fd, int output_fd, int close_fd)
+static void	runcmd_pipe_right(t_cmd *cmd, t_shell *shell,
+		int fd[2], pid_t left_pid)
 {
-	pid_t	pid;
+	pid_t	right_pid;
 
-	pid = fork();
-	if (pid == -1)
+	right_pid = fork();
+	if (right_pid == -1)
+		err_exit(errno, "pipe", SYSTEM_ERROR);
+	else if (right_pid == 0)
 	{
-		err_ret("fork");
-		exit(SYSTEM_ERROR);
-	}
-	else if (pid == 0)
-	{
-		dup2(close_fd, output_fd);
-		close(close_fd);
-		close(input_fd);
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+		close(fd[1]);
 		runcmd(cmd, shell);
 	}
-	return (pid);
+	else
+	{
+		close(fd[0]);
+		close(fd[1]);
+		wait_runcmd(left_pid);
+		exit(wait_runcmd(right_pid));
+	}
 }
 
-static void	runcmd_pipe(t_pipecmd *pcmd, t_shell *shell)
+static void	runcmd_pipe_left(t_pipecmd *pcmd, t_shell *shell)
 {
 	int		fd[2];
 	pid_t	left_pid;
-	pid_t	right_pid;
 
 	if (pipe(fd) == -1)
+		err_exit(errno, "pipe", SYSTEM_ERROR);
+	left_pid = fork();
+	if (left_pid == -1)
+		err_exit(errno, "fork", SYSTEM_ERROR);
+	else if (left_pid == 0)
 	{
-		err_ret("pipe");
-		exit(SYSTEM_ERROR);
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		runcmd(pcmd->left, shell);
 	}
-	left_pid = runpipe(pcmd->left, shell, fd[0], STDOUT_FILENO, fd[1]);
-	right_pid = runpipe(pcmd->right, shell, fd[1], STDIN_FILENO, fd[0]);
-	close(fd[0]);
-	close(fd[1]);
-	wait_runcmd(left_pid);
-	exit(wait_runcmd(right_pid));
+	else
+		runcmd_pipe_right(pcmd->right, shell, fd, left_pid);
 }
 
 void	runcmd(t_cmd *cmd, t_shell *shell)
@@ -75,5 +96,6 @@ void	runcmd(t_cmd *cmd, t_shell *shell)
 	else if (cmd->type == REDIR)
 		runcmd_redir((t_redircmd *)cmd, shell);
 	else if (cmd->type == PIPE)
-		runcmd_pipe((t_pipecmd *)cmd, shell);
+		runcmd_pipe_left((t_pipecmd *)cmd, shell);
+	exit(SUCCESS);
 }

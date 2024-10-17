@@ -24,9 +24,9 @@ void	set_fd_mode(int tok, int *fd, int *mode)
 	if (tok == '<')
 		*mode = O_RDONLY;
 	else if (tok == '>')
-		*mode = O_WRONLY | O_CREAT | O_TRUNC;
+		*mode = O_CREAT | O_RDWR | O_TRUNC;
 	else if (tok == '+')
-		*mode = O_WRONLY | O_CREAT | O_APPEND;
+		*mode = O_CREAT | O_RDWR | O_APPEND;
 	else if (tok == '-')
 		*mode = O_DSYNC;
 }

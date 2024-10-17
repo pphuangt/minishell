@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	ft_isflag(char *str)
+static int	ft_isflag(char *str)
 {
 	int	i;
 
@@ -27,7 +27,7 @@ int	ft_isflag(char *str)
 	return (0);
 }
 
-void	ft_print_argv(char **argv, int i, int flag)
+static void	ft_print_argv(char **argv, int i, int flag)
 {
 	while (argv[i])
 	{
