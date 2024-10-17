@@ -32,6 +32,37 @@ int	add_variable_environ(t_environ *environ, char *var)
 	return (SUCCESS);
 }
 
+char	*get_next_node(t_environ *environ, int len)
+{
+	int		i;
+	int		j;
+	char	**p;
+
+	i = 0;
+	j = 0;
+	p = environ->p;
+	while (*p[i])
+	{
+		while (*p[i] <= *p[j])
+	}
+}
+
+void	export_env(t_environ *environ)
+{
+	int		len;
+	char	*next;
+
+	len = environ->len;
+	while (len > 0)
+	{
+		next = get_next_node(environ, len);
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		ft_putendl_fd(next, STDOUT_FILENO);
+		len--;
+		free(next);
+	}
+}
+
 int	ft_export(char **argv, int argc, t_environ *environ)
 {
 	int	i;
@@ -49,8 +80,6 @@ int	ft_export(char **argv, int argc, t_environ *environ)
 		}
 	}
 	else
-	{
-		print_env
-	}
+		export_env(environ);
 	return (SUCCESS);
 }
