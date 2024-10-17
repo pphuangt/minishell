@@ -12,44 +12,37 @@
 
 #include "minishell.h"
 
-static void	free_split(char **p)
+static void	search_pathname_error(char *cmd_name, t_shell *shell)
 {
-	char	**head;
-
-	head = p;
-	while (*p)
-	{
-		free(*p);
-		p++;
-	}
-	free(head);
+	err_ret("malloc");
+	free(cmd_name);
+	clean_and_exit(shell, SYSTEM_ERROR);
 }
 
-char	*search_pathname(char *name, size_t len)
+static char	*search_from_path_variable(char *cmd_name, char *path_varaible,
+		t_shell *shell)
 {
-	char	**path;
-	char	**curr;
-	char	*pathname;
-	size_t	path_len;
+	char	**split_path;
 
-	path = ft_split(get_variable_environ(NULL, "PATH", 4), ':');
-	if (!path)
-		return (NULL);
-	curr = path;
-	while (*curr)
+	split_path = ft_split(path_variable, ':');
+	if (!split_path)
+		search_pathname_error(cmd_name, shell);
+}
+
+char	*search_pathname(char *cmd_name, t_shell *shell)
+{
+	char	*path_variable;
+	char	*ret;
+
+	path_variable = get_variable_environ(NULL, "PATH", 4);
+	if (!path_variable || !*path_variable)
 	{
-		path_len = ft_strlen(*curr);
-		pathname = malloc(sizeof(char) * (path_len + len + 2));
-		if (!pathname)
-			return (free_split(path), err_ret("malloc"), NULL);
-		ft_memcpy(pathname, *curr, path_len);
-		pathname[path_len] = '/';
-		ft_memcpy(pathname + path_len + 1, name, path_len + len + 2);
-		pathname[path_len + len + 1] = '\0';
-		if (access(pathname, X_OK) == 0)
-			return (free_split(path), pathname);
-		free(pathname);
-		curr++;
+		ret = ft_strjoin("./", cmd_name);
+		if (!ret)
+			search_pathname_error(cmd_name, shell);
 	}
-	return (free_split(path), NULL);
+	else
+		ret = search_in_path_variable(cmd_name, path_variable, shell);
+	free(cmd_name);
+	return (ret);
 }

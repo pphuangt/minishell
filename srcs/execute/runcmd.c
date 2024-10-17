@@ -17,24 +17,22 @@ static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell)
 	char	*pathname;
 
 	if (!ecmd->argv[0])
-		clean_and_exit(shell, NULL, SUCCESS);
-	pathname = ft_strdup(ecmd->argv[0]);
-	if (!pathname)
-		clean_and_exit(shell, NULL, SYSTEM_ERROR);
-	if (is_builtins(pathname))
-	{
+		clean_and_exit(shell, SUCCESS);
+	if (is_builtins(ecmd->argv[0]))
 		runbuiltins(shell);
-		clean_and_exit(shell, pathname, shell->exit_status);
-	}
-	else if (!ft_strchr(pathname, '/'))
+	else
 	{
-		free(pathname);
-		pathname = search_pathname(ecmd->argv[0], ft_strlen(ecmd->argv[0]));
+		pathname = ft_strdup(ecmd->argv[0]);
+		if (!pathname)
+			clean_and_exit(shell, SYSTEM_ERROR);
+		else if (!ft_strchr(pathname, '/'))
+			pathname = search_pathname(pathname, shell);
+		if (!is_pathname_exist(pathname, ecmd->argv[0]))
+			clean_and_exit(shell, CMD_NOT_FOUND);
+		execve(pathname, ecmd->argv, shell->environ.p);
+		on_execve_error(shell, pathname);
 	}
-	if (!is_pathname_exist(pathname, ecmd->argv[0]))
-		clean_and_exit(shell, pathname, CMD_NOT_FOUND);
-	execve(pathname, ecmd->argv, shell->environ.p);
-	on_execve_error(shell, pathname);
+	clean_and_exit(shell, shell->exit_status);
 }
 
 static void	runcmd_redir(t_redircmd *rcmd, t_shell *shell)

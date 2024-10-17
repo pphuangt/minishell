@@ -96,7 +96,10 @@ void	execute(t_shell *shell)
 			shell->exit_status = SYSTEM_ERROR;
 		}
 		else if (pid == 0)
+		{
+			reset_signal();
 			runcmd(shell->cmd, shell);
+		}
 		else
 			shell->exit_status = wait_runcmd(pid);
 	}

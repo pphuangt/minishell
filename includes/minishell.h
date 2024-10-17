@@ -144,7 +144,7 @@ char	*search_pathname(char *name, size_t len);
 int		is_dir(char *dir);
 int		is_pathname_exist(char *pathname, char *cmd_name);
 void	on_execve_error(t_shell *shell, char *pathname);
-void	clean_and_exit(t_shell *shell, char *pathname, int exit_status);
+void	clean_and_exit(t_shell *shell, int exit_status);
 
 /*    environ    */
 char	*get_variable_environ(char **environ, char *str, size_t size);
@@ -162,6 +162,7 @@ int		ft_exit(t_shell *shell);
 
 /*    signals    */
 int		init_signal(t_shell *shell);
+void	reset_signal(void);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);

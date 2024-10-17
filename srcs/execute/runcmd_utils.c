@@ -20,9 +20,9 @@ int	is_dir(char *dir)
 	{
 		stat(dir, &path_stat);
 		if (S_ISDIR(path_stat.st_mode))
-			return (0);
+			return (1);
 	}
-	return (1);
+	return (0);
 }
 
 int	is_pathname_exist(char *pathname, char *cmd_name)
@@ -33,9 +33,10 @@ int	is_pathname_exist(char *pathname, char *cmd_name)
 		ft_putendl_fd(": command not found", STDERR_FILENO);
 	}
 	else if (access(pathname, F_OK) != 0 && errno != ENOTDIR)
-		err_ret(pathname);
+		err_ret(cmd_name);
 	else
 		return (1);
+	free(pathname);
 	return (0);
 }
 
@@ -54,14 +55,14 @@ void	on_execve_error(t_shell *shell, char *pathname)
 		err_msg(EISDIR, pathname);
 	else
 		err_ret(pathname);
-	clean_and_exit(shell, pathname, CMD_NOT_EXEC);
+	free(pathname);
+	clean_and_exit(shell, CMD_NOT_EXEC);
 }
 
-void	clean_and_exit(t_shell *shell, char *pathname, int exit_status)
+void	clean_and_exit(t_shell *shell, int exit_status)
 {
 	freecmd(shell->cmd);
 	free_environ(&shell->environ);
 	free(shell->input);
-	free(pathname);
 	exit(exit_status);
 }
