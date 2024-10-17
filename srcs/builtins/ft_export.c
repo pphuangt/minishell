@@ -32,50 +32,90 @@ int	add_variable_environ(t_environ *environ, char *var)
 	return (SUCCESS);
 }
 
-char	*get_next_node(t_environ *environ, int len)
+char	**get_sorted_env(t_environ *environ)
 {
-	int		i;
-	int		j;
+	char	**sorted_env;
 	char	**p;
+	int		i;
 
-	i = 0;
-	j = 0;
+	sorted_env = malloc(sizeof(char *) * (environ->len + 1));
 	p = environ->p;
-	while (*p[i])
+	i = 0;
+	while (i < environ->len)
 	{
-		while (*p[i] <= *p[j])
+		while (p)
+		{
+
+		}
 	}
 }
 
 void	export_env(t_environ *environ)
 {
+	char	**sorted_env;
 	int		len;
-	char	*next;
 
 	len = environ->len;
+	sorted_env = get_sorted_env(environ);
 	while (len > 0)
 	{
-		next = get_next_node(environ, len);
 		ft_putstr_fd("declare -x ", STDOUT_FILENO);
-		ft_putendl_fd(next, STDOUT_FILENO);
+		ft_putendl_fd(sorted_env[environ->len - len], STDOUT_FILENO);
 		len--;
-		free(next);
 	}
 }
 
+char	*get_path_name(char *str)
+{
+	int		i;
+	char	*tmp;
+
+	i = 0;
+	while (*(str + i) != NULL && *(str + i) != '=')
+		i++;
+	tmp = malloc(sizeof(char) * i);
+	ft_strlcpy(tmp, str, i);
+	return (tmp);
+}
+
+int	set_data(char *p_update, char *data)
+{
+	if (p_update != NULL && data != NULL)
+	{
+		free(p_update);
+		p_update = ft_strdup(data);
+		free(data);
+	}
+	else if (data != NULL)
+	{
+		p_update = ft_strdup(data);
+		free(data);
+	}
+	return (SUCCESS);
+}
+
+
 int	ft_export(char **argv, int argc, t_environ *environ)
 {
-	int	i;
+	int		i;
+	char	*pn;
+	char	*tmp;
 
 	i = 1;
-	(void)argv;
-	(void)argc;
-	(void)environ;
 	if (argc > 1)
 	{
 		while (argv[i] != NULL)
 		{
-			add_variable_environ(environ, argv[i]);
+			pn = get_path_name(argv[i]);
+			tmp = get_variable_environ(environ, pn, ft_strlen(pn));
+			if (tmp == NULL)
+				add_variable_environ(environ, argv[i]);
+			else
+			{
+				set_data(tmp, get_variable_environ(argv, pn, ft_strlen(pn)));
+				free(tmp);
+			}
+			free(pn);
 			i++;
 		}
 	}
