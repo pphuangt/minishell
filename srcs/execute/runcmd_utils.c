@@ -44,7 +44,8 @@ int	is_pathname_exist(char **pathname, char *cmd_name)
 	return (0);
 }
 
-void	on_execve_error(char **pathname, t_shell *shell)
+void	on_execve_error(char **pathname, t_shell *shell,
+		int	*fd, int fd_size)
 {
 	int		error;
 	char	*tmp;
@@ -63,13 +64,15 @@ void	on_execve_error(char **pathname, t_shell *shell)
 	tmp = *pathname;
 	*pathname = NULL;
 	free(tmp);
-	clean_and_exit(shell, CMD_NOT_EXEC);
+	clean_and_exit(shell, CMD_NOT_EXEC, fd, fd_size);
 }
 
-void	clean_and_exit(t_shell *shell, int exit_status)
+void	clean_and_exit(t_shell *shell, int exit_status,
+	int *fd, int fd_size)
 {
 	freecmd(shell->cmd);
 	free_environ(&shell->environ);
 	free(shell->input);
+	close_fd(fd, fd_size);
 	exit(exit_status);
 }

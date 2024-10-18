@@ -46,3 +46,34 @@ int	restore_std_fd(int *std_in, int *std_out, int *std_err)
 	*std_err = -1;
 	return (ret);
 }
+
+int	is_new_fd(int new_fd, int fd[], int fd_size)
+{
+	int	i;
+
+	i = 0;
+	while (i < fd_size)
+	{
+		if (fd[i++] == new_fd)
+			return (0);
+	}
+	return (1);
+}
+
+void	close_fd(int fd[], int fd_size)
+{
+	int	i;
+
+	i = -1;
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
+	while (++i < fd_size)
+	{
+		if (fd[i] == STDIN_FILENO
+			|| fd[i] == STDOUT_FILENO
+			|| fd[i] == STDOUT_FILENO)
+			continue ;
+		close(fd[i]);
+	}
+}
