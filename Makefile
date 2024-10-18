@@ -4,14 +4,14 @@ LIB = lib
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 LIBFT = $(LIB)/libft
-HEADERS = -I./$(INCLUDES) -I./$(LIBFT)
-LIBS = $(LIBFT)/libft.a -lreadline
+HEADERS = -I./$(INCLUDES) -I./$(LIBFT) -I/usr/local/opt/readline/include
+LIBS = $(LIBFT)/libft.a -L/usr/local/opt/readline/lib -lreadline
 SRCS = $(addprefix srcs/, main.c \
 	   $(addprefix signals/, signals.c) \
 	   $(addprefix environ/, environ.c) \
 	   $(addprefix parse/, constructure.c parse.c parse_utils.c gettoken.c) \
 	   $(addprefix expansion/, expansion.c expansion_utils.c expand_env_var.c expand_env_var_utils.c expand_exit_status.c strip_quote.c symbols.c) \
-	   $(addprefix execute/, execute.c runbuiltins.c runcmd.c runcmd_utils.c redirect.c heredoc.c file_descriptor.c pathname.c) \
+	   $(addprefix execute/, execute.c runbuiltins.c runcmd.c runcmd_utils.c redirect.c heredoc.c file_descriptor.c set_pathname.c) \
 	   $(addprefix builtins/, builtins.c ft_exit.c ft_echo.c) \
 	   $(addprefix common/, err.c err_message.c freecmd.c free_environ.c shell.c))
 OBJS = $(SRCS:.c=.o)
@@ -19,7 +19,7 @@ OBJS = $(SRCS:.c=.o)
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-	$(MAKE) -C $(LIBFT)
+	$(MAKE) bonus -C $(LIBFT)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBS) $(HEADERS)
 
 %.o : %.c

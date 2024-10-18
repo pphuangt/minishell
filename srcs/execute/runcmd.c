@@ -22,15 +22,13 @@ static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell)
 		runbuiltins(shell);
 	else
 	{
-		pathname = ft_strdup(ecmd->argv[0]);
-		if (!pathname)
+		pathname = NULL;
+		if (!set_pathname(&pathname, ecmd->argv[0]))
 			clean_and_exit(shell, SYSTEM_ERROR);
-		else if (!ft_strchr(pathname, '/') && !set_exec_pathname(&pathname, shell))
-			clean_and_exit(shell, SYSTEM_ERROR);
-		if (!is_pathname_exist(pathname, ecmd->argv[0]))
+		if (!is_pathname_exist(&pathname, ecmd->argv[0]))
 			clean_and_exit(shell, CMD_NOT_FOUND);
 		execve(pathname, ecmd->argv, shell->environ.p);
-		on_execve_error(shell, pathname);
+		on_execve_error(&pathname, shell);
 	}
 	clean_and_exit(shell, shell->exit_status);
 }

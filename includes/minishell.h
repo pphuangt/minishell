@@ -140,10 +140,10 @@ void	runcmd(t_cmd *cmd, t_shell *shell);
 int		redirect(t_redircmd *rcmd, t_shell *shell);
 int		wait_runcmd(pid_t pid);
 int		is_builtins(char *cmd_name);
-char	*search_pathname(char *name, size_t len);
+int		set_pathname(char **pathname, char *cmd_name);
 int		is_dir(char *dir);
-int		is_pathname_exist(char *pathname, char *cmd_name);
-void	on_execve_error(t_shell *shell, char *pathname);
+int		is_pathname_exist(char **pathname, char *cmd_name);
+void	on_execve_error(char **pathname, t_shell *shell);
 void	clean_and_exit(t_shell *shell, int exit_status);
 
 /*    environ    */

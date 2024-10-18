@@ -25,37 +25,44 @@ int	is_dir(char *dir)
 	return (0);
 }
 
-int	is_pathname_exist(char *pathname, char *cmd_name)
+int	is_pathname_exist(char **pathname, char *cmd_name)
 {
-	if (!pathname)
+	char	*tmp;
+
+	if (!*pathname)
 	{
 		ft_putstr_fd(cmd_name, STDERR_FILENO);
 		ft_putendl_fd(": command not found", STDERR_FILENO);
 	}
-	else if (access(pathname, F_OK) != 0 && errno != ENOTDIR)
+	else if (access(*pathname, F_OK) != 0 && errno != ENOTDIR)
 		err_ret(cmd_name);
 	else
 		return (1);
-	free(pathname);
+	tmp = *pathname;
+	*pathname = NULL;
+	free(tmp);
 	return (0);
 }
 
-void	on_execve_error(t_shell *shell, char *pathname)
+void	on_execve_error(char **pathname, t_shell *shell)
 {
-	int	error;
+	int		error;
+	char	*tmp;
 
 	error = errno;
 	if (error == ENOEXEC)
 	{
-		ft_putstr_fd(pathname, STDERR_FILENO);
+		ft_putstr_fd(*pathname, STDERR_FILENO);
 		ft_putstr_fd(": cannot execute file: ", STDERR_FILENO);
 		ft_putendl_fd(strerror(ENOEXEC), STDERR_FILENO);
 	}
-	else if (is_dir(pathname))
-		err_msg(EISDIR, pathname);
+	else if (is_dir(*pathname))
+		err_msg(EISDIR, *pathname);
 	else
-		err_ret(pathname);
-	free(pathname);
+		err_ret(*pathname);
+	tmp = *pathname;
+	*pathname = NULL;
+	free(tmp);
 	clean_and_exit(shell, CMD_NOT_EXEC);
 }
 
