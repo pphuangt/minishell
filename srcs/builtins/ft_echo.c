@@ -31,8 +31,7 @@ static void	ft_print_argv(char **argv, int i, int flag)
 {
 	while (argv[i])
 	{
-		ft_putstr_fd(argv[i], STDOUT_FILENO);
-		i++;
+		ft_putstr_fd(argv[i++], STDOUT_FILENO);
 		if (argv[i])
 			ft_putchar_fd(' ', STDOUT_FILENO);
 	}

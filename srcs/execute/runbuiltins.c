@@ -25,7 +25,7 @@ int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell,
 	else if (!ft_strncmp(cmd_name, "cd", cmd_name_len))
 		return (ft_cd(ecmd->argv, ecmd->argc, &shell->environ));
 	else if (!ft_strncmp(cmd_name, "pwd", cmd_name_len))
-		return (ft_pwd(ecmd->argv, ecmd->argc, &shell->environ));
+		return (ft_pwd());
 	else if (!ft_strncmp(cmd_name, "export", cmd_name_len))
 		return (ft_export(ecmd->argv, ecmd->argc, &shell->environ));
 	else if (!ft_strncmp(cmd_name, "unset", cmd_name_len))
@@ -33,7 +33,7 @@ int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell,
 	else if (!ft_strncmp(cmd_name, "env", cmd_name_len))
 		return (ft_env(ecmd->argv, ecmd->argc, &shell->environ));
 	else if (!ft_strncmp(cmd_name, "exit", cmd_name_len))
-		return (ft_exit(shell, fd, fd_size));
+		return (ft_exit(ecmd->argv, shell, fd, fd_size));
 	return (SUCCESS);
 }
 
