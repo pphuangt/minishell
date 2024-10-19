@@ -161,7 +161,7 @@ int		ft_cd(char **argv, int argc, t_environ *environ);
 int		ft_pwd(void);
 int		ft_export(char **argv, int argc, t_environ *environ);
 int		ft_unset(char **argv, int argc, t_environ *environ);
-int		ft_env(char **argv, int argc, t_environ *environ);
+int		ft_env(t_environ *environ);
 int		ft_exit(char **argv, t_shell *shell,
 	int fd[2], int fd_size);
 

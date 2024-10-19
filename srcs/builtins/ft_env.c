@@ -12,18 +12,24 @@
 
 #include "minishell.h"
 
-int	ft_env(char **argv, int argc, t_environ *environ)
+int	ft_env(t_environ *environ)
 {
 	char	**env;
 	int		i;
+	int		j;
 
-	(void)argv;
-	(void)argc;
 	i = 0;
 	env = environ->p;
 	if (!env)
 		return (1);
 	while (env[i])
-		ft_putendl_fd(env[i++], STDOUT_FILENO);
+	{
+		j = 0;
+		while (ft_isalnum(env[i][j]) || env[i][j] == '_')
+			j++;
+		if (env[i][j] == '=')
+			ft_putendl_fd(env[i], STDOUT_FILENO);
+		i++;
+	}
 	return (0);
 }

@@ -31,7 +31,7 @@ int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell,
 	else if (!ft_strncmp(cmd_name, "unset", cmd_name_len))
 		return (ft_unset(ecmd->argv, ecmd->argc, &shell->environ));
 	else if (!ft_strncmp(cmd_name, "env", cmd_name_len))
-		return (ft_env(ecmd->argv, ecmd->argc, &shell->environ));
+		return (ft_env(&shell->environ));
 	else if (!ft_strncmp(cmd_name, "exit", cmd_name_len))
 		return (ft_exit(ecmd->argv, shell, fd, fd_size));
 	return (SUCCESS);
