@@ -15,11 +15,17 @@
 int	check_second_arg(char *arg)
 {
 	int	i;
+	int	ret;
 
 	i = 0;
-	while (argv[1][i])
+	if (arg[0] == '-' || arg[0] == '+')
+		i++;
+	ret = ft_atoi(arg) % 256;
+	if (ret < 0)
+		ret = 256 + ret;
+	while (arg[i])
 	{
-		if (ft_isdigit(argv[1][i]))
+		if (!ft_isdigit(arg[i]))
 		{
 			i = -1;
 			break ;
@@ -28,14 +34,14 @@ int	check_second_arg(char *arg)
 	}
 	if (i == -1)
 	{
-		ft_putendl_fd("numeric argument required", STDOUT_FILENO);
+		err_msg(0, "numeric argument required");
 		return (2);
 	}
 	else
-		return (ft_atoi(argv[1]) % 256);
+		return (ret);
 }
 
-int	ft_exit(char *argv, int argc, t_shell *shell)
+int	ft_exit(char **argv, int argc, t_shell *shell)
 {
 	if (argc == 2)
 		shell->exit_status = check_second_arg(argv[1]);
@@ -44,7 +50,7 @@ int	ft_exit(char *argv, int argc, t_shell *shell)
 		shell->exit_status = check_second_arg(argv[1]);
 		if (shell->exit_status != 2)
 		{
-			ft_putendl_fd("too many arguments", STDOUT_FILENO);
+			err_msg(0, "too many arguments");
 			return (1);
 		}
 	}

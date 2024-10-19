@@ -45,8 +45,16 @@ void	err_msg(int error, const char *fmt)
 	err_doit(error, fmt);
 }
 
-void	err_exit(int error, const char *fmt, int exit_status)
+void	err_exit(const char *fmt, t_shell *shell, int pipe[2])
 {
-	err_doit(error, fmt);
-	exit(exit_status);
+	err_doit(errno, fmt);
+	freecmd(shell->cmd);
+	free_environ(&shell->environ);
+	free(shell->input);
+	if (pipe)
+	{
+		close(pipe[0]);
+		close(pipe[1]);
+	}
+	exit(SYSTEM_ERROR);
 }

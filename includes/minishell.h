@@ -138,13 +138,15 @@ int		save_std_fd(int *std_in, int *std_out, int *std_err);
 int		restore_std_fd(int *std_in, int *std_out, int *std_err);
 void	runcmd(t_cmd *cmd, t_shell *shell);
 int		redirect(t_redircmd *rcmd, t_shell *shell);
+int		is_new_fd(int new_fd, int fd[], int fd_size);
+void	close_fd(int fd[], int fd_size);
 int		wait_runcmd(pid_t pid);
 int		is_builtins(char *cmd_name);
-char	*search_pathname(char *name, size_t len);
+int		set_pathname(char **pathname, char *cmd_name);
 int		is_dir(char *dir);
-int		is_pathname_exist(char *pathname, char *cmd_name);
-void	on_execve_error(t_shell *shell, char *pathname);
-void	clean_and_exit(t_shell *shell, char *pathname, int exit_status);
+int		is_pathname_exist(char **pathname, char *cmd_name);
+void	on_execve_error(char **pathname, t_shell *shell, int *fd, int fd_size);
+void	clean_and_exit(t_shell *shell, int exit_status, int *fd, int fd_size);
 
 /*    environ    */
 char	*get_variable_environ(char **environ, char *str, size_t size);
@@ -158,10 +160,11 @@ int		ft_pwd(char **argv, int argc, t_environ *environ);
 int		ft_export(char **argv, int argc, t_environ *environ);
 int		ft_unset(char **argv, int argc, t_environ *environ);
 int		ft_env(char **argv, int argc, t_environ *environ);
-int		ft_exit(t_shell *shell);
+int		ft_exit(char **argv, int argc, t_shell *shell);
 
 /*    signals    */
 int		init_signal(t_shell *shell);
+void	reset_signal(void);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);
@@ -173,6 +176,6 @@ void	err_tok(char *stok, char *etok);
 void	err_filename(char *filename);
 void	err_sys(const char *fmt, int exit_status);
 void	err_msg(int error, const char *fmt);
-void	err_exit(int error, const char *fmt, int exit_status);
+void	err_exit(const char *fmt, t_shell *shell, int pipe[2]);
 
 #endif

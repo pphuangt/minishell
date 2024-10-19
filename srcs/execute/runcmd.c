@@ -12,36 +12,53 @@
 
 #include "minishell.h"
 
-static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell)
+static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell,
+		int fd[], int fd_size)
 {
 	char	*pathname;
 
 	if (!ecmd->argv[0])
-		clean_and_exit(shell, NULL, SUCCESS);
-	pathname = ft_strdup(ecmd->argv[0]);
-	if (!pathname)
-		clean_and_exit(shell, NULL, SYSTEM_ERROR);
-	if (is_builtins(pathname))
-	{
+		clean_and_exit(shell, SUCCESS, fd, fd_size);
+	if (is_builtins(ecmd->argv[0]))
 		runbuiltins(shell);
-		clean_and_exit(shell, pathname, shell->exit_status);
-	}
-	else if (!ft_strchr(pathname, '/'))
+	else
 	{
-		free(pathname);
-		pathname = search_pathname(ecmd->argv[0], ft_strlen(ecmd->argv[0]));
+		pathname = NULL;
+		if (!set_pathname(&pathname, ecmd->argv[0]))
+			clean_and_exit(shell, SYSTEM_ERROR, fd, fd_size);
+		if (!is_pathname_exist(&pathname, ecmd->argv[0]))
+			clean_and_exit(shell, CMD_NOT_FOUND, fd, fd_size);
+		execve(pathname, ecmd->argv, shell->environ.p);
+		on_execve_error(&pathname, shell, fd, fd_size);
 	}
-	if (!is_pathname_exist(pathname, ecmd->argv[0]))
-		clean_and_exit(shell, pathname, CMD_NOT_FOUND);
-	execve(pathname, ecmd->argv, shell->environ.p);
-	on_execve_error(shell, pathname);
+	clean_and_exit(shell, shell->exit_status, fd, fd_size);
 }
 
-static void	runcmd_redir(t_redircmd *rcmd, t_shell *shell)
+static void	runcmd_redir(t_cmd *cmd, t_shell *shell)
 {
-	if (redirect(rcmd, shell) != SUCCESS)
-		exit(SYSTEM_ERROR);
-	runcmd(rcmd->cmd, shell);
+	t_redircmd	*rcmd;
+	int			fd[MAXARGS];
+	int			fd_size;
+
+	fd_size = 0;
+	while (cmd->type == REDIR)
+	{
+		rcmd = (t_redircmd *)cmd;
+		if (redirect(rcmd, shell) != SUCCESS)
+			clean_and_exit(shell, SYSTEM_ERROR, fd, fd_size);
+		if (is_new_fd(rcmd->fd, fd, fd_size))
+		{
+			if (fd_size == MAXARGS)
+			{
+				err_ret("to many fd");
+				clean_and_exit(shell, SYNTAX_ERROR, fd, fd_size);
+			}
+			fd[fd_size] = rcmd->fd;
+			fd_size++;
+		}
+		cmd = rcmd->cmd;
+	}
+	runcmd_exec((t_execcmd *)cmd, shell, fd, fd_size);
 }
 
 static void	runcmd_pipe_right(t_cmd *cmd, t_shell *shell,
@@ -51,10 +68,11 @@ static void	runcmd_pipe_right(t_cmd *cmd, t_shell *shell,
 
 	right_pid = fork();
 	if (right_pid == -1)
-		err_exit(errno, "pipe", SYSTEM_ERROR);
+		err_exit("pipe", shell, fd);
 	else if (right_pid == 0)
 	{
-		dup2(fd[0], STDIN_FILENO);
+		if (dup2(fd[0], STDIN_FILENO) == -1)
+			err_exit("dup2", shell, fd);
 		close(fd[0]);
 		close(fd[1]);
 		runcmd(cmd, shell);
@@ -64,7 +82,7 @@ static void	runcmd_pipe_right(t_cmd *cmd, t_shell *shell,
 		close(fd[0]);
 		close(fd[1]);
 		wait_runcmd(left_pid);
-		exit(wait_runcmd(right_pid));
+		clean_and_exit(shell, wait_runcmd(right_pid), 0, 0);
 	}
 }
 
@@ -74,13 +92,14 @@ static void	runcmd_pipe_left(t_pipecmd *pcmd, t_shell *shell)
 	pid_t	left_pid;
 
 	if (pipe(fd) == -1)
-		err_exit(errno, "pipe", SYSTEM_ERROR);
+		err_exit("pipe", shell, 0);
 	left_pid = fork();
 	if (left_pid == -1)
-		err_exit(errno, "fork", SYSTEM_ERROR);
+		err_exit("fork", shell, fd);
 	else if (left_pid == 0)
 	{
-		dup2(fd[1], STDOUT_FILENO);
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
+			err_exit("dup", shell, fd);
 		close(fd[0]);
 		close(fd[1]);
 		runcmd(pcmd->left, shell);
@@ -91,11 +110,8 @@ static void	runcmd_pipe_left(t_pipecmd *pcmd, t_shell *shell)
 
 void	runcmd(t_cmd *cmd, t_shell *shell)
 {
-	if (cmd->type == EXEC)
-		runcmd_exec((t_execcmd *)cmd, shell);
-	else if (cmd->type == REDIR)
-		runcmd_redir((t_redircmd *)cmd, shell);
-	else if (cmd->type == PIPE)
+	if (cmd->type == PIPE)
 		runcmd_pipe_left((t_pipecmd *)cmd, shell);
-	exit(SUCCESS);
+	else
+		runcmd_redir(cmd, shell);
 }

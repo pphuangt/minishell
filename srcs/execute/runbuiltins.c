@@ -32,21 +32,8 @@ static int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell)
 	else if (!ft_strncmp(cmd_name, "env", cmd_name_len))
 		return (ft_env(ecmd->argv, ecmd->argc, &shell->environ));
 	else if (!ft_strncmp(cmd_name, "exit", cmd_name_len))
-		return (ft_exit(shell));
+		return (ft_exit(ecmd->argv, ecmd->argc, shell));
 	return (SUCCESS);
-}
-
-static int	is_new_fd(int new_fd, int fd[], int fd_size)
-{
-	int	i;
-
-	i = 0;
-	while (i < fd_size)
-	{
-		if (fd[i++] == new_fd)
-			return (0);
-	}
-	return (1);
 }
 
 static int	runbuiltins_redir(t_redircmd *rcmd, t_shell *shell,
@@ -62,15 +49,6 @@ static int	runbuiltins_redir(t_redircmd *rcmd, t_shell *shell,
 		(*fd_size)++;
 	}
 	return (SUCCESS);
-}
-
-static void	close_fd(int fd[], int fd_size)
-{
-	int	i;
-
-	i = 0;
-	while (i < fd_size)
-		close(fd[i++]);
 }
 
 void	runbuiltins(t_shell *shell)

@@ -45,6 +45,12 @@ static int	set_signal(int signum, void (*func), int flags)
 	return (0);
 }
 
+void	reset_signal(void)
+{
+	set_signal(SIGQUIT, SIG_DFL, 0);
+	set_signal(SIGINT, SIG_DFL, 0);
+}
+
 int	init_signal(t_shell *shell)
 {
 	signal_handler(0, 0, shell);
