@@ -42,7 +42,7 @@ static int	handler_set_argument(t_execcmd *ecmd, char *str, int *i, int *start)
 	{
 		if (ft_strchr(WHITESPACE, str[*i]))
 		{
-			if (ecmd->argv == MAXARGS)
+			if (ecmd->argc == MAXARGS)
 				return (err_msg(0, "to many args"), SYNTAX_ERROR);
 			substr = ft_substr(str, *start, *i - *start);
 			if (!substr)
