@@ -15,14 +15,21 @@
 int	remove_variable_environ(t_environ *environ, char *name, size_t size)
 {
 	char	**p;
-		
+
 	p = environ->p;
 	while (*p)
 	{
 		if (ft_strncmp(*p, name, size) == 0 && *(*p + size) == '=')
 		{
-			p++;
+			free(*p);
+			while (*(p + 1) != NULL)
+			{
+				*p = *(p + 1);
+				p++;
+			}
+			p = NULL;
 			environ->len--;
+			break ;
 		}
 		p++;
 	}
