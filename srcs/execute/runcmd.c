@@ -20,7 +20,7 @@ static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell,
 	if (!ecmd->argv[0])
 		clean_and_exit(shell, SUCCESS, fd, fd_size);
 	if (is_builtins(ecmd->argv[0]))
-		runbuiltins(shell);
+		shell->exit_status = runbuiltins_exec(ecmd, shell, fd, fd_size);
 	else
 	{
 		pathname = NULL;
