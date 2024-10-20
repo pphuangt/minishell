@@ -31,7 +31,7 @@ int	main(void)
 	init_shell(&shell);
 	if (init_signal(&shell) < 0 || init_environ(&shell.environ) < 0)
 		return (-1);
-	while (rl_gets(&shell, &s, S_PROMPT, 1))
+	while (rl_gets(&shell, &s, PROMPT, 1))
 	{
 		if (*s)
 			execute(parsecmd(&shell, s));
