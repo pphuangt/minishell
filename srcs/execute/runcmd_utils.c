@@ -73,6 +73,7 @@ void	clean_and_exit(t_shell *shell, int exit_status,
 	freecmd(shell->cmd);
 	free_environ(&shell->environ);
 	free(shell->input);
+	rl_clear_history();
 	close_fd(fd, fd_size);
 	exit(exit_status);
 }

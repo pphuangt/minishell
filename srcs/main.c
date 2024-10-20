@@ -37,6 +37,7 @@ int	main(void)
 			execute(parsecmd(&shell, s));
 		reset_prompt(&shell);
 	}
+	rl_clear_history();
 	free_environ(&shell.environ);
 	printf("exit\n");
 	return (0);

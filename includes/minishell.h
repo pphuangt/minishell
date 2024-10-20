@@ -177,7 +177,6 @@ t_cmd	*reverse_redircmd(t_cmd *cmd);
 void	err_ret(const char *fmt);
 void	err_tok(char *stok, char *etok);
 void	err_filename(char *filename);
-void	err_sys(const char *fmt, int exit_status);
 void	err_msg(int error, const char *fmt);
 void	err_exit(const char *fmt, t_shell *shell, int pipe[2]);
 

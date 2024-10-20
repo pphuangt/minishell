@@ -67,6 +67,7 @@ int	ft_exit(char **argv, t_shell *shell,
 	free(shell->input);
 	shell->input = NULL;
 	free_environ(&shell->environ);
+	rl_clear_history();
 	close_fd(fd, fd_size);
 	printf("exit\n");
 	exit(shell->exit_status);

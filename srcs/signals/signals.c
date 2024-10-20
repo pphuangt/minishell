@@ -21,7 +21,6 @@ static void	signal_handler(int signum, siginfo_t *info, void *context)
 		shell = (t_shell *)context;
 		return ;
 	}
-	(void)signum;
 	(void)info;
 	shell->exit_status = TERM_BY_SIG + signum;
 	ioctl(STDIN_FILENO, TIOCSTI, "\n");

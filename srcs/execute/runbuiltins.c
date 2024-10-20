@@ -70,7 +70,8 @@ void	runbuiltins(t_shell *shell)
 		&& runbuiltins_redir((t_redircmd *)cmd, shell, fd, &fd_size) == SUCCESS)
 		cmd = ((t_redircmd *)cmd)->cmd;
 	if (cmd->type == EXEC)
-		shell->exit_status = runbuiltins_exec((t_execcmd *)cmd, shell, fd, fd_size);
+		shell->exit_status = runbuiltins_exec((t_execcmd *)cmd, shell,
+				fd, fd_size);
 	else
 		shell->exit_status = SYSTEM_ERROR;
 	close_fd(fd, fd_size);

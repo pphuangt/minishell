@@ -34,12 +34,6 @@ void	err_ret(const char *fmt)
 	err_doit(errno, fmt);
 }
 
-void	err_sys(const char *fmt, int exit_status)
-{
-	err_doit(errno, fmt);
-	exit(exit_status);
-}
-
 void	err_msg(int error, const char *fmt)
 {
 	err_doit(error, fmt);
@@ -51,6 +45,7 @@ void	err_exit(const char *fmt, t_shell *shell, int pipe[2])
 	freecmd(shell->cmd);
 	free_environ(&shell->environ);
 	free(shell->input);
+	rl_clear_history();
 	if (pipe)
 	{
 		close(pipe[0]);
