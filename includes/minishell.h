@@ -153,6 +153,7 @@ void	clean_and_exit(t_shell *shell, int exit_status, int *fd, int fd_size);
 /*    environ    */
 char	*get_variable_environ(char **environ, char *str, size_t size);
 int		init_environ(t_environ *environ);
+int		append_environ(char *str, t_environ *environ);
 void	free_environ(t_environ *environ);
 
 /*    builtins    */
@@ -160,6 +161,7 @@ int		ft_echo(char **argv, int argc);
 int		ft_cd(char **argv, int argc, t_environ *environ);
 int		ft_pwd(void);
 int		ft_export(char **argv, int argc, t_environ *environ);
+int		handle_var_export(char *str, t_environ *environ);
 int		ft_unset(char **argv, int argc, t_environ *environ);
 int		ft_env(t_environ *environ);
 int		ft_exit(char **argv, t_shell *shell,

@@ -8,7 +8,7 @@ HEADERS = -I./$(INCLUDES) -I./$(LIBFT)
 LIBS = $(LIBFT)/libft.a -lreadline
 SRCS = $(addprefix srcs/, main.c \
 	   $(addprefix signals/, signals.c) \
-	   $(addprefix environ/, environ.c) \
+	   $(addprefix environ/, environ.c environ_utils.c) \
 	   $(addprefix parse/, constructure.c parse.c parse_utils.c gettoken.c) \
 	   $(addprefix expansion/, expansion.c expansion_utils.c expand_env_var.c expand_env_var_utils.c expand_exit_status.c strip_quote.c symbols.c) \
 	   $(addprefix execute/, execute.c runbuiltins.c runcmd.c runcmd_utils.c redirect.c heredoc.c file_descriptor.c set_pathname.c) \

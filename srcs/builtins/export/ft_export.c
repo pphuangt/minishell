@@ -35,31 +35,7 @@ static int	is_key_in_environ(char *key, t_environ *environ)
 	return (-1);
 }
 
-static int	append_environ(char *str, t_environ *environ)
-{
-	char	**p;
-	char	*n_str;
-
-	if (environ->len == environ->size)
-	{
-		environ->size *= 2;
-		p = malloc(sizeof(char *) * (environ->size + 1));
-		if (!p)
-			return (err_ret("malloc"), 0);
-		ft_memcpy(p, environ->p, sizeof(char *) * environ->len);
-		free(environ->p);
-		environ->p = p;
-	}
-	n_str = ft_strdup(str);
-	if (!n_str)
-		return (err_ret("malloc"), 0);
-	environ->p[environ->len] = n_str;
-	environ->len++;
-	environ->p[environ->len] = NULL;
-	return (1);
-}
-
-static int	handle_var_export(char *str, t_environ *environ)
+int	handle_var_export(char *str, t_environ *environ)
 {
 	char	*key;
 	char	*n_str;

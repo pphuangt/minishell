@@ -64,6 +64,31 @@ static int	create_pointer_environ(t_environ *shell_environ, char **environ)
 	return (1);
 }
 
+static int	set_shlvl(t_environ *environ)
+{
+	char	*shlvl;
+	int		value;
+	char	*str;
+	char	*var;
+
+	shlvl = get_variable_environ(0, "SHLVL", 5);
+	if (!shlvl)
+		return (append_environ("SHLVL=1", environ));
+	value = ft_atoi(shlvl);
+	if (value < 0)
+		return (handle_var_export("SHLVL=0", environ));
+	value++;
+	str = ft_itoa(value);
+	if (!str)
+		return (err_ret("malloc"), 0);
+	var = ft_strjoin("SHLVL=", str);
+	if (!var)
+		return (free(str), err_ret("malloc"), 0);
+	if (!handle_var_export(var, environ))
+		return (free(str), free(var), 0);
+	return (free(str), free(var), 1);
+}
+
 int	init_environ(t_environ *shell_environ)
 {
 	extern char	**environ;
@@ -87,5 +112,7 @@ int	init_environ(t_environ *shell_environ)
 	shell_environ->len = size;
 	shell_environ->p[shell_environ->len] = NULL;
 	get_variable_environ(shell_environ->p, 0, 0);
+	if (!set_shlvl(shell_environ))
+		return (-1);
 	return (0);
 }
