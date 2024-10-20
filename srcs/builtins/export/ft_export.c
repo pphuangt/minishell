@@ -1,23 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_export.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: paradari <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/20 18:10:44 by paradari          #+#    #+#             */
+/*   Updated: 2024/10/20 18:10:46 by paradari         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int		is_valid_varname(char *str);
 int		print_exported_env(t_environ *environ);
 void	print_err_msg(char *str);
-
-static char	*extract_key(char *str)
-{
-	char	*ret;
-	int		i;
-
-	i = 0;
-	while (*(str + i) && *(str + i) != '=')
-		i++;
-	ret = malloc(sizeof(char) * (i + 1));
-	ft_strlcpy(ret, str, i + 1);
-	if (!ret)
-		err_ret("malloc");
-	return (ret);
-}
+char	*extract_key(char *str);
 
 static int	is_key_in_environ(char *key, t_environ *environ)
 {

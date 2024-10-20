@@ -13,7 +13,7 @@ SRCS = $(addprefix srcs/, main.c \
 	   $(addprefix expansion/, expansion.c expansion_utils.c expand_env_var.c expand_env_var_utils.c expand_exit_status.c strip_quote.c symbols.c) \
 	   $(addprefix execute/, execute.c runbuiltins.c runcmd.c runcmd_utils.c redirect.c heredoc.c file_descriptor.c set_pathname.c) \
 	   $(addprefix builtins/, ft_echo.c ft_cd.c ft_pwd.c ft_unset.c ft_env.c ft_exit.c \
-		$(addprefix export/, ft_export.c ft_export_output.c ft_varname.c)) \
+		$(addprefix export/, ft_export.c ft_export_output.c ft_export_utils.c)) \
 	   $(addprefix common/, err.c err_message.c freecmd.c free_environ.c shell.c))
 OBJS = $(SRCS:.c=.o)
 

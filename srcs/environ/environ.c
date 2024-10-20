@@ -34,27 +34,54 @@ char	*get_variable_environ(char **environ, char *str, size_t size)
 	return (NULL);
 }
 
-int	init_environ(t_environ *shell_environ)
+static int	is_valid_format(char *str)
 {
-	extern char	**environ;
-	size_t		size;
-	char		**envp;
+	int	i;
+
+	i = 0;
+	while (ft_isalnum(str[i]) || str[i] == '_')
+		i++;
+	if (str[i] == '=')
+		return (1);
+	return (0);
+}
+
+static int	create_pointer_environ(t_environ *shell_environ, char **environ)
+{
+	size_t	size;
 
 	size = 0;
-	envp = environ;
-	while (*envp && ++size)
-		envp++;
+	while (*environ)
+	{
+		if (is_valid_format(*environ))
+			size++;
+		environ++;
+	}
 	shell_environ->size = size * 2;
 	shell_environ->p = malloc(sizeof(char *) * (shell_environ->size + 1));
 	if (!shell_environ->p)
-		return (err_ret("malloc"), -1);
+		return (err_ret("malloc"), 0);
+	return (1);
+}
+
+int	init_environ(t_environ *shell_environ)
+{
+	extern char	**environ;
+	char		**envp;
+	size_t		size;
+
+	if (!create_pointer_environ(shell_environ, environ))
+		return (-1);
 	envp = environ;
 	size = 0;
 	while (*envp)
 	{
-		shell_environ->p[size] = ft_strdup(*envp);
-		if (!shell_environ->p[size++])
-			return (free_environ(shell_environ), err_ret("malloc"), -1);
+		if (is_valid_format(*envp))
+		{
+			shell_environ->p[size] = ft_strdup(*envp);
+			if (!shell_environ->p[size++])
+				return (free_environ(shell_environ), err_ret("malloc"), -1);
+		}
 		envp++;
 	}
 	shell_environ->len = size;
