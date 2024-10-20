@@ -27,7 +27,7 @@ static int	ft_change_dir(char *path, t_environ *environ)
 	char	buff[MAXLINE];
 
 	if (chdir(path) == -1)
-		return (err_msg(0, " No such file or directory"), 1);
+		return (err_msg(0, "cd: No such file or directory"), 1);
 	pwd = getcwd(buff, MAXLINE);
 	ft_update_pwd(pwd, environ);
 	return (0);
@@ -36,6 +36,6 @@ static int	ft_change_dir(char *path, t_environ *environ)
 int	ft_cd(char **argv, int argc, t_environ *environ)
 {
 	if (argc > 2)
-		return (err_msg(0, " too many arguments\n"), 1);
+		return (err_msg(0, "cd: too many arguments"), 1);
 	return (ft_change_dir(argv[1], environ));
 }
