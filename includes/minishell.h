@@ -135,7 +135,7 @@ void	clone_argument(char **dst, char **src);
 void	execute(t_shell *shell);
 void	runbuiltins(t_shell *shell);
 int		runbuiltins_exec(t_execcmd *ecmd, t_shell *shell,
-	int fd[2], int fd_size);
+			int fd[2], int fd_size);
 int		save_std_fd(int *std_in, int *std_out, int *std_err);
 int		restore_std_fd(int *std_in, int *std_out, int *std_err);
 void	runcmd(t_cmd *cmd, t_shell *shell);
@@ -165,7 +165,7 @@ int		handle_var_export(char *str, t_environ *environ);
 int		ft_unset(char **argv, int argc, t_environ *environ);
 int		ft_env(t_environ *environ);
 int		ft_exit(char **argv, t_shell *shell,
-	int fd[2], int fd_size);
+			int fd[2], int fd_size);
 
 /*    signals    */
 int		init_signal(t_shell *shell);
