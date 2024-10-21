@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	expand_cmd(t_cmd *cmd, int exit);
+static int	expand_cmd(t_cmd *cmd, t_shell *shell);
 
 static int	expand_filename(char **filename, int exit)
 {
@@ -51,45 +51,50 @@ static int	expand_exec(t_cmd *cmd, int exit)
 	return (SUCCESS);
 }
 
-static int	expand_redir(t_cmd *cmd, int exit)
+static int	expand_redir(t_cmd *cmd, t_shell *shell)
 {
 	t_redircmd	*rcmd;
 
 	rcmd = (t_redircmd *)cmd;
-	if (expand_cmd(rcmd->cmd, exit) == SYSTEM_ERROR)
-		return (SYSTEM_ERROR);
 	*rcmd->file.e = '\0';
-	if (rcmd->mode != O_DSYNC)
+	if (rcmd->mode == O_DSYNC)
 	{
-		if (expand_filename(&rcmd->file.s, exit) == SYSTEM_ERROR)
+		if (heredoc(rcmd, shell) < 0)
+			return (SYSTEM_ERROR);
+	}
+	else if (rcmd->mode != O_DSYNC)
+	{
+		if (expand_filename(&rcmd->file.s, shell->exit_status) != SUCCESS)
 			return (SYSTEM_ERROR);
 		rcmd->file.e = rcmd->file.s;
 	}
+	if (expand_cmd(rcmd->cmd, shell) == SYSTEM_ERROR)
+		return (SYSTEM_ERROR);
 	return (SUCCESS);
 }
 
-static int	expand_cmd(t_cmd *cmd, int exit)
+static int	expand_cmd(t_cmd *cmd, t_shell *shell)
 {
 	t_pipecmd	*pcmd;
 
 	if (!cmd)
 		return (SUCCESS);
 	if (cmd->type == EXEC)
-		return (expand_exec(cmd, exit));
+		return (expand_exec(cmd, shell->exit_status));
 	else if (cmd->type == REDIR)
-		return (expand_redir(cmd, exit));
+		return (expand_redir(cmd, shell));
 	else
 	{
 		pcmd = (t_pipecmd *)cmd;
-		if (expand_cmd(pcmd->left, exit) == SYSTEM_ERROR)
+		if (expand_cmd(pcmd->left, shell) == SYSTEM_ERROR)
 			return (SYSTEM_ERROR);
-		return (expand_cmd(pcmd->right, exit));
+		return (expand_cmd(pcmd->right, shell));
 	}
 }
 
 int	expansion(t_shell *shell)
 {
-	if (expand_cmd(shell->cmd, shell->exit_status) == SYSTEM_ERROR)
+	if (expand_cmd(shell->cmd, shell) == SYSTEM_ERROR)
 	{
 		shell->exit_status = SYSTEM_ERROR;
 		return (SYSTEM_ERROR);

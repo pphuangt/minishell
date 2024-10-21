@@ -76,6 +76,7 @@ typedef struct s_redircmd
 	struct s_string	file;
 	int				mode;
 	int				fd;
+	int				hd_fd;
 }	t_redircmd;
 
 typedef struct s_pipecmd
@@ -139,7 +140,7 @@ int		runbuiltins_exec(t_execcmd *ecmd, t_shell *shell,
 int		save_std_fd(int *std_in, int *std_out, int *std_err);
 int		restore_std_fd(int *std_in, int *std_out, int *std_err);
 void	runcmd(t_cmd *cmd, t_shell *shell);
-int		redirect(t_redircmd *rcmd, t_shell *shell);
+int		redirect(t_redircmd *rcmd);
 int		is_new_fd(int new_fd, int fd[], int fd_size);
 void	close_fd(int fd[], int fd_size);
 int		wait_runcmd(pid_t pid);

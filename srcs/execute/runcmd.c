@@ -44,7 +44,7 @@ static void	runcmd_redir(t_cmd *cmd, t_shell *shell)
 	while (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd *)cmd;
-		if (redirect(rcmd, shell) != SUCCESS)
+		if (redirect(rcmd) != SUCCESS)
 			clean_and_exit(shell, SYSTEM_ERROR, fd, fd_size);
 		if (is_new_fd(rcmd->fd, fd, fd_size))
 		{

@@ -22,15 +22,12 @@ static void	end_by_eof_msg(char *delimiter, int count_line)
 	ft_putendl_fd("')", STDERR_FILENO);
 }
 
-static int	end_heredoc(t_shell *hd_shell, size_t *count_line,
-		int hd_fd, int fd[2])
+static int	end_heredoc(t_shell *hd_shell, t_redircmd *rcmd,
+		size_t *count_line, int fd[2])
 {
 	*count_line += hd_shell->count_line - 1;
 	close(fd[1]);
-	if (dup2(fd[0], hd_fd) == -1)
-		return (close(fd[0]), err_ret("dup2"), -1);
-	if (fd[0] != hd_fd)
-		close(fd[0]);
+	rcmd->hd_fd = fd[0];
 	return (0);
 }
 
@@ -69,7 +66,7 @@ static int	read_heredoc(t_redircmd *rcmd, t_shell *shell, int has_q)
 	}
 	if (!s)
 		end_by_eof_msg(rcmd->file.s, shell->count_line);
-	return (free(s), end_heredoc(&hd_shell, &shell->count_line, rcmd->fd, fd));
+	return (free(s), end_heredoc(&hd_shell, rcmd, &shell->count_line, fd));
 }
 
 int	heredoc(t_redircmd *rcmd, t_shell *shell)

@@ -37,10 +37,9 @@ int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell,
 	return (SUCCESS);
 }
 
-static int	runbuiltins_redir(t_redircmd *rcmd, t_shell *shell,
-		int fd[], int *fd_size)
+static int	runbuiltins_redir(t_redircmd *rcmd, int fd[], int *fd_size)
 {
-	if (redirect(rcmd, shell) != SUCCESS)
+	if (redirect(rcmd) != SUCCESS)
 		return (SYSTEM_ERROR);
 	if (is_new_fd(rcmd->fd, fd, *fd_size))
 	{
@@ -67,7 +66,7 @@ void	runbuiltins(t_shell *shell)
 	cmd = shell->cmd;
 	fd_size = 0;
 	while (cmd->type == REDIR
-		&& runbuiltins_redir((t_redircmd *)cmd, shell, fd, &fd_size) == SUCCESS)
+		&& runbuiltins_redir((t_redircmd *)cmd, fd, &fd_size) == SUCCESS)
 		cmd = ((t_redircmd *)cmd)->cmd;
 	if (cmd->type == EXEC)
 		shell->exit_status = runbuiltins_exec((t_execcmd *)cmd, shell,

@@ -12,14 +12,16 @@
 
 #include "minishell.h"
 
-int	redirect(t_redircmd *rcmd, t_shell *shell)
+int	redirect(t_redircmd *rcmd)
 {
 	int	fd;
 
 	if (rcmd->mode == O_DSYNC)
 	{
-		if (heredoc(rcmd, shell) < 0)
-			return (SYSTEM_ERROR);
+		if (dup2(rcmd->hd_fd, rcmd->fd) < 0)
+			return (err_ret("dup2"), SYSTEM_ERROR);
+		if (rcmd->hd_fd != rcmd->fd)
+			close(rcmd->hd_fd);
 	}
 	else
 	{
