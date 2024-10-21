@@ -82,8 +82,8 @@ static void	runcmd_pipe_right(t_cmd *cmd, t_shell *shell,
 	{
 		close(fd[0]);
 		close(fd[1]);
-		wait_runcmd(left_pid);
-		clean_and_exit(shell, wait_runcmd(right_pid), 0, 0);
+		wait_runcmd(left_pid, 0);
+		clean_and_exit(shell, wait_runcmd(right_pid, 0), 0, 0);
 	}
 }
 

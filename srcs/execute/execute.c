@@ -29,7 +29,7 @@ static void	print_exit_msg(int wstatus, int signum)
 		ft_putendl_fd(exit_msg, STDERR_FILENO);
 }
 
-int	wait_runcmd(pid_t pid)
+int	wait_runcmd(pid_t pid, int own)
 {
 	int	ret;
 	int	wstatus;
@@ -45,6 +45,8 @@ int	wait_runcmd(pid_t pid)
 		signum = WTERMSIG(wstatus);
 		if (signum == SIGQUIT || signum == SIGSEGV)
 			print_exit_msg(wstatus, signum);
+		else if (own && signum == SIGINT)
+			printf("\n");
 		ret = TERM_BY_SIG + signum;
 	}
 	return (ret);
@@ -103,7 +105,7 @@ void	execute(t_shell *shell)
 		else
 		{
 			set_signal(SIGINT, SIG_IGN, 0);
-			shell->exit_status = wait_runcmd(pid);
+			shell->exit_status = wait_runcmd(pid, 1);
 			set_signal(SIGINT, &signal_handler, SA_RESTART | SA_SIGINFO);
 		}
 	}

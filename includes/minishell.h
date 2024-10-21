@@ -143,7 +143,7 @@ void	runcmd(t_cmd *cmd, t_shell *shell);
 int		redirect(t_redircmd *rcmd);
 int		is_new_fd(int new_fd, int fd[], int fd_size);
 void	close_fd(int fd[], int fd_size);
-int		wait_runcmd(pid_t pid);
+int		wait_runcmd(pid_t pid, int own);
 int		is_builtins(char *cmd_name);
 int		set_pathname(char **pathname, char *cmd_name);
 int		is_dir(char *dir);
