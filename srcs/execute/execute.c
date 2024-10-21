@@ -97,10 +97,14 @@ void	execute(t_shell *shell)
 		}
 		else if (pid == 0)
 		{
-			reset_signal();
+			set_signal(SIGINT, SIG_IGN, 0);
 			runcmd(shell->cmd, shell);
 		}
 		else
+		{
+			set_signal(SIGINT, SIG_IGN, 0);
 			shell->exit_status = wait_runcmd(pid);
+			set_signal(SIGINT, &signal_handler, SA_RESTART | SA_SIGINFO);
+		}
 	}
 }

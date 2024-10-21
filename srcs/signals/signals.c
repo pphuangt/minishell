@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static void	signal_handler(int signum, siginfo_t *info, void *context)
+void	signal_handler(int signum, siginfo_t *info, void *context)
 {
 	static t_shell	*shell = NULL;
 
@@ -28,7 +28,7 @@ static void	signal_handler(int signum, siginfo_t *info, void *context)
 	rl_on_new_line();
 }
 
-static int	set_signal(int signum, void (*func), int flags)
+int	set_signal(int signum, void (*func), int flags)
 {
 	struct sigaction	sa;
 

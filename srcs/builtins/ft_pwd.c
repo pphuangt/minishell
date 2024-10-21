@@ -18,7 +18,8 @@ int	ft_pwd(void)
 	char	buff[MAXLINE];
 
 	wd = getcwd(buff, MAXLINE);
-	if (wd)
-		ft_putendl_fd(wd, STDOUT_FILENO);
+	if (!wd)
+		wd = get_variable_environ(0, "PWD", 3);
+	ft_putendl_fd(wd, STDOUT_FILENO);
 	return (0);
 }

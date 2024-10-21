@@ -28,6 +28,7 @@ static void	runcmd_exec(t_execcmd *ecmd, t_shell *shell,
 			clean_and_exit(shell, SYSTEM_ERROR, fd, fd_size);
 		if (!is_pathname_exist(&pathname, ecmd->argv[0]))
 			clean_and_exit(shell, CMD_NOT_FOUND, fd, fd_size);
+		reset_signal();
 		execve(pathname, ecmd->argv, shell->environ.p);
 		on_execve_error(&pathname, shell, fd, fd_size);
 	}

@@ -171,6 +171,8 @@ int		ft_exit(char **argv, t_shell *shell,
 /*    signals    */
 int		init_signal(t_shell *shell);
 void	reset_signal(void);
+int		set_signal(int signum, void (*func), int flags);
+void	signal_handler(int signum, siginfo_t *info, void *context);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);

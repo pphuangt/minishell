@@ -15,13 +15,15 @@
 static int	ft_isflag(char *str)
 {
 	int	i;
+	int	len;
 
+	len = ft_strlen(str);
 	i = 1;
 	if (str[0] == '-')
 	{
 		while (str[i] && str[i] == 'n')
 			i++;
-		if (i == 2)
+		if (i == len)
 			return (1);
 	}
 	return (0);
