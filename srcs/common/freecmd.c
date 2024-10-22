@@ -32,6 +32,11 @@ static void	freeredir(t_cmd *cmd)
 	freecmd(redircmd->cmd);
 	if (redircmd->file.s == redircmd->file.e)
 		free(redircmd->file.s);
+	if (redircmd->hd)
+	{
+		remove_file(redircmd->hd);
+		free(redircmd->hd);
+	}
 	free(redircmd);
 }
 

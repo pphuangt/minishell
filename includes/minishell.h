@@ -76,7 +76,7 @@ typedef struct s_redircmd
 	struct s_string	file;
 	int				mode;
 	int				fd;
-	int				hd_fd;
+	char			*hd;
 }	t_redircmd;
 
 typedef struct s_pipecmd
@@ -127,6 +127,7 @@ int		cal_ret_size(char *str, int exit_status, int heredoc);
 int		get_exit_status(char *dst, int exit_status);
 int		is_invalid_filename(char *str);
 void	handle_quote(char *qs, char c);
+int		setup_hd_file(t_redircmd *rcmd);
 int		heredoc(t_redircmd *rcmd, t_shell *shell);
 char	*strip_quotes(char *s);
 int		set_argument(t_execcmd *ecmd, char *str);
@@ -173,6 +174,10 @@ int		init_signal(t_shell *shell);
 void	reset_signal(void);
 int		set_signal(int signum, void (*func), int flags);
 void	signal_handler(int signum, siginfo_t *info, void *context);
+
+/*    file    */
+char	*generate_file(void);
+void	remove_file(char *filename);
 
 /*    utils    */
 void	freecmd(t_cmd *cmd);

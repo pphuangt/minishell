@@ -63,6 +63,8 @@ static int	expand_redir(t_cmd *cmd, t_shell *shell)
 			return (SYSTEM_ERROR);
 		rcmd->file.e = rcmd->file.s;
 	}
+	else if (heredoc(rcmd, shell) < 0)
+		return (SYSTEM_ERROR);
 	if (expand_cmd(rcmd->cmd, shell) == SYSTEM_ERROR)
 		return (SYSTEM_ERROR);
 	return (SUCCESS);
@@ -91,7 +93,8 @@ int	expansion(t_shell *shell)
 {
 	if (expand_cmd(shell->cmd, shell) == SYSTEM_ERROR)
 	{
-		shell->exit_status = SYSTEM_ERROR;
+		if (shell->exit_status != TERM_BY_SIG + SIGINT)
+			shell->exit_status = SYSTEM_ERROR;
 		return (SYSTEM_ERROR);
 	}
 	return (SUCCESS);

@@ -44,6 +44,7 @@ t_cmd	*redircmd(t_cmd *subcmd, t_string *file, int mode, int fd)
 	redircmd->file.e = file->e;
 	redircmd->mode = mode;
 	redircmd->fd = fd;
+	redircmd->hd = NULL;
 	return ((t_cmd *)redircmd);
 }
 
