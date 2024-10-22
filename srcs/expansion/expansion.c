@@ -57,12 +57,7 @@ static int	expand_redir(t_cmd *cmd, t_shell *shell)
 
 	rcmd = (t_redircmd *)cmd;
 	*rcmd->file.e = '\0';
-	if (rcmd->mode == O_DSYNC)
-	{
-		if (heredoc(rcmd, shell) < 0)
-			return (SYSTEM_ERROR);
-	}
-	else if (rcmd->mode != O_DSYNC)
+	if (rcmd->mode != O_DSYNC)
 	{
 		if (expand_filename(&rcmd->file.s, shell->exit_status) != SUCCESS)
 			return (SYSTEM_ERROR);

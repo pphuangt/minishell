@@ -18,10 +18,13 @@ int	redirect(t_redircmd *rcmd)
 
 	if (rcmd->mode == O_DSYNC)
 	{
+		printf("execute heredoc\n");
+		/*
 		if (dup2(rcmd->hd_fd, rcmd->fd) < 0)
 			return (err_ret("dup2"), SYSTEM_ERROR);
 		if (rcmd->hd_fd != rcmd->fd)
 			close(rcmd->hd_fd);
+		*/
 	}
 	else
 	{
