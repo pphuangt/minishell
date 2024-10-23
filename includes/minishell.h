@@ -25,6 +25,7 @@
 # include <sys/wait.h>
 # include <sys/stat.h>
 # include "libft.h"
+# include "get_next_line_bonus.h"
 
 # define METACHARACTER " \t\r\n\v|<>"
 # define WHITESPACE " \t\r\n\v"
