@@ -13,7 +13,6 @@
 #include "minishell.h"
 
 void	free_gnl(t_gnl **src);
-void	*ft_memmove(void *dst, const void *src, size_t len);
 
 static t_gnl	*create_buff(void)
 {

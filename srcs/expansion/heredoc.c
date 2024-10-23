@@ -56,7 +56,7 @@ static int	read_heredoc(t_redircmd *rcmd, t_shell *shell,
 			return ((shell->exit_status = 1), free(s), close(fd), -1);
 		free(s);
 	}
-	if (!s)
+	if (shell->is_interactive && !s)
 		end_by_eof_msg(rcmd->file.s, shell->count_line);
 	shell->count_line += hd_shell.count_line - 1;
 	return ((shell->exit_status = exit_status), free(s), close(fd), 1);

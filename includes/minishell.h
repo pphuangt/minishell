@@ -108,7 +108,6 @@ typedef struct s_shell
 void	init_shell(t_shell *shell);
 char	*rl_gets(t_shell *shell, char **s, char *prompt, int history);
 void	reset_prompt(t_shell *shell);
-char	*get_next_line(int fd);
 int		ft_strcmp(const char *s1, const char *s2);
 
 /*    constructure    */
