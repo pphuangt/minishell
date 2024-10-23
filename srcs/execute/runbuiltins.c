@@ -12,27 +12,40 @@
 
 #include "minishell.h"
 
+int	is_builtins(char *cmd_name)
+{
+	if (!cmd_name || !*cmd_name)
+		return (0);
+	if (!ft_strcmp(cmd_name, "echo")
+		|| !ft_strcmp(cmd_name, "cd")
+		|| !ft_strcmp(cmd_name, "pwd")
+		|| !ft_strcmp(cmd_name, "export")
+		|| !ft_strcmp(cmd_name, "unset")
+		|| !ft_strcmp(cmd_name, "env")
+		|| !ft_strcmp(cmd_name, "exit"))
+		return (1);
+	return (0);
+}
+
 int	runbuiltins_exec(t_execcmd *ecmd, t_shell *shell,
 		int fd[2], int fd_size)
 {
 	char	*cmd_name;
-	size_t	cmd_name_len;
 
 	cmd_name = ecmd->argv[0];
-	cmd_name_len = ft_strlen(cmd_name);
-	if (!ft_strncmp(cmd_name, "echo", cmd_name_len))
+	if (!ft_strcmp(cmd_name, "echo"))
 		return (ft_echo(ecmd->argv, ecmd->argc));
-	else if (!ft_strncmp(cmd_name, "cd", cmd_name_len))
+	else if (!ft_strcmp(cmd_name, "cd"))
 		return (ft_cd(ecmd->argv, ecmd->argc, &shell->environ));
-	else if (!ft_strncmp(cmd_name, "pwd", cmd_name_len))
+	else if (!ft_strcmp(cmd_name, "pwd"))
 		return (ft_pwd());
-	else if (!ft_strncmp(cmd_name, "export", cmd_name_len))
+	else if (!ft_strcmp(cmd_name, "export"))
 		return (ft_export(ecmd->argv, ecmd->argc, &shell->environ));
-	else if (!ft_strncmp(cmd_name, "unset", cmd_name_len))
+	else if (!ft_strcmp(cmd_name, "unset"))
 		return (ft_unset(ecmd->argv, ecmd->argc, &shell->environ));
-	else if (!ft_strncmp(cmd_name, "env", cmd_name_len))
+	else if (!ft_strcmp(cmd_name, "env"))
 		return (ft_env(&shell->environ));
-	else if (!ft_strncmp(cmd_name, "exit", cmd_name_len))
+	else if (!ft_strcmp(cmd_name, "exit"))
 		return (ft_exit(ecmd->argv, shell, fd, fd_size));
 	return (SUCCESS);
 }

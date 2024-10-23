@@ -39,18 +39,16 @@ static int	read_heredoc(t_redircmd *rcmd, t_shell *shell,
 {
 	t_shell	hd_shell;
 	char	*s;
-	size_t	file_len;
 	int		exit_status;
 
 	init_shell(&hd_shell);
-	file_len = ft_strlen(rcmd->file.s);
 	exit_status = shell->exit_status;
 	shell->exit_status = 0;
 	while (rl_gets(&hd_shell, &s, "> ", 0))
 	{
 		if (shell->exit_status == TERM_BY_SIG + SIGINT)
 			return (free(s), -1);
-		if (ft_strncmp(s, rcmd->file.s, file_len) == 0)
+		if (ft_strcmp(s, rcmd->file.s) == 0)
 			break ;
 		if (has_q)
 			ft_putendl_fd(s, fd);

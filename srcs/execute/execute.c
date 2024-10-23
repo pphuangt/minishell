@@ -29,7 +29,7 @@ static void	print_exit_msg(int wstatus, int signum)
 		ft_putendl_fd(exit_msg, STDERR_FILENO);
 }
 
-int	wait_runcmd(pid_t pid, int own)
+int	wait_runcmd(pid_t pid, int is_child)
 {
 	int	ret;
 	int	wstatus;
@@ -45,11 +45,18 @@ int	wait_runcmd(pid_t pid, int own)
 		signum = WTERMSIG(wstatus);
 		if (signum == SIGQUIT || signum == SIGSEGV)
 			print_exit_msg(wstatus, signum);
-		else if (own && signum == SIGINT)
+		else if (is_child && signum == SIGINT)
 			printf("\n");
 		ret = TERM_BY_SIG + signum;
 	}
 	return (ret);
+}
+
+static void	wait_all_child(pid_t pid, t_shell *shell)
+{
+	set_signal(SIGINT, SIG_IGN, 0);
+	shell->exit_status = wait_runcmd(pid, 0);
+	set_signal(SIGINT, &signal_handler, SA_RESTART | SA_SIGINFO);
 }
 
 static char	*get_cmd_name(t_cmd *cmd)
@@ -59,24 +66,6 @@ static char	*get_cmd_name(t_cmd *cmd)
 	else if (cmd->type == REDIR)
 		return (get_cmd_name(((t_redircmd *)cmd)->cmd));
 	return (NULL);
-}
-
-int	is_builtins(char *cmd_name)
-{
-	size_t	cmd_name_len;
-
-	if (!cmd_name || !*cmd_name)
-		return (0);
-	cmd_name_len = ft_strlen(cmd_name);
-	if (!ft_strncmp(cmd_name, "echo", cmd_name_len)
-		|| !ft_strncmp(cmd_name, "cd", cmd_name_len)
-		|| !ft_strncmp(cmd_name, "pwd", cmd_name_len)
-		|| !ft_strncmp(cmd_name, "export", cmd_name_len)
-		|| !ft_strncmp(cmd_name, "unset", cmd_name_len)
-		|| !ft_strncmp(cmd_name, "env", cmd_name_len)
-		|| !ft_strncmp(cmd_name, "exit", cmd_name_len))
-		return (1);
-	return (0);
 }
 
 void	execute(t_shell *shell)
@@ -103,10 +92,6 @@ void	execute(t_shell *shell)
 			runcmd(shell->cmd, shell);
 		}
 		else
-		{
-			set_signal(SIGINT, SIG_IGN, 0);
-			shell->exit_status = wait_runcmd(pid, 1);
-			set_signal(SIGINT, &signal_handler, SA_RESTART | SA_SIGINFO);
-		}
+			wait_all_child(pid, shell);
 	}
 }

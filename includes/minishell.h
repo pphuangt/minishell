@@ -106,6 +106,7 @@ typedef struct s_shell
 void	init_shell(t_shell *shell);
 char	*rl_gets(t_shell *shell, char **s, char *prompt, int history);
 void	reset_prompt(t_shell *shell);
+int		ft_strcmp(const char *s1, const char *s2);
 
 /*    constructure    */
 t_cmd	*execcmd(void);
@@ -144,7 +145,7 @@ void	runcmd(t_cmd *cmd, t_shell *shell);
 int		redirect(t_redircmd *rcmd);
 int		is_new_fd(int new_fd, int fd[], int fd_size);
 void	close_fd(int fd[], int fd_size);
-int		wait_runcmd(pid_t pid, int own);
+int		wait_runcmd(pid_t pid, int is_child);
 int		is_builtins(char *cmd_name);
 int		set_pathname(char **pathname, char *cmd_name);
 int		is_dir(char *dir);
