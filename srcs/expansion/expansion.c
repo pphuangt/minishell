@@ -60,7 +60,10 @@ static int	expand_redir(t_cmd *cmd, t_shell *shell)
 	if (rcmd->mode != O_DSYNC)
 	{
 		if (expand_filename(&rcmd->file.s, shell->exit_status) != SUCCESS)
+		{
+			shell->exit_status = SYSTEM_ERROR;
 			return (SYSTEM_ERROR);
+		}
 		rcmd->file.e = rcmd->file.s;
 	}
 	else if (heredoc(rcmd, shell) < 0)
@@ -77,7 +80,14 @@ static int	expand_cmd(t_cmd *cmd, t_shell *shell)
 	if (!cmd)
 		return (SUCCESS);
 	if (cmd->type == EXEC)
-		return (expand_exec(cmd, shell->exit_status));
+	{
+		if (expand_exec(cmd, shell->exit_status) < 0)
+		{
+			shell->exit_status = SYSTEM_ERROR;
+			return (SYSTEM_ERROR);
+		}
+		return (SUCCESS);
+	}
 	else if (cmd->type == REDIR)
 		return (expand_redir(cmd, shell));
 	else

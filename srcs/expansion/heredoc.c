@@ -40,9 +40,12 @@ static int	read_heredoc(t_redircmd *rcmd, t_shell *shell,
 	t_shell	hd_shell;
 	char	*s;
 	size_t	file_len;
+	int		exit_status;
 
 	init_shell(&hd_shell);
 	file_len = ft_strlen(rcmd->file.s);
+	exit_status = shell->exit_status;
+	shell->exit_status = 0;
 	while (rl_gets(&hd_shell, &s, "> ", 0))
 	{
 		if (shell->exit_status == TERM_BY_SIG + SIGINT)
@@ -51,14 +54,14 @@ static int	read_heredoc(t_redircmd *rcmd, t_shell *shell,
 			break ;
 		if (has_q)
 			ft_putendl_fd(s, fd);
-		else if (put_heredoc_fd(s, fd, shell->exit_status) < 0)
-			return (free(s), close(fd), -1);
+		else if (put_heredoc_fd(s, fd, exit_status) < 0)
+			return ((shell->exit_status = 1), free(s), close(fd), -1);
 		free(s);
 	}
 	if (!s)
 		end_by_eof_msg(rcmd->file.s, shell->count_line);
 	shell->count_line += hd_shell.count_line - 1;
-	return (free(s), close(fd), 1);
+	return ((shell->exit_status = exit_status), free(s), close(fd), 1);
 }
 
 int	heredoc(t_redircmd *rcmd, t_shell *shell)
@@ -69,13 +72,14 @@ int	heredoc(t_redircmd *rcmd, t_shell *shell)
 
 	fd = setup_hd_file(rcmd);
 	if (fd < 0)
-		return (-1);
+		return ((shell->exit_status = SYSTEM_ERROR), -1);
 	has_q = 0;
 	if (ft_strchr(rcmd->file.s, '\'') || ft_strchr(rcmd->file.s, '\"'))
 		has_q = 1;
 	str = ft_strdup(rcmd->file.s);
 	if (!str)
-		return (err_ret("malloc here document"), close(fd), -1);
+		return ((shell->exit_status = SYSTEM_ERROR),
+			err_ret("malloc here document"), close(fd), -1);
 	if (has_q)
 		strip_quotes(str);
 	rcmd->file.s = str;
