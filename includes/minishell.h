@@ -166,6 +166,7 @@ int		ft_echo(char **argv, int argc);
 int		ft_cd(char **argv, int argc, t_environ *environ);
 int		ft_pwd(void);
 int		ft_export(char **argv, int argc, t_environ *environ);
+int		is_valid_varname(char *str);
 int		handle_var_export(char *str, t_environ *environ);
 int		ft_unset(char **argv, int argc, t_environ *environ);
 int		ft_env(t_environ *environ);

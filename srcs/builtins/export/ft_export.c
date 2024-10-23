@@ -12,7 +12,6 @@
 
 #include "minishell.h"
 
-int		is_valid_varname(char *str);
 int		print_exported_env(t_environ *environ);
 void	print_err_msg(char *str);
 char	*extract_key(char *str);

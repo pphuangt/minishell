@@ -33,7 +33,7 @@ static int	check_second_arg(char *arg)
 		i++;
 	}
 	if (i == -1)
-		return (err_msg(0, "numeric argument required"), 2);
+		return (err_msg(0, "exit: numeric argument required"), 2);
 	else
 		return (ret);
 }
@@ -53,6 +53,8 @@ int	ft_exit(char **argv, t_shell *shell,
 {
 	int	argc;
 
+	if (shell->is_interactive)
+		printf("exit\n");
 	argc = get_argv_len(argv);
 	if (argc == 2)
 		shell->exit_status = check_second_arg(argv[1]);
@@ -60,7 +62,7 @@ int	ft_exit(char **argv, t_shell *shell,
 	{
 		shell->exit_status = check_second_arg(argv[1]);
 		if (shell->exit_status != 2)
-			return (err_msg(0, "too many arguments"), 1);
+			return (err_msg(0, "exit: too many arguments"), 1);
 	}
 	freecmd(shell->cmd);
 	shell->cmd = NULL;
@@ -68,7 +70,6 @@ int	ft_exit(char **argv, t_shell *shell,
 	shell->input = NULL;
 	free_environ(&shell->environ);
 	rl_clear_history();
-	printf("exit\n");
 	close_fd(fd, fd_size);
 	exit(shell->exit_status);
 }
