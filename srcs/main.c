@@ -31,6 +31,7 @@ int	main(void)
 	init_shell(&shell);
 	if (init_signal(&shell) < 0 || init_environ(&shell.environ) < 0)
 		return (-1);
+	rl_outstream = stderr;
 	while (rl_gets(&shell, &s, PROMPT, 1))
 	{
 		if (*s)
@@ -39,6 +40,7 @@ int	main(void)
 	}
 	rl_clear_history();
 	free_environ(&shell.environ);
-	printf("exit\n");
+	if (shell.is_interactive)
+		printf("exit\n");
 	return (0);
 }

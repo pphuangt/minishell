@@ -1,18 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/28 10:46:06 by pphuangt          #+#    #+#             */
-/*   Updated: 2023/09/28 10:46:10 by pphuangt         ###   ########.fr       */
+/*   Created: 2023/09/25 12:43:38 by pphuangt          #+#    #+#             */
+/*   Updated: 2023/09/25 12:44:04 by pphuangt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static t_gnl	*create_buff(t_gnl **head, int fd)
+void	free_gnl(t_gnl **src);
+void	*ft_memmove(void *dst, const void *src, size_t len);
+
+static t_gnl	*create_buff(void)
 {
 	t_gnl	*buff;
 
@@ -27,65 +30,62 @@ static t_gnl	*create_buff(t_gnl **head, int fd)
 		return (NULL);
 	}
 	buff->length = 0;
-	buff->fd = fd;
-	buff->next = *head;
-	*head = buff;
 	return (buff);
 }
 
-static int	expand_buff(t_gnl **head, t_gnl *buff, int fd)
+static int	expand_buff(t_gnl **buff)
 {
 	char	*n_str;
 
-	n_str = malloc(sizeof(char) * (buff->size * DB));
+	n_str = malloc(sizeof(char) * ((*buff)->size * DB));
 	if (!n_str)
 	{
-		free_t_gnl(head, fd);
+		free_gnl(buff);
 		return (0);
 	}
-	ft_memmove(n_str, buff->str, buff->length);
-	free(buff->str);
-	buff->str = n_str;
-	buff->size = buff->size * DB;
+	ft_memmove(n_str, (*buff)->str, (*buff)->length);
+	free((*buff)->str);
+	(*buff)->str = n_str;
+	(*buff)->size = (*buff)->size * DB;
 	return (1);
 }
 
-static char	*gen_line(t_gnl **head, t_gnl *buff, ssize_t i, int fd)
+static char	*gen_line(t_gnl **buff, ssize_t i)
 {
 	char	*result;
 
 	result = malloc(sizeof(char) * (i + 1));
 	if (!result)
 	{
-		free_t_gnl(head, fd);
+		free_gnl(buff);
 		return (NULL);
 	}
 	result[i] = '\0';
-	ft_memmove(result, buff->str, i);
-	ft_memmove(buff->str, buff->str + i, buff->length - i);
-	buff->length = buff->length - i;
-	if (buff->length == 0)
-		free_t_gnl(head, fd);
+	ft_memmove(result, (*buff)->str, i);
+	ft_memmove((*buff)->str, (*buff)->str + i, (*buff)->length - i);
+	(*buff)->length = (*buff)->length - i;
+	if ((*buff)->length == 0)
+		free_gnl(buff);
 	return (result);
 }
 
-static char	*find_line(t_gnl **head, t_gnl *buff, int fd)
+static char	*find_line(t_gnl **buff, int fd)
 {
 	ssize_t	size;
 	ssize_t	i;
 
 	i = 1;
-	while (buff->str[i - 1] != '\n')
+	while ((*buff)->str[i - 1] != '\n')
 	{
-		if (i == buff->length)
+		if (i == (*buff)->length)
 		{
-			if (buff->size - buff->length < BS && !expand_buff(head, buff, fd))
+			if ((*buff)->size - (*buff)->length < BS && !expand_buff(buff))
 				return (NULL);
-			size = read(fd, buff->str + buff->length, BUFFER_SIZE);
-			buff->length = buff->length + size;
+			size = read(fd, (*buff)->str + (*buff)->length, BUFFER_SIZE);
+			(*buff)->length = (*buff)->length + size;
 			if (size < 0)
 			{
-				free_t_gnl(head, fd);
+				free_gnl(buff);
 				return (NULL);
 			}
 			else if (size == 0)
@@ -93,30 +93,28 @@ static char	*find_line(t_gnl **head, t_gnl *buff, int fd)
 		}
 		i++;
 	}
-	return (gen_line(head, buff, i, fd));
+	return (gen_line(buff, i));
 }
 
 char	*get_next_line(int fd)
 {
-	static t_gnl	*head = NULL;
-	t_gnl			*buff;
+	static t_gnl	*buff = NULL;
 	t_gnl			*tmp;
 	ssize_t			size;
 
-	buff = find_node(head, fd);
 	tmp = buff;
 	if (!buff)
 	{
-		buff = create_buff(&head, fd);
+		buff = create_buff();
 		if (!buff)
 			return (NULL);
 		size = read(fd, buff->str + buff->length, BUFFER_SIZE);
 		if ((size == 0 && !tmp) || size < 0)
 		{
-			free_t_gnl(&head, fd);
+			free_gnl(&buff);
 			return (NULL);
 		}
 		buff->length = buff->length + size;
 	}
-	return (find_line(&head, buff, fd));
+	return (find_line(&buff, fd));
 }

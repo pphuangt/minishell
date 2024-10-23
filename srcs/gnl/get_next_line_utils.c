@@ -1,53 +1,48 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pphuangt <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/28 10:46:18 by pphuangt          #+#    #+#             */
-/*   Updated: 2023/09/28 10:58:32 by pphuangt         ###   ########.fr       */
+/*   Created: 2023/09/25 12:45:09 by pphuangt          #+#    #+#             */
+/*   Updated: 2023/09/25 12:45:13 by pphuangt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_gnl	*find_node(t_gnl *head, int fd)
+void	free_gnl(t_gnl **src)
 {
-	t_gnl	*cur;
-
-	cur = head;
-	while (cur)
-	{
-		if (cur->fd == fd)
-			return (cur);
-		cur = cur->next;
-	}
-	return (NULL);
+	free((*src)->str);
+	free(*src);
+	*src = NULL;
 }
 
-void	free_t_gnl(t_gnl **head, int fd)
+void	*ft_memmove(void *dst, const void *src, size_t len)
 {
-	t_gnl	*tmp;
-	t_gnl	*prev;
+	unsigned char		*c_dst;
+	const unsigned char	*c_src;
 
-	tmp = *head;
-	prev = NULL;
-	if (tmp->fd == fd)
+	c_dst = (unsigned char *) dst;
+	c_src = (const unsigned char *) src;
+	if (dst > src)
 	{
-		*head = tmp->next;
-		free(tmp->str);
-		free(tmp);
-	}
-	else
-	{
-		while (tmp != NULL && tmp->fd != fd)
+		while (len > 0)
 		{
-			prev = tmp;
-			tmp = tmp->next;
+			c_dst[len - 1] = c_src[len - 1];
+			len--;
 		}
-		prev->next = tmp->next;
-		free(tmp->str);
-		free(tmp);
 	}
+	else if (dst < src)
+	{
+		while (len > 0)
+		{
+			*c_dst = *c_src;
+			c_dst++;
+			c_src++;
+			len--;
+		}
+	}
+	return (dst);
 }

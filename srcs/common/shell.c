@@ -14,6 +14,7 @@
 
 void	init_shell(t_shell *shell)
 {
+	shell->is_interactive = isatty(STDIN_FILENO);
 	shell->cmd = NULL;
 	shell->input = NULL;
 	shell->count_line = 0;
@@ -30,7 +31,14 @@ void	reset_prompt(t_shell *shell)
 
 char	*rl_gets(t_shell *shell, char **s, char *prompt, int history)
 {
-	*s = readline(prompt);
+	if (shell->is_interactive)
+		*s = readline(prompt);
+	else
+	{
+		*s = get_next_line(STDIN_FILENO);
+		if (*s && **s)
+			(*s)[ft_strlen(*s) - 1] = '\0';
+	}
 	shell->input = *s;
 	shell->count_line++;
 	if (*s && **s && history)
