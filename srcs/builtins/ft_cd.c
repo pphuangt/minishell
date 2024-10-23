@@ -30,7 +30,8 @@ static void	print_err_cd(char *path)
 {
 	ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
 	ft_putstr_fd(path, STDERR_FILENO);
-	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putendl_fd(strerror(errno), STDERR_FILENO);
 }
 
 static int	go_back_path(char *old_pwd, char *last_pwd)

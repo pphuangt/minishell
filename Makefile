@@ -14,7 +14,7 @@ SRCS = $(addprefix srcs/, main.c \
 	   $(addprefix execute/, execute.c runbuiltins.c runcmd.c runcmd_utils.c redirect.c file_descriptor.c set_pathname.c) \
 	   $(addprefix builtins/, ft_echo.c ft_cd.c ft_pwd.c ft_unset.c ft_env.c ft_exit.c \
 		$(addprefix export/, ft_export.c ft_export_output.c ft_export_utils.c)) \
-	   $(addprefix common/, err.c err_message.c freecmd.c free_environ.c shell.c file_utils.c ft_strcmp.c))
+	   $(addprefix common/, err.c err_message.c freecmd.c free_environ.c shell.c file_utils.c ft_strcmp.c get_next_line_bonus.c get_next_line_utils_bonus.c))
 OBJS = $(SRCS:.c=.o)
 
 all : $(NAME)

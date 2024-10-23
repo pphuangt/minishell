@@ -28,7 +28,7 @@ static int	is_key_in_environ(char *key, t_environ *environ)
 	i = 0;
 	while (p[i])
 	{
-		if (!ft_strncmp(p[i], key, key_len) && *(p[i] + key_len) == '=')
+		if (!ft_strncmp(p[i], key, key_len) && p[i][key_len] == '=')
 			return (i);
 		i++;
 	}

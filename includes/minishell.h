@@ -96,6 +96,7 @@ typedef struct s_environ
 
 typedef struct s_shell
 {
+	int			is_interactive;
 	t_cmd		*cmd;
 	char		*input;
 	t_environ	environ;
