@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line_bonus.h"
+#include "minishell.h"
 
 static t_gnl	*create_buff(t_gnl **head, int fd)
 {
