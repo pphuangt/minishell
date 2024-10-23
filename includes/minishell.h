@@ -145,7 +145,7 @@ void	runcmd(t_cmd *cmd, t_shell *shell);
 int		redirect(t_redircmd *rcmd);
 int		is_new_fd(int new_fd, int fd[], int fd_size);
 void	close_fd(int fd[], int fd_size);
-int		wait_runcmd(pid_t pid, int is_child);
+int		wait_runcmd(pid_t pid);
 int		is_builtins(char *cmd_name);
 int		set_pathname(char **pathname, char *cmd_name);
 int		is_dir(char *dir);
@@ -175,6 +175,7 @@ int		init_signal(t_shell *shell);
 void	reset_signal(void);
 int		set_signal(int signum, void (*func), int flags);
 void	signal_handler(int signum, siginfo_t *info, void *context);
+void	signal_child_handler(int signum, siginfo_t *info, void *context);
 
 /*    file    */
 char	*generate_file(void);

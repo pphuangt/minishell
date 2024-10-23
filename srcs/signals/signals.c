@@ -28,6 +28,14 @@ void	signal_handler(int signum, siginfo_t *info, void *context)
 	rl_on_new_line();
 }
 
+void	signal_child_handler(int signum, siginfo_t *info, void *context)
+{
+	(void)signum;
+	(void)info;
+	(void)context;
+	printf("\n");
+}
+
 int	set_signal(int signum, void (*func), int flags)
 {
 	struct sigaction	sa;

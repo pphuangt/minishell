@@ -29,7 +29,7 @@ static void	print_exit_msg(int wstatus, int signum)
 		ft_putendl_fd(exit_msg, STDERR_FILENO);
 }
 
-int	wait_runcmd(pid_t pid, int is_child)
+int	wait_runcmd(pid_t pid)
 {
 	int	ret;
 	int	wstatus;
@@ -45,8 +45,6 @@ int	wait_runcmd(pid_t pid, int is_child)
 		signum = WTERMSIG(wstatus);
 		if (signum == SIGQUIT || signum == SIGSEGV)
 			print_exit_msg(wstatus, signum);
-		else if (is_child && signum == SIGINT)
-			printf("\n");
 		ret = TERM_BY_SIG + signum;
 	}
 	return (ret);
@@ -54,8 +52,8 @@ int	wait_runcmd(pid_t pid, int is_child)
 
 static void	wait_all_child(pid_t pid, t_shell *shell)
 {
-	set_signal(SIGINT, SIG_IGN, 0);
-	shell->exit_status = wait_runcmd(pid, 0);
+	set_signal(SIGINT, &signal_child_handler, SA_RESTART | SA_SIGINFO);
+	shell->exit_status = wait_runcmd(pid);
 	set_signal(SIGINT, &signal_handler, SA_RESTART | SA_SIGINFO);
 }
 
