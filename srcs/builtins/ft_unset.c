@@ -12,7 +12,8 @@
 
 #include "minishell.h"
 
-static int	remove_variable_environ(t_environ *environ, char *key, size_t key_len)
+static int	remove_variable_environ(t_environ *environ,
+		char *key, size_t key_len)
 {
 	char		**p;
 
