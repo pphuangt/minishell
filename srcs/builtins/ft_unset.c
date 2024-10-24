@@ -12,14 +12,15 @@
 
 #include "minishell.h"
 
-static int	remove_variable_environ(t_environ *environ, char *name, size_t size)
+static int	remove_variable_environ(t_environ *environ, char *key, size_t key_len)
 {
 	char		**p;
 
 	p = environ->p;
 	while (*p)
 	{
-		if (ft_strncmp(*p, name, size) == 0 && *(*p + size) == '=')
+		if (ft_strncmp(*p, key, key_len) == 0
+			&& (*(*p + key_len) == '=' || *(*p + key_len) == '\0'))
 		{
 			free(*p);
 			while (*(p + 1))
