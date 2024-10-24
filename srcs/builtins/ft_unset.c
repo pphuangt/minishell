@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: paradari <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: paradari <paradari@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 16:26:55 by paradari          #+#    #+#             */
-/*   Updated: 2024/10/04 16:26:56 by paradari         ###   ########.fr       */
+/*   Updated: 2024/10/24 22:59:39 by paradari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static int	remove_variable_environ(t_environ *environ,
 	while (*p)
 	{
 		if (ft_strncmp(*p, key, key_len) == 0
-			&& (*(*p + key_len) == '=' || *(*p + key_len) == '\0'))
+			&& (*(*p + key_len) == '=' || !(*p + key_len)))
 		{
 			free(*p);
 			while (*(p + 1))
