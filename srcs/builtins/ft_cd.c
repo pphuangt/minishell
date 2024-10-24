@@ -79,7 +79,7 @@ static int	ft_change_dir(char *path, t_environ *environ)
 	}
 	old_pwd = get_variable_environ(0, "PWD", 3);
 	if (!old_pwd)
-		old_pwd = ft_strdup(last_pwd);
+		old_pwd = last_pwd;
 	ft_update_wd(old_pwd, environ, 0);
 	pwd = getcwd(buff, MAXLINE);
 	ft_update_wd(pwd, environ, 1);
