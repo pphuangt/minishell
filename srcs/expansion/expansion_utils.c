@@ -68,7 +68,7 @@ int	set_argument(t_execcmd *ecmd, char *str)
 	{
 		if (str[i] == '"')
 			skip_double_quote(str, &i);
-		else if (str[i] == '\"')
+		else if (str[i] == '\'')
 			skip_single_quote(str, &i);
 		else if (str[i] == 0x01)
 		{

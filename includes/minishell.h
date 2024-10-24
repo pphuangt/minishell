@@ -32,7 +32,7 @@
 # define REDIR_O "<>"
 # define QUOTE "\'\""
 # define MAXLINE 4096
-# define PROMPT "\e[3;34m\e[0m\e[1;34mminishell$\e[0m "
+# define PROMPT "\001\e[3;34m\e[0m\e[1;34m\002minishell$\001\e[0m\002 "
 # define MAXARGS 100
 
 /*    exit_status    */
