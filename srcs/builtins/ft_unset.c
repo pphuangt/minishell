@@ -21,7 +21,7 @@ static int	remove_variable_environ(t_environ *environ,
 	while (*p)
 	{
 		if (ft_strncmp(*p, key, key_len) == 0
-			&& (*(*p + key_len) == '=' || !(*p + key_len)))
+			&& (*(*p + key_len) == '=' || *(*p + key_len) == '\0'))
 		{
 			free(*p);
 			while (*(p + 1))
