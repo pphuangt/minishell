@@ -94,6 +94,12 @@ typedef struct s_environ
 	size_t	size;
 }	t_environ;
 
+typedef struct	s_child_pid
+{
+	t_pid				pid;
+	struct s_child_pid	*next;
+}	t_child_pid;
+
 typedef struct s_shell
 {
 	int			is_interactive;
@@ -102,6 +108,7 @@ typedef struct s_shell
 	t_environ	environ;
 	size_t		count_line;
 	int			exit_status;
+	t_child_pid	*child_pid;
 }	t_shell;
 
 /*    common    */
@@ -178,7 +185,6 @@ int		init_signal(t_shell *shell);
 void	reset_signal(void);
 int		set_signal(int signum, void (*func), int flags);
 void	signal_handler(int signum, siginfo_t *info, void *context);
-void	signal_child_handler(int signum, siginfo_t *info, void *context);
 
 /*    file    */
 char	*generate_file(void);

@@ -52,7 +52,7 @@ int	wait_runcmd(pid_t pid)
 
 static void	wait_all_child(pid_t pid, t_shell *shell)
 {
-	set_signal(SIGINT, &signal_child_handler, SA_RESTART | SA_SIGINFO);
+	set_signal(SIGINT, SIG_IGN, 0);
 	shell->exit_status = wait_runcmd(pid);
 	set_signal(SIGINT, &signal_handler, SA_RESTART | SA_SIGINFO);
 }
@@ -68,13 +68,11 @@ static char	*get_cmd_name(t_cmd *cmd)
 
 void	execute(t_shell *shell)
 {
-	char	*cmd_name;
 	pid_t	pid;
 
 	if (!shell->cmd || expansion(shell) != SUCCESS)
 		return ;
-	cmd_name = get_cmd_name(shell->cmd);
-	if (shell->cmd->type != PIPE && is_builtins(cmd_name))
+	if (shell->cmd->type != PIPE && is_builtins(get_cmd_name(shell->cmd)))
 		runbuiltins(shell);
 	else
 	{
