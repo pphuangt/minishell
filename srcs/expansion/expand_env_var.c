@@ -28,7 +28,7 @@ static int	env_var_cpy(char *dst, char *src, int *i, int exit_status)
 		while (ft_isalnum(src[*i]) || src[*i] == '_')
 			*i = *i + 1;
 		str = get_variable_environ(0, src, *i);
-		if (str)
+		if (str && *str)
 		{
 			*dst = 0x01;
 			ret = ft_strlen(str);

@@ -28,7 +28,7 @@ static int	variable_size(char *str, int *i, int exit_status)
 		while (ft_isalnum(str[*i + 1]) || str[*i + 1] == '_')
 			*i = *i + 1;
 		value = get_variable_environ(0, str + 1, *i);
-		if (value)
+		if (value && *value)
 			ret = ft_strlen(value) + 2;
 	}
 	return (ret);
